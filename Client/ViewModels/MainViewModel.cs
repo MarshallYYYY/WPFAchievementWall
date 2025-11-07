@@ -20,17 +20,25 @@ namespace Client.ViewModels
         public MainViewModel(IRegionManager regionManager)
         {
             InitMenus();
-            NavigateCommand = new DelegateCommand<Menu>(Navigate);
             this.regionManager = regionManager;
+            NavigateCommand = new DelegateCommand<Menu>(Navigate);
+            
+            //Navigate(Menus.First(menu => menu.Title == "成就展示"));
         }
-        //  { get; set; } 是必须的！！！
+        //  { get; set; } 是必要的！！！
         public ObservableCollection<Menu> Menus { get; set; } = [];
         private void InitMenus()
         {
             Menus.Add(new Menu() { Icon = "📊", Title = "成就展示", ViewName = "AchievementDisplayView" });
-            Menus.Add(new Menu() { Icon = "🎯", Title = "目标管理", ViewName = "ToDoView" });
-            Menus.Add(new Menu() { Icon = "📈", Title = "数据统计", ViewName = "MemoView" });
+            Menus.Add(new Menu() { Icon = "🎯", Title = "目标管理", ViewName = "GoalsManagementView" });
+            Menus.Add(new Menu() { Icon = "📈", Title = "数据统计", ViewName = "DataStatisticsView" });
             Menus.Add(new Menu() { Icon = "⚙️", Title = "设置", ViewName = "SettingsView" });
+        }
+        private string mainViewTitle = "个人成就记录墙";
+        public string MainViewTitle
+        {
+            get { return mainViewTitle; }
+            set { SetProperty(ref mainViewTitle, value); }
         }
         private readonly IRegionManager regionManager;
         public DelegateCommand<Menu> NavigateCommand { get; private set; }
@@ -40,7 +48,8 @@ namespace Client.ViewModels
                 return;
 
             regionManager.Regions[PrismRegionName.MainViewRegion].RequestNavigate(menu.ViewName);
-            //Title = $"MyToDo - {menu.Title}";
+            MainViewTitle = $"个人成就记录墙 - {menu.Title}";
+            MenuToggleButtonIsChecked = false;
         }
         private bool menuToggleButtonIsChecked = false;
         public bool MenuToggleButtonIsChecked

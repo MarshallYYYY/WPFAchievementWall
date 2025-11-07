@@ -25,6 +25,9 @@ namespace Client
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.RegisterForNavigation<AchievementDisplayView, AchievementDisplayViewModel>();
+            containerRegistry.RegisterForNavigation<GoalsManagementView, GoalsManagementViewModel>();
+            containerRegistry.RegisterForNavigation<DataStatisticsView, DataStatisticsViewModel>();
+            containerRegistry.RegisterForNavigation<SettingsView, SettingsViewModel>();
         }
     }
 }

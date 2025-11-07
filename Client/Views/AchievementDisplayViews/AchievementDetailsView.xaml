@@ -39,7 +39,7 @@
 
                     <!--  达成时间  -->
                     <TextBlock
-                        Text="{Binding SelectedAchievement.Date, StringFormat='yyyy年MM月dd日'}"
+                        Text="{Binding SelectedAchievement.AchieveDate, StringFormat='yyyy年MM月dd日'}"
                         VerticalAlignment="Center"
                         Margin="5,0,0,0"
                         FontSize="16"

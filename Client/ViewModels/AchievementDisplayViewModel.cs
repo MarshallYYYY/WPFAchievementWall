@@ -30,7 +30,7 @@ namespace Client.ViewModels
                     {
                         Title = "111",
                         Content = "大风大酒店开发活动懂法守法达到法定发大法师发卡机老大发哈三大发山东发撒",
-                        Date = new DateTime(2025,1,1),
+                        AchieveDate = new DateTime(2025,1,1),
                         Level = 2,
                         Category = AchievementCategory.Life
                     },
@@ -38,7 +38,7 @@ namespace Client.ViewModels
                     {
                         Title = "代发大是大非久啊",
                         Content = "多发点发大水大法师大萨达发撒",
-                        Date = new DateTime(2025,1,1),
+                        AchieveDate = new DateTime(2025,1,1),
                         Level = 0,
                         Category = AchievementCategory.Default
                     },
@@ -46,7 +46,7 @@ namespace Client.ViewModels
                     {
                         Title = "111",
                         Content = "111111",
-                        Date = new DateTime(2025,1,1),
+                        AchieveDate = new DateTime(2025,1,1),
                         Level = 3,
                         Category = AchievementCategory.Learning
                     },
@@ -54,7 +54,7 @@ namespace Client.ViewModels
                     {
                         Title = "111",
                         Content = "大风大酒店开发活动懂法守法达到法定发大法师发卡机老大发哈三大发山东发撒",
-                        Date = new DateTime(2025,1,1),
+                        AchieveDate = new DateTime(2025,1,1),
                         Level = 5,
                         Category = AchievementCategory.Career
                     },
@@ -62,7 +62,7 @@ namespace Client.ViewModels
                     {
                         Title = "111",
                         Content = "111111",
-                        Date = new DateTime(2025,1,1),
+                        AchieveDate = new DateTime(2025,1,1),
                         Level = 1,
                         Category = AchievementCategory.Health
                     },
@@ -87,13 +87,6 @@ namespace Client.ViewModels
         public DelegateCommand<Achievement> OpenDetailsCommand { get; private set; }
         private void OpenDetails(Achievement achievement)
         {
-            //string info =
-            //    achievement.Title + "\n" +
-            //    achievement.Content + "\n" +
-            //    achievement.Date.ToString() + "\n" +
-            //    achievement.Level.ToString() + "\n" +
-            //    achievement.Category.ToString();
-            //MessageBox.Show(info);
             SelectedAchievement = achievement;
             if (DetailsVisibility == Visibility.Hidden)
                 DetailsVisibility = Visibility.Visible;

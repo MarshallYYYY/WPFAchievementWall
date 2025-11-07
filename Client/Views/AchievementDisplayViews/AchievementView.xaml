@@ -50,16 +50,17 @@
                         <RowDefinition
                             Height="auto" />
                         <RowDefinition
-                            Height="30" />
+                            Height="20" />
                     </Grid.RowDefinitions>
 
-                    <!--  根据分类显示不同的颜色和图标  -->
+                    <!--  根据分类显示不同的图标和图标颜色  -->
                     <TextBlock
                         Text="{Binding Path=Category, 
                             Converter={StaticResource EnumToInfo},
                             ConverterParameter=Icon}"
-                        HorizontalAlignment="Center"
                         FontSize="30"
+                        Margin="0,10,0,0"
+                        HorizontalAlignment="Center"
                         Foreground="{Binding Category, 
                             Converter={StaticResource EnumToInfo}, 
                             ConverterParameter=Color}" />
@@ -113,7 +114,7 @@
 
                         <!--  达成时间  -->
                         <TextBlock
-                            Text="{Binding Date, StringFormat='yyyy年MM月dd日'}"
+                            Text="{Binding AchieveDate, StringFormat='yyyy年MM月dd日'}"
                             VerticalAlignment="Center"
                             FontSize="16"
                             Foreground="#999" />
@@ -139,7 +140,8 @@
                     Command="{Binding DataContext.OpenDetailsCommand, 
                             RelativeSource={RelativeSource AncestorType=UserControl, 
                             AncestorLevel=3}}"
-                    CommandParameter="{Binding}">
+                    CommandParameter="{Binding}"
+                    ToolTip="成就详情">
                     <md:PackIcon
                         Width="27"
                         Height="27"

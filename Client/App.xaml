@@ -13,23 +13,29 @@
                     BaseTheme="Light"
                     PrimaryColor="Indigo"
                     SecondaryColor="Lime" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <Style x:Key="MyListBoxItemStyle"
+            <Style
+                x:Key="MyListBoxItemStyle"
                 TargetType="ListBoxItem">
                 <Setter
                     Property="MinHeight"
                     Value="40" />
-                <Setter Property="Template">
+                <Setter
+                    Property="Template">
                     <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                        <ControlTemplate
+                            TargetType="{x:Type ListBoxItem}">
 
                             <Grid>
                                 <!--  内容最左侧的样式  -->
-                                <Border x:Name="borderOne" />
+                                <Border
+                                    x:Name="borderOne"/>
                                 <!--  内容选中的样式  -->
-                                <Border x:Name="borderTwo" />
+                                <Border
+                                    x:Name="borderTwo" />
                                 <!--  内容呈现,使用自定义模板时，不加该属性，原先的内容无法呈现  -->
                                 <ContentPresenter
                                     HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
@@ -40,37 +46,47 @@
                             <ControlTemplate.Triggers>
 
                                 <!--  如果是选中状态  -->
-                                <Trigger Property="IsSelected" Value="True">
+                                <Trigger
+                                    Property="IsSelected"
+                                    Value="True">
                                     <!--  第一个Border 设置边框样式  -->
-                                    <Setter TargetName="borderOne"
+                                    <Setter
+                                        TargetName="borderOne"
                                         Property="BorderThickness"
-                                        Value="4,0,0,0" />
+                                        Value="5,0,0,0" />
                                     <!--
                                         第一个Border 设置边框颜色，
                                         value 动态绑定主要是为了适应主题颜色更改时，边框也着变
                                     -->
-                                    <Setter TargetName="borderOne"
+                                    <Setter
+                                        TargetName="borderOne"
                                         Property="BorderBrush"
                                         Value="{DynamicResource PrimaryHueLightBrush}" />
 
                                     <!--  第二个border 设置选中的样式  -->
-                                    <Setter TargetName="borderTwo"
+                                    <Setter
+                                        TargetName="borderTwo"
                                         Property="Background"
                                         Value="{DynamicResource PrimaryHueLightBrush}" />
                                     <!--  第二个border 设置选中的透明度  -->
-                                    <Setter TargetName="borderTwo"
+                                    <Setter
+                                        TargetName="borderTwo"
                                         Property="Opacity"
                                         Value="0.2" />
                                 </Trigger>
 
                                 <!--  鼠标悬停触发器,如果鼠标悬停时  -->
-                                <Trigger Property="IsMouseOver" Value="True">
+                                <Trigger
+                                    Property="IsMouseOver"
+                                    Value="True">
                                     <!--  第二个border 设置选中的样式  -->
-                                    <Setter TargetName="borderTwo"
+                                    <Setter
+                                        TargetName="borderTwo"
                                         Property="Background"
                                         Value="{DynamicResource PrimaryHueLightBrush}" />
                                     <!--  第二个border 设置选中的透明度  -->
-                                    <Setter TargetName="borderTwo"
+                                    <Setter
+                                        TargetName="borderTwo"
                                         Property="Opacity"
                                         Value="0.2" />
                                 </Trigger>
