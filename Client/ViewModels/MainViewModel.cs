@@ -7,7 +7,10 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace Client.ViewModels
 {
@@ -45,5 +48,9 @@ namespace Client.ViewModels
             get { return menuToggleButtonIsChecked; }
             set { SetProperty(ref menuToggleButtonIsChecked, value); }
         }
+
+        #region 最小化、最大化、关闭按钮的点击事件，标题栏的拖拽、最大化切换
+
+        #endregion
     }
 }

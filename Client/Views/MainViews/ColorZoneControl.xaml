@@ -51,18 +51,22 @@
             </Image>
             <Button
                 x:Name="btnMin"
+                Click="MinimizeButton_Click"
                 Style="{StaticResource MaterialDesignFlatMidBgButton}">
                 <md:PackIcon
                     Kind="WindowMinimize" />
             </Button>
             <Button
                 x:Name="btnMax"
+                Click="MaximizeButton_Click"
                 Style="{StaticResource MaterialDesignFlatMidBgButton}">
                 <md:PackIcon
+                    x:Name="MaximizeIcon"
                     Kind="WindowMaximize" />
             </Button>
             <Button
                 x:Name="btnClose"
+                Click="CloseButton_Click"
                 Style="{StaticResource MaterialDesignFlatMidBgButton}"
                 Cursor="Hand">
                 <md:PackIcon

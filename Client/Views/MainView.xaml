@@ -19,7 +19,12 @@
     prism:ViewModelLocator.AutoWireViewModel="True"
     Style="{StaticResource MaterialDesignWindow}"
     xmlns:mainviews="clr-namespace:Client.Views.MainViews"
-    mc:Ignorable="d">
+    WindowStyle="None"
+    AllowsTransparency="True"
+    ResizeMode="CanResizeWithGrip"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d"
+    StateChanged="Window_StateChange">
 
     <md:DialogHost
         x:Name="DialogHost"
@@ -43,13 +48,16 @@
                 <!--  导航条色块：上方的一整块  -->
                 <md:ColorZone
                     x:Name="ColorZone"
+                    MouseDoubleClick="ColorZone_MouseDoubleClick"
+                    MouseMove="ColorZone_MouseMove"
                     Padding="0"
                     md:ElevationAssist.Elevation="Dp4"
                     DockPanel.Dock="Top"
                     Mode="PrimaryMid">
 
-                    <mainviews:ColorZoneControl />
-                    
+                    <mainviews:ColorZoneControl
+                        x:Name="colorZoneControl" />
+
                 </md:ColorZone>
 
                 <ContentControl
