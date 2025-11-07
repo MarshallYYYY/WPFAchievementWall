@@ -1,0 +1,51 @@
+﻿<UserControl
+    x:Class="Client.Views.AchievementDisplayViews.YearAchievementControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Client.Views.AchievementDisplayViews"
+    xmlns:models="clr-namespace:Client.Models"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <Grid>
+        <StackPanel
+            d:DataContext="{d:DesignInstance models:YearAchievements}"
+            Margin="20,20,0,0"
+            Orientation="Horizontal">
+
+            <!--  时间线部分  -->
+            <StackPanel
+                Width="120"
+                VerticalAlignment="Top">
+                <TextBlock
+                    Text="{Binding Year}"
+                    Margin="30,0"
+                    FontSize="27"
+                    FontWeight="Bold"
+                    HorizontalAlignment="Center"
+                    Foreground="#FF3F51B5" />
+                <Rectangle
+                    Height="3"
+                    Margin="0,4,0,0"
+                    Fill="#FF3F51B5"
+                    Opacity="0.5" />
+            </StackPanel>
+
+            <!--  成就项组  -->
+            <ItemsControl
+                Margin="5,40,0,0"
+                ItemsSource="{Binding Achievements}">
+                <ItemsControl.ItemTemplate>
+
+                    <DataTemplate>
+                        <local:AchievementControl />
+                    </DataTemplate>
+
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+        </StackPanel>
+    </Grid>
+</UserControl>
