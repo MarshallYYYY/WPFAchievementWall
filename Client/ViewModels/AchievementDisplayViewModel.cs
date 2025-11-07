@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Client.ViewModels
 {
@@ -13,6 +14,8 @@ namespace Client.ViewModels
         public AchievementDisplayViewModel()
         {
             InitAllAchievement();
+            OpenDetailsCommand = new DelegateCommand<Achievement>(OpenDetails);
+            CloseDetailsCommand = new DelegateCommand(CloseDetails);
         }
         public ObservableCollection<YearAchievements> AllAchievement { get; set; } = [];
 
@@ -68,6 +71,38 @@ namespace Client.ViewModels
             YearAchievements yearAchievements2024 = yearAchievements2025;
             AllAchievement.Add(yearAchievements2025);
             AllAchievement.Add(yearAchievements2024);
+        }
+        private Visibility detailsVisibility = Visibility.Hidden;
+        public Visibility DetailsVisibility
+        {
+            get { return detailsVisibility; }
+            set { SetProperty(ref detailsVisibility, value); }
+        }
+        private Achievement? selectedAchievement;
+        public Achievement? SelectedAchievement
+        {
+            get { return selectedAchievement; }
+            set { SetProperty(ref selectedAchievement, value); }
+        }
+        public DelegateCommand<Achievement> OpenDetailsCommand { get; private set; }
+        private void OpenDetails(Achievement achievement)
+        {
+            //string info =
+            //    achievement.Title + "\n" +
+            //    achievement.Content + "\n" +
+            //    achievement.Date.ToString() + "\n" +
+            //    achievement.Level.ToString() + "\n" +
+            //    achievement.Category.ToString();
+            //MessageBox.Show(info);
+            SelectedAchievement = achievement;
+            if (DetailsVisibility == Visibility.Hidden)
+                DetailsVisibility = Visibility.Visible;
+        }
+        public DelegateCommand CloseDetailsCommand { get; private set; }
+        private void CloseDetails()
+        {
+            if (DetailsVisibility == Visibility.Visible)
+                DetailsVisibility = Visibility.Hidden;
         }
     }
 }

@@ -14,9 +14,9 @@
     xmlns:views="clr-namespace:Client.Views"
     xmlns:models="clr-namespace:Client.Models"
     xmlns:viewmodels="clr-namespace:Client.ViewModels"
+    xmlns:mvms="clr-namespace:Client.ViewModels.MainViewModels"
     d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
     xmlns:common="clr-namespace:Client.Common"
-    prism:ViewModelLocator.AutoWireViewModel="True"
     Style="{StaticResource MaterialDesignWindow}"
     xmlns:mainviews="clr-namespace:Client.Views.MainViews"
     WindowStyle="None"
@@ -40,7 +40,7 @@
 
             <!--  左边弹出的菜单  -->
             <md:DrawerHost.LeftDrawerContent>
-                <mainviews:LeftDrawerContentControl />
+                <mainviews:LeftDrawerContentView />
             </md:DrawerHost.LeftDrawerContent>
 
             <DockPanel>
@@ -50,13 +50,13 @@
                     x:Name="ColorZone"
                     MouseDoubleClick="ColorZone_MouseDoubleClick"
                     MouseMove="ColorZone_MouseMove"
-                    Padding="0"
+                    Padding="5"
                     md:ElevationAssist.Elevation="Dp4"
                     DockPanel.Dock="Top"
                     Mode="PrimaryMid">
 
-                    <mainviews:ColorZoneControl
-                        x:Name="colorZoneControl" />
+                    <mainviews:ColorZoneView
+                        x:Name="colorZoneView" />
 
                 </md:ColorZone>
 

@@ -1,5 +1,6 @@
 ﻿using Client.Common;
 using Client.Models;
+using Client.ViewModels.MainViewModels;
 using Prism.Navigation.Regions;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,6 @@ namespace Client.ViewModels
             NavigateCommand = new DelegateCommand<Menu>(Navigate);
             this.regionManager = regionManager;
         }
-
         //  { get; set; } 是必须的！！！
         public ObservableCollection<Menu> Menus { get; set; } = [];
         private void InitMenus()
@@ -48,9 +48,5 @@ namespace Client.ViewModels
             get { return menuToggleButtonIsChecked; }
             set { SetProperty(ref menuToggleButtonIsChecked, value); }
         }
-
-        #region 最小化、最大化、关闭按钮的点击事件，标题栏的拖拽、最大化切换
-
-        #endregion
     }
 }

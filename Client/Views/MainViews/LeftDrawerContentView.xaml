@@ -1,5 +1,5 @@
 ﻿<UserControl
-    x:Class="Client.Views.MainViews.LeftDrawerContentControl"
+    x:Class="Client.Views.MainViews.LeftDrawerContentView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -10,7 +10,9 @@
     d:DesignWidth="800"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:mvms="clr-namespace:Client.ViewModels.MainViewModels"
     xmlns:viewmodels="clr-namespace:Client.ViewModels"
+    xmlns:prism="http://prismlibrary.com/"
     d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}">
 
     <DockPanel
@@ -20,23 +22,24 @@
         <StackPanel
             Margin="0,20"
             DockPanel.Dock="Top">
-            
+
             <Image
-                Height="50"
-                Width="50"
+                Height="80"
+                Width="80"
                 Source="/Images/Marshall.jpg">
                 <Image.Clip>
                     <EllipseGeometry
-                        Center="25,25"
-                        RadiusX="25"
-                        RadiusY="25" />
+                        Center="40,40"
+                        RadiusX="40"
+                        RadiusY="40" />
                 </Image.Clip>
             </Image>
             <TextBlock
-                Text="Marshall Yu"
+                Text="古法编程师"
+                FontSize="22"
                 Margin="0,10"
                 HorizontalAlignment="Center" />
-            
+
         </StackPanel>
 
         <!--  菜单列表  -->
@@ -49,31 +52,32 @@
             <i:Interaction.Triggers>
                 <i:EventTrigger
                     EventName="SelectionChanged">
-                    
+
                     <i:InvokeCommandAction
                         Command="{Binding NavigateCommand}"
                         CommandParameter="{Binding ElementName=menuBar, Path=SelectedItem}" />
-                    
+
                 </i:EventTrigger>
             </i:Interaction.Triggers>
 
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    
+
                     <StackPanel
                         Orientation="Horizontal"
                         Background="Transparent">
                         <TextBlock
                             Text="{Binding Icon}"
-                            Margin="10,0" />
+                            FontSize="16"
+                            Margin="15,0,10,0" />
                         <TextBlock
-                            Text="{Binding Title}"
-                            Margin="10,0" />
+                            FontSize="16"
+                            Text="{Binding Title}" />
                     </StackPanel>
-                    
+
                 </DataTemplate>
             </ListBox.ItemTemplate>
-            
+
         </ListBox>
 
     </DockPanel>
