@@ -5,10 +5,8 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Data;
-using System.Windows.Media;
 
-namespace Client.Models
+namespace Models
 {
     // 单个成就项
     public class Achievement : ModelBase

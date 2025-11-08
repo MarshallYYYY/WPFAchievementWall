@@ -1,4 +1,5 @@
 ﻿using Client.Models;
+using Models.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
