@@ -1,5 +1,5 @@
 ﻿using Client.Models;
-using Models.Models;
+using Models;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -10,9 +10,9 @@ using System.Windows.Data;
 
 namespace Client.Converters
 {
-    public class EnumToInfoConverter : IValueConverter
+    public class StringToInfoConverter : IValueConverter
     {
-        private static readonly Dictionary<AchievementCategory, AchievementCategoryInfo> dict = new()
+        private static readonly Dictionary<string, AchievementCategoryInfo> dict = new()
         {
             {AchievementCategory.Default, new ("默认", "✨", "#FFFFCA28")},
             {AchievementCategory.Life, new ("生活经历", "👨‍👩‍👧‍👦", "#FF6B35")},
@@ -22,7 +22,7 @@ namespace Client.Converters
         };
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is AchievementCategory category &&
+            if (value is string category &&
                 dict.TryGetValue(category, out var info))
             {
                 string? propertyName = parameter as string;
@@ -34,7 +34,7 @@ namespace Client.Converters
                     _ => info.Name
                 };
             }
-            return "默认"; // 默认值
+            return AchievementCategory.Default; // 默认值
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

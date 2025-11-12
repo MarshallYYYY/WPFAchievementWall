@@ -14,8 +14,8 @@
     d:DesignWidth="800">
 
     <UserControl.Resources>
-        <converters:EnumToInfoConverter
-            x:Key="EnumToInfo" />
+        <converters:StringToInfoConverter
+            x:Key="StringToInfo" />
         <converters:IntToStarConverter
             x:Key="IntToStar" />
     </UserControl.Resources>
@@ -52,7 +52,7 @@
                         Margin="10,0,0,0"
                         CornerRadius="4">
                         <TextBlock
-                            Text="{Binding Path=SelectedAchievement.Category,Converter={StaticResource EnumToInfo},ConverterParameter=Name}"
+                            Text="{Binding Path=SelectedAchievement.Category,Converter={StaticResource StringToInfo},ConverterParameter=Name}"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             FontSize="14"

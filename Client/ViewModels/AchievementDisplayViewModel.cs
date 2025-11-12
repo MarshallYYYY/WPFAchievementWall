@@ -1,5 +1,5 @@
 ﻿using Client.Models;
-using Models.Models;
+using Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -19,7 +19,10 @@ namespace Client.ViewModels
             CloseDetailsCommand = new DelegateCommand(CloseDetails);
         }
         public ObservableCollection<YearAchievements> AllAchievement { get; set; } = [];
-
+        public static class Test
+        {
+            public static AchievementCategoryInfo Default = new("", "", "");
+        }
         public void InitAllAchievement()
         {
             YearAchievements yearAchievements2025 = new()

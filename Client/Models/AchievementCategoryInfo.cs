@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Models.Models
+namespace Client.Models
 {
     public class AchievementCategoryInfo(string name, string icon, string color)
     {

@@ -14,7 +14,11 @@ namespace Models
         // 重要程度(1-5星)：ImportanceLevel
         public int Level { get; set; }
         public string? ImagePath { get; set; }
-        //public string? Category { get; set; }
-        public AchievementCategory Category { get; set; }
+        public string? Category { get; set; }
+        //public AchievementCategory Category { get; set; }
+    }
+    public class AchievementCategoryStr
+    {
+        public static string Default = "默认";
     }
 }
