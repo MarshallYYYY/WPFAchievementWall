@@ -22,7 +22,9 @@ namespace Server.Data
             // 配置 User 实体
             modelBuilder.Entity<User>(entity =>
             {
+                // 主键
                 entity.HasKey(e => e.Id);
+                // 非空，唯一
                 entity.Property(e => e.UserName)
                       .IsRequired()         //必填，非空
                       .HasMaxLength(50);
@@ -33,9 +35,11 @@ namespace Server.Data
                       .IsRequired()
                       .HasMaxLength(500);
                 entity.Property(e => e.CreateTime)
-                      .HasDefaultValueSql("GETDATE()");  // 默认值为 SQL Server 的当前时间
+                      .IsRequired()
+                      // 默认值为 SQL Server 的当前时间
+                      .HasDefaultValueSql("GETDATE()");
 
-                // 添加索引
+                // 添加唯一索引
                 entity.HasIndex(e => e.UserName).IsUnique();
             });
 
@@ -43,36 +47,57 @@ namespace Server.Data
             modelBuilder.Entity<Achievement>(entity =>
             {
                 entity.HasKey(e => e.Id);
+
+                // Title: 非空
                 entity.Property(e => e.Title)
                       .IsRequired()
                       .HasMaxLength(100);
-                entity.Property(e => e.Content)
-                      .HasMaxLength(1000);
-                entity.Property(e => e.ImagePath)
-                      .HasMaxLength(500);
-                entity.Property(e => e.Level)
-                      .IsRequired()
-                      .HasDefaultValue(3);
-                entity.Property(e => e.Category)
-                      .HasMaxLength(50);
 
-                // 添加索引
-                entity.HasIndex(e => e.AchieveDate);
-                entity.HasIndex(e => e.Category);
+                // Content: 非空
+                entity.Property(e => e.Content)
+                      .IsRequired()
+                      .HasMaxLength(1000);
+
+                // AchieveDate: 非空，Goal 需要特殊处理
+                entity.Property(e => e.AchieveDate)
+                      .IsRequired();
+
+                entity.Property(e => e.Level)
+                      .IsRequired();
+                entity.Property(e => e.ImagePath)
+                      .IsRequired()
+                      .HasMaxLength(500);
+                entity.Property(e => e.Category)
+                      .IsRequired()
+                      .HasMaxLength(50)
+                      .HasDefaultValue("默认");
             });
 
             // 配置 Goal 实体
             modelBuilder.Entity<Goal>(entity =>
             {
                 entity.HasKey(e => e.Id);
+
+                // Title: 非空
                 entity.Property(e => e.Title)
                       .IsRequired()
                       .HasMaxLength(100);
+
+                // Content: 非空
                 entity.Property(e => e.Content)
+                      .IsRequired()
                       .HasMaxLength(1000);
 
-                // 添加索引
-                entity.HasIndex(e => e.TargetDate);
+                // AchieveDate: 非空，Goal 需要特殊处理
+                entity.Property(e => e.AchieveDate)
+                      .IsRequired();
+
+                // TargetDate: 目标日期，非空
+                entity.Property(e => e.TargetDate)
+                      .IsRequired();
+
+                entity.Property(e => e.AchieveDate)
+                      .HasDefaultValue("1-1-1");
             });
         }
     }

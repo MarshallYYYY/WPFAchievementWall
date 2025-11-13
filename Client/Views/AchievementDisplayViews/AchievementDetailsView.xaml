@@ -52,7 +52,9 @@
                         Margin="10,0,0,0"
                         CornerRadius="4">
                         <TextBlock
-                            Text="{Binding Path=SelectedAchievement.Category,Converter={StaticResource StringToInfo},ConverterParameter=Name}"
+                            Text="{Binding Path=SelectedAchievement.Category,
+                                Converter={StaticResource StringToInfo},
+                                ConverterParameter=Name}"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             FontSize="14"

@@ -1,6 +1,8 @@
 ﻿using Client.Common;
 using Client.Models;
+using Client.Services;
 using Client.ViewModels.MainViewModels;
+using Models;
 using Prism.Navigation.Regions;
 using System;
 using System.Collections.Generic;
@@ -17,13 +19,42 @@ namespace Client.ViewModels
 {
     public class MainViewModel : BindableBase
     {
-        public MainViewModel(IRegionManager regionManager)
+        public MainViewModel(IRegionManager regionManager,
+            UserService userService, AchievementService achievementService, GoalService goalService)
         {
             InitMenus();
             this.regionManager = regionManager;
             NavigateCommand = new DelegateCommand<Menu>(Navigate);
-            
+
             //Navigate(Menus.First(menu => menu.Title == "成就展示"));
+
+            this.userService = userService;
+            this.achievementService = achievementService;
+            this.goalService = goalService;
+            Test(userService, achievementService, goalService);
+        }
+        private async void Test(UserService userService, AchievementService achievementService, GoalService goalService)
+        {
+            List<User> users = await userService.GetUsersAsync();
+            string msg = "";
+            foreach (User user in users)
+            {
+                msg += $"{user.Id}  {user.UserName}  {user.Password}  {user.AvatarPath}  {user.CreateTime}\n";
+            }
+            MessageBox.Show(msg);
+
+            List<Achievement> achievements = await achievementService.GetAchievementsAsync();
+            msg = "";
+            foreach (Achievement achievement in achievements)
+            {
+                msg += $"{achievement.Id}  {achievement.Category}\n";
+            }
+            MessageBox.Show(msg);
+
+            List<Goal> goals = await goalService.GetGoalsAsync();
+            msg = "";
+            goals.ForEach(goal => msg += $"{goal.Id} {goal.Title} {goal.Content} {goal.TargetDate} {goal.AchieveDate}\n");
+            MessageBox.Show(msg);
         }
         //  { get; set; } 是必要的！！！
         public ObservableCollection<Menu> Menus { get; set; } = [];
@@ -41,6 +72,8 @@ namespace Client.ViewModels
             set { SetProperty(ref mainViewTitle, value); }
         }
         private readonly IRegionManager regionManager;
+        private readonly GoalService goalService;
+
         public DelegateCommand<Menu> NavigateCommand { get; private set; }
         private void Navigate(Menu menu)
         {
@@ -57,5 +90,7 @@ namespace Client.ViewModels
             get { return menuToggleButtonIsChecked; }
             set { SetProperty(ref menuToggleButtonIsChecked, value); }
         }
+        private readonly UserService userService;
+        private readonly AchievementService achievementService;
     }
 }

@@ -1,81 +1,48 @@
 ﻿using Client.Models;
+using Client.Services;
 using Models;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace Client.ViewModels
 {
     public class AchievementDisplayViewModel : BindableBase
     {
-        public AchievementDisplayViewModel()
+        public AchievementDisplayViewModel(AchievementService achievementService)
         {
-            InitAllAchievement();
             OpenDetailsCommand = new DelegateCommand<Achievement>(OpenDetails);
             CloseDetailsCommand = new DelegateCommand(CloseDetails);
+            this.achievementService = achievementService;
+
+            InitAllAchievement(achievementService);
+
+            // 这个不成功：
+            //Task.Run(async () => await InitAllAchievement(achievementService));
+
+            // 直接调用异步初始化方法，C# 7.0 丢弃运算符
+            // 我明确知道这是一个异步方法，我故意不等待它完成，让它在后台运行，我不关心它的返回结果
+            //_ = InitAllAchievement(achievementService);
         }
         public ObservableCollection<YearAchievements> AllAchievement { get; set; } = [];
-        public static class Test
+        private async void InitAllAchievement(AchievementService service)
         {
-            public static AchievementCategoryInfo Default = new("", "", "");
-        }
-        public void InitAllAchievement()
-        {
-            YearAchievements yearAchievements2025 = new()
-            {
-                Year = "2025",
-                Achievements = new ObservableCollection<Achievement>()
+            AllAchievement.Clear();
+            List<Achievement> allAchievement = await service.GetAchievementsAsync();
+            List<YearAchievements> allYearGroup = allAchievement
+                .GroupBy(achievement => achievement.AchieveDate.Year.ToString())
+                // 按年份降序排列
+                .OrderByDescending(yearGroup => yearGroup.Key)
+                //  Select(转换为YearAchievements)
+                .Select(yearGroup => new YearAchievements
                 {
-                    new Achievement()
-                    {
-                        Title = "111",
-                        Content = "大风大酒店开发活动懂法守法达到法定发大法师发卡机老大发哈三大发山东发撒",
-                        AchieveDate = new DateTime(2025,1,1),
-                        Level = 2,
-                        Category = AchievementCategory.Life
-                    },
-                    new Achievement()
-                    {
-                        Title = "代发大是大非久啊",
-                        Content = "多发点发大水大法师大萨达发撒",
-                        AchieveDate = new DateTime(2025,1,1),
-                        Level = 0,
-                        Category = AchievementCategory.Default
-                    },
-                    new Achievement()
-                    {
-                        Title = "111",
-                        Content = "111111",
-                        AchieveDate = new DateTime(2025,1,1),
-                        Level = 3,
-                        Category = AchievementCategory.Learning
-                    },
-                    new Achievement()
-                    {
-                        Title = "111",
-                        Content = "大风大酒店开发活动懂法守法达到法定发大法师发卡机老大发哈三大发山东发撒",
-                        AchieveDate = new DateTime(2025,1,1),
-                        Level = 5,
-                        Category = AchievementCategory.Career
-                    },
-                    new Achievement()
-                    {
-                        Title = "111",
-                        Content = "111111",
-                        AchieveDate = new DateTime(2025,1,1),
-                        Level = 1,
-                        Category = AchievementCategory.Health
-                    },
-                }
-            };
-            YearAchievements yearAchievements2024 = yearAchievements2025;
-            AllAchievement.Add(yearAchievements2025);
-            AllAchievement.Add(yearAchievements2024);
+                    Year = yearGroup.Key,
+                    Achievements = new ObservableCollection<Achievement>(
+                        yearGroup.OrderByDescending(achievement => achievement.AchieveDate).ToList())
+                })
+                .ToList();
+            allYearGroup.ForEach(yearGroup => AllAchievement.Add(yearGroup));
         }
+
         private Visibility detailsVisibility = Visibility.Hidden;
         public Visibility DetailsVisibility
         {
@@ -83,6 +50,8 @@ namespace Client.ViewModels
             set { SetProperty(ref detailsVisibility, value); }
         }
         private Achievement? selectedAchievement;
+        private readonly AchievementService achievementService;
+
         public Achievement? SelectedAchievement
         {
             get { return selectedAchievement; }
