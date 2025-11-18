@@ -23,6 +23,7 @@
         <ScrollViewer
             ScrollViewer.VerticalScrollBarVisibility="Hidden"
             Grid.Column="0">
+            
             <!-- 左侧的成就记录时间线 -->
             <ItemsControl
                 Margin="0,0,30,0"
@@ -41,27 +42,6 @@
         <advs:AchievementDetailsView
             Visibility="{Binding DetailsVisibility}"
             Grid.Column="1" />
-
-
-        <!-- 加载指示器 -->
-        <Border
-            Visibility="Collapsed"
-            Background="White"
-            Opacity="0.9">
-            <StackPanel
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center">
-                <ProgressBar
-                    IsIndeterminate="True"
-                    Width="200"
-                    Height="10"
-                    Margin="0,0,0,10" />
-                <TextBlock
-                    Text="XXX"
-                    HorizontalAlignment="Center"
-                    FontSize="14" />
-            </StackPanel>
-        </Border>
 
     </Grid>
 

@@ -13,8 +13,8 @@
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:views="clr-namespace:Client.Views"
     xmlns:models="clr-namespace:Client.Models"
-    xmlns:viewmodels="clr-namespace:Client.ViewModels"
     xmlns:mvms="clr-namespace:Client.ViewModels.MainViewModels"
+    xmlns:viewmodels="clr-namespace:Client.ViewModels"
     d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
     xmlns:common="clr-namespace:Client.Common"
     Style="{StaticResource MaterialDesignWindow}"
@@ -43,7 +43,12 @@
                 <mainviews:LeftDrawerContentView />
             </md:DrawerHost.LeftDrawerContent>
 
-            <DockPanel>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition
+                        Height="auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
 
                 <!--  导航条色块：上方的一整块  -->
                 <md:ColorZone
@@ -61,14 +66,30 @@
                 </md:ColorZone>
 
                 <ContentControl
-                    prism:RegionManager.RegionName="{x:Static common:PrismRegionName.MainViewRegion}" />
-                <ProgressBar
-                    IsIndeterminate="True"
-                    Width="200"
-                    Height="10"
-                    Margin="0,0,0,10" />
+                    Grid.Row="1"
+                    prism:RegionManager.RegionName="{x:Static common:PrismRegionName.MainViewRegion}"
+                    Visibility="{Binding Path=RegionVisibility}" />
 
-            </DockPanel>
+                <!-- 加载指示器 -->
+                <StackPanel
+                    Grid.Row="1"
+                    Visibility="{Binding Path=LoadingVisibility}"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                    <ProgressBar
+                        IsIndeterminate="True"
+                        Style="{StaticResource MaterialDesignCircularProgressBar}"
+                        Value="0"
+                        Width="100"
+                        Height="100" />
+                    <TextBlock
+                        Text="正在加载中..."
+                        HorizontalAlignment="Center"
+                        Margin="0,20,0,0"
+                        FontSize="18" />
+                </StackPanel>
+                
+            </Grid>
 
         </md:DrawerHost>
 
