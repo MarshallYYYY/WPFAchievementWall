@@ -62,6 +62,11 @@
 
                 <ContentControl
                     prism:RegionManager.RegionName="{x:Static common:PrismRegionName.MainViewRegion}" />
+                <ProgressBar
+                    IsIndeterminate="True"
+                    Width="200"
+                    Height="10"
+                    Margin="0,0,0,10" />
 
             </DockPanel>
 

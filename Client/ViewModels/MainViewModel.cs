@@ -31,7 +31,7 @@ namespace Client.ViewModels
             this.userService = userService;
             this.achievementService = achievementService;
             this.goalService = goalService;
-            Test(userService, achievementService, goalService);
+            //Test(userService, achievementService, goalService);
         }
         private async void Test(UserService userService, AchievementService achievementService, GoalService goalService)
         {
