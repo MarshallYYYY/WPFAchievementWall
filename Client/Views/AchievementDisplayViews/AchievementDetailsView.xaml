@@ -29,11 +29,40 @@
                 CornerRadius="20"
                 Opacity="0.1" />
             <StackPanel>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition
+                            Width="auto" />
+                        <ColumnDefinition
+                            Width="auto" />
+                    </Grid.ColumnDefinitions>
 
-                <TextBlock
-                    HorizontalAlignment="Center"
-                    Text="{Binding SelectedAchievement.Title}"
-                    FontSize="60" />
+                    <TextBlock
+                        Grid.ColumnSpan="3"
+                        HorizontalAlignment="Center"
+                        Text="{Binding SelectedAchievement.Title}"
+                        FontSize="38" />
+
+                    <Button
+                        Grid.Column="1"
+                        Content="编辑"
+                        Background="Blue"
+                        Opacity="0.5"
+                        Width="auto"
+                        Margin="5"
+                        FontSize="16" />
+
+                    <Button
+                        Grid.Column="2"
+                        Command="{Binding Path=DeleteCommand}"
+                        Content="删除"
+                        Background="Red"
+                        Opacity="0.5"
+                        Width="auto"
+                        Margin="5,5,20,5"
+                        FontSize="16" />
+                </Grid>
                 <StackPanel
                     Orientation="Horizontal">
 

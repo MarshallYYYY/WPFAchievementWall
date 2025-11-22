@@ -13,6 +13,7 @@
     prism:ViewModelLocator.AutoWireViewModel="True"
     xmlns:advms="clr-namespace:Client.ViewModels.AchievementDisplayViewModels"
     xmlns:projectmodels="clr-namespace:Models;assembly=Models"
+    xmlns:views="clr-namespace:Client.Views"
     d:DataContext="{d:DesignInstance Type=projectmodels:Achievement}"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -130,6 +131,7 @@
                 </Grid>
 
                 <!--  最右侧的展开按钮  -->
+                <!--  CommandParameter="{Binding}" 就是当前的 Achievement 对象。  -->
                 <Button
                     Grid.Column="1"
                     Width="50"
@@ -137,9 +139,8 @@
                     Margin="0,0,-35,0"
                     HorizontalAlignment="Right"
                     Style="{StaticResource MaterialDesignFloatingActionMiniSecondaryButton}"
-                    Command="{Binding DataContext.OpenDetailsCommand, 
-                            RelativeSource={RelativeSource AncestorType=UserControl, 
-                            AncestorLevel=3}}"
+                    Command="{Binding DataContext.OpenCloseDetailsCommand, 
+                            RelativeSource={RelativeSource AncestorType=views:AchievementDisplayView}}"
                     CommandParameter="{Binding}"
                     ToolTip="成就详情">
                     <md:PackIcon
