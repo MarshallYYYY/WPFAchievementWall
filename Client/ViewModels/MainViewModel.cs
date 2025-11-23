@@ -2,19 +2,9 @@
 using Client.Events;
 using Client.Models;
 using Client.Services;
-using Client.ViewModels.MainViewModels;
 using Models;
-using Prism.Navigation.Regions;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls.Primitives;
-using System.Windows.Input;
-using System.Windows.Media;
 
 namespace Client.ViewModels
 {
@@ -30,7 +20,7 @@ namespace Client.ViewModels
                 visibility => LoadingVisibility = visibility);
             NavigateCommand = new DelegateCommand<Menu>(Navigate);
 
-            //Navigate(Menus.First(menu => menu.Title == "成就展示"));
+            //Navigate(Menus.First(menu => menu.SearchBarTitle == "成就展示"));
 
             this.userService = userService;
             this.achievementService = achievementService;
@@ -40,28 +30,61 @@ namespace Client.ViewModels
             TestCommand = new DelegateCommand(TestButton);
         }
 
-        //  { get; set; } 是必要的！！！
-        public ObservableCollection<Menu> Menus { get; set; } = [];
-        private readonly IRegionManager regionManager;
-        private readonly IEventAggregator eventAggregator;
-        public DelegateCommand<Menu> NavigateCommand { get; private set; }
+        #region 上方工具栏
 
         private string mainViewTitle = "个人成就记录墙";
+
         public string MainViewTitle
         {
             get { return mainViewTitle; }
             set { SetProperty(ref mainViewTitle, value); }
         }
+
         private bool menuToggleButtonIsChecked = false;
+
         public bool MenuToggleButtonIsChecked
         {
             get { return menuToggleButtonIsChecked; }
             set { SetProperty(ref menuToggleButtonIsChecked, value); }
         }
 
+        #endregion 上方工具栏
+
+        #region 左侧菜单栏
+
+        //  { get; set; } 是必要的！！！
+        public ObservableCollection<Menu> Menus { get; set; } = [];
+
+        private void InitMenus()
+        {
+            Menus.Add(new Menu() { Icon = "📊", Title = "成就展示", ViewName = "AchievementDisplayView" });
+            Menus.Add(new Menu() { Icon = "🎯", Title = "目标管理", ViewName = "GoalsManagementView" });
+            Menus.Add(new Menu() { Icon = "📈", Title = "数据统计", ViewName = "DataStatisticsView" });
+            Menus.Add(new Menu() { Icon = "⚙️", Title = "设置", ViewName = "SettingsView" });
+        }
+
+        private readonly IRegionManager regionManager;
+        private readonly IEventAggregator eventAggregator;
+        public DelegateCommand<Menu> NavigateCommand { get; private set; }
+
+        private void Navigate(Menu menu)
+        {
+            if (menu == null || string.IsNullOrEmpty(menu.ViewName))
+                return;
+
+            regionManager.Regions[PrismRegionName.MainViewRegion].RequestNavigate(menu.ViewName);
+            MainViewTitle = $"个人成就记录墙 - {menu.Title}";
+            MenuToggleButtonIsChecked = false;
+        }
+
+        #endregion 左侧菜单栏
+
+        #region 加载窗口
+
         private Visibility loadingVisibility = Visibility.Collapsed;
+
         /// <summary>
-        /// 加载部分的显示与否
+        /// 加载窗口的显示与否
         /// </summary>
         public Visibility LoadingVisibility
         {
@@ -75,32 +98,19 @@ namespace Client.ViewModels
                     RegionVisibility = Visibility.Collapsed;
             }
         }
+
         private Visibility regionVisibility;
+
         public Visibility RegionVisibility
         {
             get { return regionVisibility; }
             set { SetProperty(ref regionVisibility, value); }
         }
 
-
-        private void InitMenus()
-        {
-            Menus.Add(new Menu() { Icon = "📊", Title = "成就展示", ViewName = "AchievementDisplayView" });
-            Menus.Add(new Menu() { Icon = "🎯", Title = "目标管理", ViewName = "GoalsManagementView" });
-            Menus.Add(new Menu() { Icon = "📈", Title = "数据统计", ViewName = "DataStatisticsView" });
-            Menus.Add(new Menu() { Icon = "⚙️", Title = "设置", ViewName = "SettingsView" });
-        }
-        private void Navigate(Menu menu)
-        {
-            if (menu == null || string.IsNullOrEmpty(menu.ViewName))
-                return;
-
-            regionManager.Regions[PrismRegionName.MainViewRegion].RequestNavigate(menu.ViewName);
-            MainViewTitle = $"个人成就记录墙 - {menu.Title}";
-            MenuToggleButtonIsChecked = false;
-        }
+        #endregion 加载窗口
 
         #region Test
+
         public DelegateCommand TestCommand { get; private set; }
 
         private void TestButton()
@@ -114,6 +124,7 @@ namespace Client.ViewModels
         private readonly UserService userService;
         private readonly AchievementService achievementService;
         private readonly GoalService goalService;
+
         private async void Test(UserService userService, AchievementService achievementService, GoalService goalService)
         {
             List<User> users = await userService.GetUsersAsync();
@@ -137,6 +148,7 @@ namespace Client.ViewModels
             goals.ForEach(goal => msg += $"{goal.Id} {goal.Title} {goal.Content} {goal.TargetDate} {goal.AchieveDate}\n");
             MessageBox.Show(msg);
         }
-        #endregion
+
+        #endregion Test
     }
 }

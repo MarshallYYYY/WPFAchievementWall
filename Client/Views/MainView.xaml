@@ -5,37 +5,36 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local="clr-namespace:Client"
-    Title="MainView"
-    Width="1280"
-    Height="720"
     xmlns:prism="http://prismlibrary.com/"
     xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:views="clr-namespace:Client.Views"
     xmlns:models="clr-namespace:Client.Models"
-    xmlns:mvms="clr-namespace:Client.ViewModels.MainViewModels"
     xmlns:viewmodels="clr-namespace:Client.ViewModels"
-    d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
     xmlns:common="clr-namespace:Client.Common"
-    Style="{StaticResource MaterialDesignWindow}"
     xmlns:mainviews="clr-namespace:Client.Views.MainViews"
+    Title="MainView"
+    Width="1280"
+    Height="720"
+    d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
+    Style="{StaticResource MaterialDesignWindow}"
     WindowStyle="None"
     AllowsTransparency="True"
     ResizeMode="CanResizeWithGrip"
     WindowStartupLocation="CenterScreen"
-    mc:Ignorable="d"
-    StateChanged="Window_StateChange">
+    StateChanged="Window_StateChange"
+    mc:Ignorable="d">
 
-    <md:DialogHost
-        x:Name="DialogHost"
+    <md:DialogHost x:Name="DialogHost"
         DialogTheme="Inherit"
         Identifier="RootDialog"
         SnackbarMessageQueue="{Binding ElementName=MainSnackbar, Path=MessageQueue}">
 
-        <!--跨界面访问 Toggle 不生效，所以添加了一个
-        MenuToggleButtonIsChecked 属性用来控制左侧菜单的出现与否。-->
-        <md:DrawerHost
-            x:Name="drawerHost"
+        <!--
+            跨界面访问 Toggle 不生效，所以添加了一个
+            MenuToggleButtonIsChecked 属性用来控制左侧菜单的出现与否。
+        -->
+        <md:DrawerHost x:Name="drawerHost"
             IsLeftDrawerOpen="{Binding MenuToggleButtonIsChecked}">
 
             <!--  左边弹出的菜单  -->
@@ -45,50 +44,44 @@
 
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition
-                        Height="auto" />
+                    <RowDefinition Height="auto" />
                     <RowDefinition />
                 </Grid.RowDefinitions>
 
                 <!--  导航条色块：上方的一整块  -->
-                <md:ColorZone
-                    x:Name="ColorZone"
-                    MouseDoubleClick="ColorZone_MouseDoubleClick"
-                    MouseMove="ColorZone_MouseMove"
+                <md:ColorZone x:Name="ColorZone"
                     Padding="5"
                     md:ElevationAssist.Elevation="Dp4"
+                    MouseDoubleClick="ColorZone_MouseDoubleClick"
+                    MouseMove="ColorZone_MouseMove"
                     DockPanel.Dock="Top"
                     Mode="PrimaryMid">
 
-                    <mainviews:ColorZoneView
-                        x:Name="colorZoneView" />
+                    <mainviews:ColorZoneView x:Name="colorZoneView" />
 
                 </md:ColorZone>
 
-                <ContentControl
-                    Grid.Row="1"
+                <ContentControl Grid.Row="1"
                     prism:RegionManager.RegionName="{x:Static common:PrismRegionName.MainViewRegion}"
                     Visibility="{Binding Path=RegionVisibility}" />
 
-                <!-- 加载指示器 -->
-                <StackPanel
-                    Grid.Row="1"
-                    Visibility="{Binding Path=LoadingVisibility}"
+                <!--  加载指示器  -->
+                <StackPanel Grid.Row="1"
                     HorizontalAlignment="Center"
-                    VerticalAlignment="Center">
+                    VerticalAlignment="Center"
+                    Visibility="{Binding Path=LoadingVisibility}">
                     <ProgressBar
+                        Width="100"
+                        Height="100"
                         IsIndeterminate="True"
                         Style="{StaticResource MaterialDesignCircularProgressBar}"
-                        Value="0"
-                        Width="100"
-                        Height="100" />
-                    <TextBlock
-                        Text="正在加载中..."
-                        HorizontalAlignment="Center"
+                        Value="0" />
+                    <TextBlock Text="正在加载中..."
                         Margin="0,20,0,0"
+                        HorizontalAlignment="Center"
                         FontSize="18" />
                 </StackPanel>
-                
+
             </Grid>
 
         </md:DrawerHost>

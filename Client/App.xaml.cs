@@ -1,8 +1,6 @@
 ﻿using Client.Models;
 using Client.Services;
 using Client.ViewModels;
-using Client.ViewModels.AchievementDisplayViewModels;
-using Client.ViewModels.MainViewModels;
 using Client.Views;
 using Client.Views.AchievementDisplayViews;
 using Client.Views.MainViews;
@@ -17,7 +15,6 @@ namespace Client
     /// </summary>
     public partial class App : PrismApplication
     {
-
         protected override Window CreateShell()
         {
             return Container.Resolve<MainView>();
@@ -29,7 +26,7 @@ namespace Client
             containerRegistry.RegisterForNavigation<GoalsManagementView, GoalsManagementViewModel>();
             containerRegistry.RegisterForNavigation<DataStatisticsView, DataStatisticsViewModel>();
             containerRegistry.RegisterForNavigation<SettingsView, SettingsViewModel>();
-            
+
             // 注册 API 服务，注意不能用 https！
             string baseUrl = "http://localhost:5045";
 

@@ -60,6 +60,7 @@
             <TextBox
                 MinWidth="150"
                 FontSize="22"
+                Text="{Binding Path=Title}"
                 VerticalAlignment="Center" />
 
         </StackPanel>
@@ -70,6 +71,7 @@
         <TextBox
             FontSize="22"
             TextWrapping="Wrap"
+            Text="{Binding Path=Content}"
             VerticalAlignment="Center" />
 
         <StackPanel
@@ -82,7 +84,7 @@
                 FontSize="22"
                 Width="30"
                 ItemsSource="{Binding Path=LevelComboBoxSource}"
-                SelectedIndex="{Binding Path=LevelComboBoxSelectedIndex}"
+                SelectedItem="{Binding Path=Level}"
                 HorizontalAlignment="Center"
                 HorizontalContentAlignment="Center" />
 
@@ -98,7 +100,7 @@
             <ComboBox
                 FontSize="22"
                 ItemsSource="{Binding Path=CategoryComboBoxSource}"
-                SelectedIndex="{Binding Path=CategoryComboBoxSelectedIndex}" />
+                SelectedItem="{Binding Path=Category}" />
 
         </StackPanel>
 
@@ -108,6 +110,7 @@
 
             <Button
                 Content="确定"
+                Command="{Binding OKCommand}"
                 HorizontalAlignment="Right"
                 FontSize="18"
                 Style="{StaticResource MaterialDesignFlatButton}">

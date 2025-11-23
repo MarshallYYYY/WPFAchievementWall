@@ -40,7 +40,7 @@
                 <ItemsControl.ItemTemplate>
 
                     <DataTemplate>
-                        <local:AchievementView/>
+                        <local:AchievementView />
                     </DataTemplate>
 
                 </ItemsControl.ItemTemplate>

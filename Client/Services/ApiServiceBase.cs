@@ -36,6 +36,7 @@ namespace Client.Services
         {
             string json = JsonConvert.SerializeObject(data);
             StringContent content = new(json, Encoding.UTF8, "application/json");
+            // PostAsync：发送 POST 请求
             HttpResponseMessage response = await _httpClient.PostAsync($"{_baseUrl}/{endpoint}", content);
             response.EnsureSuccessStatusCode();
             string responseContent = await response.Content.ReadAsStringAsync();

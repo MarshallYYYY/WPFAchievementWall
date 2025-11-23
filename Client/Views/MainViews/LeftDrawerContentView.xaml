@@ -10,7 +10,6 @@
     d:DesignWidth="800"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
-    xmlns:mvms="clr-namespace:Client.ViewModels.MainViewModels"
     xmlns:viewmodels="clr-namespace:Client.ViewModels"
     xmlns:prism="http://prismlibrary.com/"
     d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}">
@@ -39,7 +38,7 @@
                 FontSize="22"
                 Margin="0,10"
                 HorizontalAlignment="Center" />
-
+            
         </StackPanel>
 
         <!--  菜单列表  -->
@@ -56,8 +55,8 @@
                     <i:InvokeCommandAction
                         Command="{Binding NavigateCommand}"
                         CommandParameter="{Binding ElementName=menuBar, Path=SelectedItem}" />
-
-                </i:EventTrigger>
+                    
+                </i:EventTrigger>                
             </i:Interaction.Triggers>
 
             <ListBox.ItemTemplate>
@@ -74,11 +73,11 @@
                             FontSize="16"
                             Text="{Binding Title}" />
                     </StackPanel>
-
+                    
                 </DataTemplate>
             </ListBox.ItemTemplate>
-
+            
         </ListBox>
-
+        
     </DockPanel>
 </UserControl>
