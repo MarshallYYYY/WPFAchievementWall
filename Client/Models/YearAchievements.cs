@@ -6,6 +6,6 @@ namespace Client.Models
     public class YearAchievements
     {
         public string? Year { get; set; }
-        public ObservableCollection<Achievement>? Achievements { get; set; }
+        public List<Achievement>? Achievements { get; set; }
     }
 }

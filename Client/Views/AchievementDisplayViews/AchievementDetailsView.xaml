@@ -9,6 +9,7 @@
     xmlns:viewmodels="clr-namespace:Client.ViewModels"
     d:DataContext="{d:DesignInstance Type=viewmodels:AchievementDisplayViewModel}"
     xmlns:converters="clr-namespace:Client.Converters"
+    xmlns:advs="clr-namespace:Client.Views.AchievementDisplayViews"
     mc:Ignorable="d"
     d:DesignHeight="450"
     d:DesignWidth="800">
@@ -46,12 +47,18 @@
 
                     <Button
                         Grid.Column="1"
+                        Command="{Binding Path=EditCommand}"
                         Content="编辑"
                         Background="Blue"
                         Opacity="0.5"
                         Width="auto"
                         Margin="5"
-                        FontSize="16" />
+                        FontSize="16">
+
+                        <Button.CommandParameter>
+                            <advs:AddEditAchievementView />
+                        </Button.CommandParameter>
+                    </Button>
 
                     <Button
                         Grid.Column="2"

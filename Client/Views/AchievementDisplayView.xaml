@@ -8,6 +8,7 @@
     xmlns:viewmodels="clr-namespace:Client.ViewModels"
     d:DataContext="{d:DesignInstance Type=viewmodels:AchievementDisplayViewModel}"
     xmlns:advs="clr-namespace:Client.Views.AchievementDisplayViews"
+    xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
     mc:Ignorable="d"
     d:DesignHeight="450"
     d:DesignWidth="800">
@@ -17,6 +18,8 @@
         <Grid.RowDefinitions>
             <RowDefinition
                 Height="auto" />
+            <RowDefinition
+                Height="auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
 
@@ -24,9 +27,16 @@
         <advs:AchievementDisplayTopView
             Grid.Row="0" />
 
+        <Border
+            Grid.Row="1"
+            BorderBrush="#FF3F51B5"
+            BorderThickness="0,1,0,0"
+            HorizontalAlignment="Stretch"
+            Margin="0,5" />
+
         <!--下方的左右两栏-->
         <Grid
-            Grid.Row="1">
+            Grid.Row="2">
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition
