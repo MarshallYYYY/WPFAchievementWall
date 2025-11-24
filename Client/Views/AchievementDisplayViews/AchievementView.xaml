@@ -106,7 +106,6 @@
                         Grid.Row="1"
                         Margin="0,8,0,0"
                         FontSize="18"
-                        ToolTip="{Binding Content}"
                         Foreground="#666" />
                     <StackPanel
                         Grid.Row="2"

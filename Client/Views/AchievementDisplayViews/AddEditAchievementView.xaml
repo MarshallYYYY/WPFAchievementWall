@@ -8,6 +8,7 @@
     xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:viewmodels="clr-namespace:Client.ViewModels"
     d:DataContext="{d:DesignInstance Type=viewmodels:AchievementDisplayViewModel}"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     mc:Ignorable="d"
     d:DesignHeight="450"
     d:DesignWidth="800">
@@ -27,106 +28,118 @@
 
     </UserControl.Resources>
 
-    <StackPanel
-        MinWidth="200"
-        MaxWidth="500">
+    <Grid>
 
-        <TextBlock
-            Text="{Binding Path=TitleAddEdit}"
-            HorizontalAlignment="Center"
-            FontSize="50" />
-
+        <!--这俩border只是为了好看-->
+        <Border
+            Background="White" />
+        <Border
+            Background="Gray"
+            Opacity="0.2"
+            CornerRadius="50"
+            Margin="150,80" />
+        
         <StackPanel
-            Orientation="Horizontal">
+            Margin="0,120,0,0"
+            MinWidth="200"
+            MaxWidth="500">
 
             <TextBlock
-                Text="日期："
-                Style="{StaticResource TextBlockTemplate}" />
-            <DatePicker
-                VerticalContentAlignment="Center"
-                Width="150"
-                FontSize="18"
-                SelectedDate="{Binding Path=AchieveDate}"
-                md:TextFieldAssist.HasClearButton="True" />
+                Text="{Binding Path=TitleAddEdit}"
+                HorizontalAlignment="Center"
+                Margin="0,-10,0,10"
+                FontSize="50" />
 
-        </StackPanel>
+            <StackPanel
+                Orientation="Horizontal">
 
-        <StackPanel
-            Orientation="Horizontal">
+                <TextBlock
+                    Text="日期："
+                    Style="{StaticResource TextBlockTemplate}" />
+                <DatePicker
+                    VerticalContentAlignment="Center"
+                    Width="150"
+                    FontSize="18"
+                    SelectedDate="{Binding Path=AchieveDate}"
+                    md:TextFieldAssist.HasClearButton="True" />
+
+            </StackPanel>
+
+            <StackPanel
+                Orientation="Horizontal">
+
+                <TextBlock
+                    Text="标题："
+                    Style="{StaticResource TextBlockTemplate}" />
+                <TextBox
+                    MinWidth="150"
+                    FontSize="22"
+                    Text="{Binding Path=Title}"
+                    VerticalAlignment="Center" />
+
+            </StackPanel>
 
             <TextBlock
-                Text="标题："
+                Text="内容："
                 Style="{StaticResource TextBlockTemplate}" />
             <TextBox
-                MinWidth="150"
                 FontSize="22"
-                Text="{Binding Path=Title}"
+                TextWrapping="Wrap"
+                Text="{Binding Path=Content}"
+                MaxLines="7"
                 VerticalAlignment="Center" />
 
-        </StackPanel>
+            <StackPanel
+                Orientation="Horizontal">
 
-        <TextBlock
-            Text="内容："
-            Style="{StaticResource TextBlockTemplate}" />
-        <TextBox
-            FontSize="22"
-            TextWrapping="Wrap"
-            Text="{Binding Path=Content}"
-            VerticalAlignment="Center" />
+                <TextBlock
+                    Text="星级："
+                    Style="{StaticResource TextBlockTemplate}" />
+                <ComboBox
+                    FontSize="22"
+                    Width="30"
+                    ItemsSource="{Binding Path=LevelComboBoxSource}"
+                    SelectedItem="{Binding Path=Level}"
+                    HorizontalAlignment="Center"
+                    HorizontalContentAlignment="Center" />
 
-        <StackPanel
-            Orientation="Horizontal">
+            </StackPanel>
 
-            <TextBlock
-                Text="星级："
-                Style="{StaticResource TextBlockTemplate}" />
-            <ComboBox
-                FontSize="22"
-                Width="30"
-                ItemsSource="{Binding Path=LevelComboBoxSource}"
-                SelectedItem="{Binding Path=Level}"
+            <StackPanel
+                Orientation="Horizontal">
+
+                <TextBlock
+                    Text="类别："
+                    Style="{StaticResource TextBlockTemplate}" />
+
+                <ComboBox
+                    FontSize="22"
+                    ItemsSource="{Binding Path=CategoryComboBoxSource}"
+                    SelectedItem="{Binding Path=Category}" />
+
+            </StackPanel>
+
+            <StackPanel
                 HorizontalAlignment="Center"
-                HorizontalContentAlignment="Center" />
+                Orientation="Horizontal">
+
+                <Button
+                    Content="确定"
+                    Command="{Binding SaveCommand}"
+                    FontSize="22"
+                    Style="{StaticResource MaterialDesignFlatButton}">
+                </Button>
+
+                <Button
+                    Content="取消"
+                    Command="{Binding Path=CancelCommand}"
+                    FontSize="22"
+                    Style="{StaticResource MaterialDesignFlatButton}">
+                </Button>
+
+            </StackPanel>
 
         </StackPanel>
-
-        <StackPanel
-            Orientation="Horizontal">
-
-            <TextBlock
-                Text="类别："
-                Style="{StaticResource TextBlockTemplate}" />
-
-            <ComboBox
-                FontSize="22"
-                ItemsSource="{Binding Path=CategoryComboBoxSource}"
-                SelectedItem="{Binding Path=Category}" />
-
-        </StackPanel>
-
-        <StackPanel
-            HorizontalAlignment="Center"
-            Orientation="Horizontal">
-
-            <Button
-                Content="确定"
-                Command="{Binding OKCommand}"
-                HorizontalAlignment="Right"
-                FontSize="18"
-                Style="{StaticResource MaterialDesignFlatButton}">
-            </Button>
-
-            <Button
-                Command="{x:Static md:DialogHost.CloseDialogCommand}"
-                IsCancel="True"
-                Content="取消"
-                HorizontalAlignment="Right"
-                FontSize="18"
-                Style="{StaticResource MaterialDesignFlatButton}">
-            </Button>
-
-        </StackPanel>
-
-    </StackPanel>
+    </Grid>
 
 </UserControl>

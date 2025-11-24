@@ -20,7 +20,7 @@ namespace Client.ViewModels
                 visibility => LoadingVisibility = visibility);
             NavigateCommand = new DelegateCommand<Menu>(Navigate);
 
-            //Navigate(Menus.First(menu => menu.SearchBarTitle == "成就展示"));
+            //Navigate(Menus.First(menu => menu.Title == "成就展示"));
 
             this.userService = userService;
             this.achievementService = achievementService;

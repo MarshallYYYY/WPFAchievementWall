@@ -8,6 +8,7 @@
     xmlns:viewmodels="clr-namespace:Client.ViewModels"
     xmlns:advs="clr-namespace:Client.Views.AchievementDisplayViews"
     d:DataContext="{d:DesignInstance Type=viewmodels:AchievementDisplayViewModel}"
+    xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -48,8 +49,9 @@
             Text="年份："
             Style="{StaticResource TextBlockTemplate}" />
         <ComboBox
-            Width="69"
+            Width="80"
             FontSize="22"
+            md:TextFieldAssist.HasClearButton="True"
             ItemsSource="{Binding Path=SearchBarYearComboBoxSource}"
             SelectedItem="{Binding Path=SearchBarYear}" />
 
@@ -58,27 +60,30 @@
             Style="{StaticResource TextBlockTemplate}" />
         <TextBox
             Text="{Binding Path=SearchBarTitle}"
+            FontSize="22"
+            md:TextFieldAssist.HasClearButton="True"
             Width="120"
-            VerticalAlignment="Center"
-            FontSize="22" />
+            VerticalContentAlignment="Center" />
 
         <TextBlock
             Text="内容："
             Style="{StaticResource TextBlockTemplate}" />
         <TextBox
             Text="{Binding Path=SearchBarContent}"
+            md:TextFieldAssist.HasClearButton="True"
             Width="200"
-            VerticalAlignment="Center"
+            VerticalContentAlignment="Center"
             FontSize="22" />
 
         <TextBlock
             Text="星级："
             Style="{StaticResource TextBlockTemplate}" />
         <ComboBox
-            Width="30"
+            Width="45"
             HorizontalAlignment="Center"
             HorizontalContentAlignment="Center"
             FontSize="22"
+            md:TextFieldAssist.HasClearButton="True"
             ItemsSource="{Binding Path=LevelComboBoxSource}"
             SelectedItem="{Binding Path=SearchBarLevel}" />
 
@@ -86,8 +91,9 @@
             Text="类别："
             Style="{StaticResource TextBlockTemplate}" />
         <ComboBox
-            Width="105"
+            Width="120"
             FontSize="22"
+            md:TextFieldAssist.HasClearButton="True"
             ItemsSource="{Binding Path=CategoryComboBoxSource}"
             SelectedItem="{Binding Path=SearchBarCategory}" />
 
@@ -95,7 +101,7 @@
             Content="筛选"
             Grid.Row="0"
             Command="{Binding Path=FilterCommand}"
-            Margin="5"
+            Margin="5,0,0,0"
             Background="Green"
             Opacity="0.8"
             FontSize="22" />
@@ -104,24 +110,24 @@
             Content="清空"
             Grid.Row="0"
             Command="{Binding Path=ClearCommand}"
-            Margin="5"
+            Margin="5,0,0,0"
             Background="Green"
             Opacity="0.8"
             FontSize="22" />
 
         <Button
             Grid.Row="0"
-            Command="{Binding Path=AddCommand}"
+            Command="{Binding Path=OpenAddCommand}"
             Content="New +"
-            Margin="0,0,20,0"
+            Margin="5,0,10,0"
             DockPanel.Dock="Right"
             Background="Green"
             Opacity="0.8"
             FontSize="22">
 
-            <Button.CommandParameter>
+            <!--<Button.CommandParameter>
                 <advs:AddEditAchievementView />
-            </Button.CommandParameter>
+            </Button.CommandParameter>-->
         </Button>
     </DockPanel>
 </UserControl>

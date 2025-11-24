@@ -47,7 +47,7 @@
 
                     <Button
                         Grid.Column="1"
-                        Command="{Binding Path=EditCommand}"
+                        Command="{Binding Path=OpenEditCommand}"
                         Content="编辑"
                         Background="Blue"
                         Opacity="0.5"

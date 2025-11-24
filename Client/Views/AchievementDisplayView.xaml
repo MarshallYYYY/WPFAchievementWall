@@ -68,6 +68,10 @@
                 Grid.Column="1" />
         </Grid>
 
+        <!--新增、编辑 成就的页面-->
+        <advs:AddEditAchievementView
+            Grid.RowSpan="3"
+            Visibility="{Binding Path=AddEditVisibility}" />
     </Grid>
 
 </UserControl>
