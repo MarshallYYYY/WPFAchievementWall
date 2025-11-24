@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using System.Windows;
 
+
 namespace Client.ViewModels
 {
     public partial class AchievementDisplayViewModel : BindableBase
@@ -21,19 +22,18 @@ namespace Client.ViewModels
             OpenCloseDetailsCommand = new DelegateCommand<Achievement>(OpenCloseDetails);
 
             service = achievementService;
-            this.eventAggregator = eventAggregator;
 
             // C# 7.0 丢弃运算符：直接调用异步初始化方法
             // 我明确知道这是一个异步方法，我故意不等待它完成，让它在后台运行，我不关心它的返回结果
 
             // 下面是两种写法，在功能和行为上 等价
             // ①：lambda 方式一般在你想传入额外参数或多行操作时才需要
-            //_ = RunWithLoading(async () => await InitData());
+            //_ = LoadingHelper.RunWithLoadingAsync(async () => await InitData());
             // ②：
-            _ = RunWithLoading(InitData);
+            _ = LoadingHelper.RunWithLoadingAsync(InitData);
 
-            // 下面这种写法也可以，但会多一个无用的变量（语义不清晰）
-            //Task t = RunWithLoading(InitData);
+            // ③：下面这种写法也可以，但会多一个无用的变量（语义不清晰），所以不推荐使用。
+            //Task t = LoadingHelper.RunWithLoadingAsync(InitData);
 
             OpenAddCommand = new DelegateCommand(OpenAdd);
             OpenEditCommand = new DelegateCommand(OpenEdit);
@@ -49,8 +49,16 @@ namespace Client.ViewModels
         /// </summary>
         private readonly AchievementService service;
 
-        private readonly IEventAggregator eventAggregator;
+        /// <summary>
+        /// 从 Web API 获取的所有成就，按年份分组存储；
+        /// 只有在 初始化的查询 以及 删除、新增、编辑成就 后才会变更该属性的值，
+        /// 因为这些操作都需要向 Web API 请求数据。
+        /// </summary>
         private readonly List<YearAchievements> localAllAchievement = [];
+        /// <summary>
+        /// 用于绑定到界面的所有成就，按年份分组存储；
+        /// 搜索栏的筛选按钮会变更该属性的值。
+        /// </summary>
         public ObservableCollection<YearAchievements> AllAchievement { get; set; } = [];
 
         private Visibility detailsVisibility = Visibility.Collapsed;
@@ -63,32 +71,9 @@ namespace Client.ViewModels
 
         private async Task InitData()
         {
-            //eventAggregator.GetEvent<LoadingVisibilityEvent>().Publish(Visibility.Visible);
-            //await InitLocalAllAchievement();
-            //SetAllAchievement(localAllAchievement);
-            //InitSearchBarYearComboBoxSource();
-            //eventAggregator.GetEvent<LoadingVisibilityEvent>().Publish(Visibility.Collapsed);
-
             await InitLocalAllAchievement();
             SetAllAchievement(localAllAchievement);
             InitSearchBarYearComboBoxSource();
-        }
-        private async Task RunWithLoading(Func<Task> func)
-        {
-            eventAggregator.GetEvent<LoadingVisibilityEvent>().Publish(Visibility.Visible);
-            try
-            {
-                await func();
-            }
-            catch (Exception ex)
-            {
-                // 日志或显示提示
-                MessageBox.Show(ex.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            finally
-            {
-                eventAggregator.GetEvent<LoadingVisibilityEvent>().Publish(Visibility.Collapsed);
-            }
         }
 
         private async Task InitLocalAllAchievement()
@@ -297,7 +282,7 @@ namespace Client.ViewModels
             if (boxResult is MessageBoxResult.No)
                 return;
 
-            _ = RunWithLoading(async () =>
+            _ = LoadingHelper.RunWithLoadingAsync(async () =>
             {
                 bool result = await service.DeleteAchievementAsync(selectedAchievement.Id);
                 if (result is true)
@@ -350,6 +335,14 @@ namespace Client.ViewModels
         private void OpenEdit()
         {
             TitleAddEdit = "编辑";
+            if (selectedAchievement is null)
+                return;
+            AchieveDate = selectedAchievement.AchieveDate;
+            Title = selectedAchievement.Title ?? "";
+            Content = selectedAchievement.Content ?? "";
+            Level = selectedAchievement.Level;
+            Category = selectedAchievement.Category ?? "";
+
             AddEditVisibility = Visibility.Visible;
         }
 
@@ -413,21 +406,37 @@ namespace Client.ViewModels
                 ImagePath = "ImgPath"
             };
 
-            _ = RunWithLoading(async () =>
+            _ = LoadingHelper.RunWithLoadingAsync(async () =>
             {
                 Achievement achievementFromApi = await service.CreateAchievementAsync(achievement);
                 if (achievementFromApi is not null)
                 {
                     AddEditVisibility = Visibility.Collapsed;
                     DetailsVisibility = Visibility.Collapsed;
-                    SelectedAchievement = null;
                     await InitData();
                 }
             });
         }
         private void EditAchievement()
         {
+            if (selectedAchievement is null)
+                return;
+            selectedAchievement.AchieveDate = AchieveDate;
+            selectedAchievement.Title = Title;
+            selectedAchievement.Content = Content;
+            selectedAchievement.Level = Level;
+            selectedAchievement.Category = Category;
 
+            _ = LoadingHelper.RunWithLoadingAsync(async () =>
+            {
+                bool result = await service.UpdateAchievementAsync(selectedAchievement);
+                if (result is true)
+                {
+                    AddEditVisibility = Visibility.Collapsed;
+                    DetailsVisibility = Visibility.Collapsed;
+                    await InitData();
+                }
+            });
         }
         public DelegateCommand CancelCommand { get; private set; }
         #endregion 新增、编辑成就页面

@@ -1,11 +1,7 @@
-﻿using Client.Models;
+﻿using Client.Events;
 using Client.Services;
 using Client.ViewModels;
 using Client.Views;
-using Client.Views.AchievementDisplayViews;
-using Client.Views.MainViews;
-using System.Configuration;
-using System.Data;
 using System.Windows;
 
 namespace Client
@@ -17,9 +13,17 @@ namespace Client
     {
         protected override Window CreateShell()
         {
+            // 容器已经准备好，可以 Resolve 出 IEventAggregator 实例
+            // 解析 IEventAggregator 实例
+            var eventAggregator = Container.Resolve<IEventAggregator>();
+
+            // 初始化静态 LoadingHelper
+            LoadingHelper.Initialize(eventAggregator);
+
             return Container.Resolve<MainView>();
         }
 
+        // 只能注册类型，没有实例可用
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.RegisterForNavigation<AchievementDisplayView, AchievementDisplayViewModel>();
