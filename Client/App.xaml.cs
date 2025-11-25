@@ -15,12 +15,12 @@ namespace Client
         {
             // 容器已经准备好，可以 Resolve 出 IEventAggregator 实例
             // 解析 IEventAggregator 实例
-            var eventAggregator = Container.Resolve<IEventAggregator>();
+            IEventAggregator eventAggregator = Container.Resolve<IEventAggregator>();
 
             // 初始化静态 LoadingHelper
             LoadingHelper.Initialize(eventAggregator);
 
-            return Container.Resolve<MainView>();
+            return Container.Resolve<MainView>();   
         }
 
         // 只能注册类型，没有实例可用

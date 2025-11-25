@@ -38,7 +38,7 @@ namespace Server.Migrations
                     TargetDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Content = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
-                    AchieveDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValue: new DateTime(2001, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified))
+                    AchieveDate = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {

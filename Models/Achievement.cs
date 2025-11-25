@@ -4,10 +4,10 @@
     public class Achievement : ModelBase
     {
         // 重要程度(1-5星)：ImportanceLevel
-        public int Level { get; set; }
+        public int Level { get; set; } = 1;
         // 非空
-        public string? ImagePath { get; set; }
+        public string ImagePath { get; set; } = string.Empty;
         // 非空，默认值为 "默认"
-        public string? Category { get; set; }
+        public string Category { get; set; } = "默认";
     }
 }

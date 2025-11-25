@@ -58,7 +58,7 @@ namespace Server.Data
                       .IsRequired()
                       .HasMaxLength(1000);
 
-                // AchieveDate: 非空，Goal 需要特殊处理
+                // AchieveDate: 非空，Goal 中可空
                 entity.Property(e => e.AchieveDate)
                       .IsRequired();
 
@@ -88,16 +88,12 @@ namespace Server.Data
                       .IsRequired()
                       .HasMaxLength(1000);
 
-                // AchieveDate: 非空，Goal 需要特殊处理
-                entity.Property(e => e.AchieveDate)
-                      .IsRequired();
+                // AchieveDate: 在 Goal 中可空（唯一的可空）
+                entity.Property(e => e.AchieveDate);
 
                 // TargetDate: 目标日期，非空
                 entity.Property(e => e.TargetDate)
                       .IsRequired();
-
-                entity.Property(e => e.AchieveDate)
-                      .HasDefaultValue("1-1-1");
             });
         }
     }

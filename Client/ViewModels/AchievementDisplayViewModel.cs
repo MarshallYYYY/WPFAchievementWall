@@ -1,10 +1,8 @@
 ﻿using Client.Events;
 using Client.Models;
 using Client.Services;
-using MaterialDesignThemes.Wpf;
 using Models;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using System.Windows;
 
 
@@ -12,9 +10,7 @@ namespace Client.ViewModels
 {
     public partial class AchievementDisplayViewModel : BindableBase
     {
-        public AchievementDisplayViewModel(
-            AchievementService achievementService,
-            IEventAggregator eventAggregator)
+        public AchievementDisplayViewModel(AchievementService achievementService)
         {
             FilterCommand = new DelegateCommand(Filter);
             ClearCommand = new(ClearSearchBar);
@@ -83,21 +79,22 @@ namespace Client.ViewModels
             List<Achievement> allAchievement = await service.GetAchievementsAsync();
             // 将所有的成就按照年份分组
             List<YearAchievements> allYearGroup = allAchievement
-                .GroupBy(achievement => achievement.AchieveDate.Year.ToString())
+                .GroupBy(achievement => achievement.AchieveDate?.Year)
                 // 按年份降序排列
                 // yearGroup.Key 是刚刚分组的 Key（年份字符串）
                 .OrderByDescending(yearGroup => yearGroup.Key)
                 //  Select(转换为YearAchievements)
                 .Select(yearGroup => new YearAchievements
                 {
-                    Year = yearGroup.Key,
+                    Year = Convert.ToInt32(yearGroup.Key),
                     // 调用构造函数来进行赋值
                     Achievements = new List<Achievement>(
                         yearGroup.OrderByDescending(achievement => achievement.AchieveDate).ToList())
                 })
                 .ToList();
             // 按照年份依次添加到 AllAchievement 中
-            allYearGroup.ForEach(yearGroup => localAllAchievement.Add(yearGroup));
+            // allYearGroup.ForEach(yearGroup => localAllAchievement.Add(yearGroup));
+            allYearGroup.ForEach(localAllAchievement.Add);
         }
 
         private void SetAllAchievement(List<YearAchievements> allAchievement)
@@ -154,17 +151,16 @@ namespace Client.ViewModels
         #region 上方的搜索栏 SearchBar
 
         #region 数据
-        public ObservableCollection<string> SearchBarYearComboBoxSource { get; private set; } = [];
-        private string? searchBarYear = null;
-
-        public string? SearchBarYear
+        // ComboBoxSource相关的都改为可空了，下面的两个 Level 和 Category 的源相关的也是可空。
+        public ObservableCollection<int?> SearchBarYearComboBoxSource { get; private set; } = [];
+        private int? searchBarYear = null;
+        public int? SearchBarYear
         {
             get { return searchBarYear; }
             set { SetProperty(ref searchBarYear, value); }
         }
 
         private string searchBarTitle = "";
-
         public string SearchBarTitle
         {
             get { return searchBarTitle; }
@@ -179,9 +175,8 @@ namespace Client.ViewModels
             set { SetProperty(ref searchBarContent, value); }
         }
 
-        public ObservableCollection<int> LevelComboBoxSource { get; } = [0, 1, 2, 3, 4, 5];
+        public ObservableCollection<int> LevelComboBoxSource { get; } = [1, 2, 3, 4, 5];
         private int? searchBarLevel = null;
-
         public int? SearchBarLevel
         {
             get { return searchBarLevel; }
@@ -190,9 +185,7 @@ namespace Client.ViewModels
 
         public ObservableCollection<string> CategoryComboBoxSource { get; } =
             ["默认", "生活经历", "学习成长", "健康运动", "职业发展"];
-
         private string? searchBarCategory = null;
-
         public string? SearchBarCategory
         {
             get { return searchBarCategory; }
@@ -210,19 +203,23 @@ namespace Client.ViewModels
             AllAchievement.Clear();
 
             IEnumerable<YearAchievements> allAchievement = localAllAchievement;
-            if (SearchBarYear is not null)
+            if (searchBarYear is not null)
+            {
+                // 如果限制了某个年份，那么 allAchievement 中就只有一个元素
                 allAchievement = allAchievement.Where(yearGroup => yearGroup.Year == SearchBarYear);
+            }
 
             // 其实当 搜索栏 选择了某个年份时，allAchievement 中只有一个元素，也就是下面的循环只执行一次；
             // 但是若 搜索栏 中未选择年份时，则对所有年份逐个运行检查。
             foreach (YearAchievements yearGroup in allAchievement)
             {
-                IQueryable<Achievement> query = (yearGroup.Achievements ?? []).AsQueryable();
+                IQueryable<Achievement> query = (yearGroup.Achievements).AsQueryable();
 
                 if (SearchBarTitle is not "")
-                    query = query.Where(achievement => (achievement.Title ?? "").Contains(SearchBarTitle));
+                    query = query.Where(achievement => (achievement.Title).Contains(SearchBarTitle));
                 if (SearchBarContent is not "")
-                    query = query.Where(achievement => (achievement.Content ?? string.Empty).Contains(SearchBarContent));
+                    query = query.Where(
+                        achievement => (achievement.Content).Contains(SearchBarContent));
                 if (SearchBarLevel is not null)
                     query = query.Where(achievement => achievement.Level == SearchBarLevel);
                 if (SearchBarCategory is not null)
@@ -260,7 +257,6 @@ namespace Client.ViewModels
         #region 成就详情（右侧界面）
 
         private Achievement? selectedAchievement = null;
-
         public Achievement? SelectedAchievement
         {
             get { return selectedAchievement; }
@@ -326,7 +322,7 @@ namespace Client.ViewModels
             AchieveDate = DateTime.Now;
             Title = "";
             Content = "";
-            Level = 0;
+            Level = 1;
             Category = "默认";
 
             AddEditVisibility = Visibility.Visible;
@@ -337,11 +333,11 @@ namespace Client.ViewModels
             TitleAddEdit = "编辑";
             if (selectedAchievement is null)
                 return;
-            AchieveDate = selectedAchievement.AchieveDate;
-            Title = selectedAchievement.Title ?? "";
-            Content = selectedAchievement.Content ?? "";
+            AchieveDate = selectedAchievement.AchieveDate ?? DateTime.Now;
+            Title = selectedAchievement.Title;
+            Content = selectedAchievement.Content;
             Level = selectedAchievement.Level;
-            Category = selectedAchievement.Category ?? "";
+            Category = selectedAchievement.Category;
 
             AddEditVisibility = Visibility.Visible;
         }
@@ -365,7 +361,7 @@ namespace Client.ViewModels
             get { return content; }
             set { SetProperty(ref content, value); }
         }
-        private int level;
+        private int level = 1;
         public int Level
         {
             get { return level; }
@@ -382,6 +378,11 @@ namespace Client.ViewModels
         public DelegateCommand SaveCommand { get; private set; }
         private void Save()
         {
+            if (ValidateAchievement(out string errorMessage) is false)
+            {
+                MessageBox.Show(errorMessage, "输入错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
             switch (titleAddEdit)
             {
                 case "新增":
@@ -394,6 +395,64 @@ namespace Client.ViewModels
                     break;
             }
         }
+        private bool ValidateAchievement(out string errorMessage)
+        {
+            // 1. 日期不能为空或默认值
+            if (achieveDate == default)
+            {
+                errorMessage = "日期不能为空，请选择一个有效日期。";
+                return false;
+            }
+
+            // 2. 日期不能大于现在（未来时间不允许）
+            if (achieveDate > DateTime.Now)
+            {
+                errorMessage = "日期不能晚于当前时间。";
+                return false;
+            }
+
+            // 3. 标题不能为空
+            // string.IsNullOrEmpty 只能判断下面的前两种情况
+            // 判断字符串是否为：1.null 2.""（空字符串） 3." "（空格） 4."\n" "\t" 等空白字符
+            if (string.IsNullOrWhiteSpace(title))
+            {
+                errorMessage = "标题不能为空。";
+                return false;
+            }
+
+            // 4. 内容不能为空
+            if (string.IsNullOrWhiteSpace(content))
+            {
+                errorMessage = "内容不能为空。";
+                return false;
+            }
+
+            //5.Level 必须在合法区间（1–5）
+            if (level < 1 || level > 5)
+            {
+                errorMessage = "重要程度星级必须在 1 到 5 之间。";
+                return false;
+            }
+
+            // 6. 分类不能为空
+            if (string.IsNullOrWhiteSpace(category))
+            {
+                errorMessage = "类别不能为空。";
+                return false;
+            }
+
+            // 7. 图片路径不能为空
+            //if (string.IsNullOrWhiteSpace(imagePath))
+            //{
+            //    errorMessage = "图片路径不能为空，请上传图片。";
+            //    return false;
+            //}
+
+            // 全部通过
+            errorMessage = string.Empty;
+            return true;
+        }
+
         private void AddAchievement()
         {
             Achievement achievement = new()
@@ -412,8 +471,10 @@ namespace Client.ViewModels
                 if (achievementFromApi is not null)
                 {
                     AddEditVisibility = Visibility.Collapsed;
-                    DetailsVisibility = Visibility.Collapsed;
+                    // 下面两个函数中都有 SetAllAchievement(localAllAchievement);，
+                    // 所以在 ClearSearchBar(); 中的那一次调用属于多余调用
                     await InitData();
+                    ClearSearchBar();
                 }
             });
         }
@@ -433,8 +494,8 @@ namespace Client.ViewModels
                 if (result is true)
                 {
                     AddEditVisibility = Visibility.Collapsed;
-                    DetailsVisibility = Visibility.Collapsed;
                     await InitData();
+                    ClearSearchBar();
                 }
             });
         }

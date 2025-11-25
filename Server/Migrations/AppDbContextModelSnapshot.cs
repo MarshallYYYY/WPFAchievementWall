@@ -71,10 +71,8 @@ namespace Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("AchieveDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2001, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
+                    b.Property<DateTime?>("AchieveDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Content")
                         .IsRequired()

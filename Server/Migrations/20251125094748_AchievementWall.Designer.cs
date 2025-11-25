@@ -12,7 +12,7 @@ using Server.Data;
 namespace Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251113160123_AchievementWall")]
+    [Migration("20251125094748_AchievementWall")]
     partial class AchievementWall
     {
         /// <inheritdoc />
@@ -74,10 +74,8 @@ namespace Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("AchieveDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValue(new DateTime(2001, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
+                    b.Property<DateTime?>("AchieveDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Content")
                         .IsRequired()
