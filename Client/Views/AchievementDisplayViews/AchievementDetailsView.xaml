@@ -53,12 +53,7 @@
                         Opacity="0.5"
                         Width="auto"
                         Margin="5"
-                        FontSize="16">
-
-                        <Button.CommandParameter>
-                            <advs:AddEditAchievementView />
-                        </Button.CommandParameter>
-                    </Button>
+                        FontSize="16" />
 
                     <Button
                         Grid.Column="2"

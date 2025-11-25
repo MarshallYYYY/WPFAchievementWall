@@ -130,6 +130,7 @@
 
                 <!--  最右侧的展开按钮  -->
                 <!--  CommandParameter="{Binding}" 就是当前的 Achievement 对象。  -->
+                <!--d:DataContext="{d:DesignInstance Type=viewmodels:AchievementDisplayViewModel}"-->
                 <Button
                     Grid.Column="1"
                     Width="50"

@@ -8,9 +8,20 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d"
+    xmlns:gmvs="clr-namespace:Client.Views.GoalsManagementViews"
     xmlns:viewmodels="clr-namespace:Client.ViewModels"
     d:DataContext="{d:DesignInstance Type=viewmodels:GoalsManagementViewModel}"
     xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+        </ResourceDictionary>
+    </UserControl.Resources>
 
     <Grid>
 
@@ -19,57 +30,98 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
+        <!--左侧：进行中的目标-->
         <Grid
-            Grid.Column="0"
-            Width="auto">
+            Grid.Column="0">
 
-            <Border
-                Margin="50,50,25,50"
-                Background="#FF97D7F4"
-                CornerRadius="50">
+            <Grid.RowDefinitions>
+                <RowDefinition
+                    Height="auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
 
-                <ScrollViewer
-                    Margin="20"
-                    Grid.Column="0"
-                    ScrollViewer.VerticalScrollBarVisibility="Hidden">
+            <Grid
+                Margin="0,10,0,0"
+                Grid.Row="0">
 
-                    <ItemsControl
-                        ItemsSource="{Binding Goals}">
-                        <ItemsControl.ItemTemplate>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition
+                        Width="auto" />
+                </Grid.ColumnDefinitions>
 
-                            <DataTemplate>
-                                <StackPanel>
-                                    <TextBlock
-                                        Text="{Binding Path=Title}" />
-                                    <TextBlock
-                                        Text="{Binding Path=Content}" />
-                                    <TextBlock
-                                        Text="{Binding Path=TargetDate}" />
-                                    <CheckBox
-                                        Content="Primary"
-                                        IsChecked="True"
-                                        Style="{StaticResource MaterialDesignFilterChipPrimaryCheckBox}" />
-                                </StackPanel>
-                            </DataTemplate>
+                <TextBlock
+                    Text="进行中..."
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    FontSize="38" />
+                <Button
+                    Content="添加目标 +"
+                    Margin="0,0,50,0"
+                    FontSize="18"
+                    Background="Green"
+                    Opacity="0.8"
+                    VerticalAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    HorizontalAlignment="Right" />
+            </Grid>
 
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
+            <ScrollViewer
+                Grid.Row="1"
+                Margin="50,10,25,27"
+                Width="auto"
+                ScrollViewer.VerticalScrollBarVisibility="Visible">
 
-            </Border>
-            
+                <ItemsControl
+                    ItemsSource="{Binding Path=OngoingGoals}">
+                    <ItemsControl.ItemTemplate>
+
+                        <DataTemplate>
+                            <gmvs:OngoingGoalDataTemplate />
+                        </DataTemplate>
+
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
         </Grid>
 
+        <!--右侧：已完成的目标-->
         <Grid
-            Grid.Column="1"
-            Width="auto">
-            <Border
-                Margin="25,50,50,50"
-                Background="Red"
-                Opacity="0.2"
-                CornerRadius="50" />
-            <Button
-                Width="200" />
+            Grid.Column="1">
+
+            <Grid.RowDefinitions>
+                <RowDefinition
+                    Height="auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <TextBlock
+                Grid.Row="0"
+                Margin="0,10,0,0"
+                Text="已完成"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                FontSize="38" />
+
+            <ScrollViewer
+                Grid.Row="1"
+                Margin="50,10,25,27"
+                Width="auto"
+                ScrollViewer.VerticalScrollBarVisibility="Visible">
+
+                <ItemsControl
+                    ItemsSource="{Binding Path=AchievedGoals}">
+                    <ItemsControl.ItemTemplate>
+
+                        <DataTemplate>
+                            <gmvs:AchievedGoalDataTemplate />
+                        </DataTemplate>
+
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+
         </Grid>
 
     </Grid>

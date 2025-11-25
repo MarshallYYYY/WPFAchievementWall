@@ -123,11 +123,7 @@
             DockPanel.Dock="Right"
             Background="Green"
             Opacity="0.8"
-            FontSize="22">
+            FontSize="22" />
 
-            <!--<Button.CommandParameter>
-                <advs:AddEditAchievementView />
-            </Button.CommandParameter>-->
-        </Button>
     </DockPanel>
 </UserControl>

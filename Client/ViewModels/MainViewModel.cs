@@ -33,6 +33,7 @@ namespace Client.ViewModels
         #region 上方工具栏
 
         private string mainViewTitle = "个人成就记录墙";
+        //private string mainViewTitle = "个人成就记录墙 - 主页";
 
         public string MainViewTitle
         {
@@ -57,7 +58,8 @@ namespace Client.ViewModels
 
         private void InitMenus()
         {
-            Menus.Add(new Menu() { Icon = "📊", Title = "成就展示", ViewName = "AchievementDisplayView" });
+            //Menus.Add(new Menu() { Icon = "🏠", Title = "主页", ViewName = "MainView" });
+            Menus.Add(new Menu() { Icon = "🏆", Title = "成就展示", ViewName = "AchievementDisplayView" });
             Menus.Add(new Menu() { Icon = "🎯", Title = "目标管理", ViewName = "GoalsManagementView" });
             Menus.Add(new Menu() { Icon = "📈", Title = "数据统计", ViewName = "DataStatisticsView" });
             Menus.Add(new Menu() { Icon = "⚙️", Title = "设置", ViewName = "SettingsView" });

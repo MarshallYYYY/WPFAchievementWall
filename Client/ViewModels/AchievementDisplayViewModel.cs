@@ -1,6 +1,7 @@
 ﻿using Client.Events;
 using Client.Models;
 using Client.Services;
+using MaterialDesignThemes.Wpf;
 using Models;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -272,6 +273,8 @@ namespace Client.ViewModels
         {
             if (selectedAchievement is null)
                 return;
+            // TODO：新的弹窗设计
+            //var result = await DialogHost.Show("这是提示内容", "RootDialog");
             MessageBoxResult boxResult = MessageBox.Show(
                 "是否删除？", "警告",
                 MessageBoxButton.YesNo, MessageBoxImage.Warning);
