@@ -57,6 +57,8 @@
                     FontSize="38" />
                 <Button
                     Content="添加目标 +"
+                    Command="{Binding OpenAddCommand}"
+                    CommandParameter="{Binding}"
                     Margin="0,0,50,0"
                     FontSize="18"
                     Background="Green"
@@ -124,6 +126,10 @@
 
         </Grid>
 
+        <!--新增、编辑 目标的页面-->
+        <gmvs:AddEditGoalView
+            Grid.ColumnSpan="2"
+            Visibility="{Binding Path=AddEditVisibility}" />
     </Grid>
 
 </UserControl>

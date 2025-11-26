@@ -12,7 +12,7 @@ using Server.Data;
 namespace Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251125094748_AchievementWall")]
+    [Migration("20251125191226_AchievementWall")]
     partial class AchievementWall
     {
         /// <inheritdoc />

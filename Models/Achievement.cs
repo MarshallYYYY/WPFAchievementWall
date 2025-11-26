@@ -7,7 +7,7 @@
         public int Level { get; set; } = 1;
         // 非空
         public string ImagePath { get; set; } = string.Empty;
-        // 非空，默认值为 "默认"
-        public string Category { get; set; } = "默认";
+        // 非空，有默认值
+        public string Category { get; set; } = AchievementCategory.Default;
     }
 }

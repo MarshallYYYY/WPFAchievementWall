@@ -78,6 +78,9 @@
                 <StackPanel
                     VerticalAlignment="Center">
                     <Button
+                        Command="{Binding DataContext.OpenEditCommand,
+                            RelativeSource={RelativeSource AncestorType=views:GoalsManagementView}}"
+                        CommandParameter="{Binding}"
                         Margin="2"
                         Background="Blue"
                         Opacity="0.5"
@@ -95,6 +98,9 @@
                 </StackPanel>
 
                 <Button
+                    Command="{Binding DataContext.AchieveCommand,
+                            RelativeSource={RelativeSource AncestorType=views:GoalsManagementView}}"
+                    CommandParameter="{Binding}"
                     Width="66"
                     Height="66"
                     FontSize="20"

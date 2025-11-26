@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using Server.Data;
@@ -22,10 +17,19 @@ namespace Server.Controllers
         }
 
         // GET: api/Achievements
+        // GET: api/Achievements?title=xxx
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Achievement>>> GetAchievements()
+        public async Task<ActionResult<IEnumerable<Achievement>>> GetAchievements([FromQuery] string? title)
         {
-            return await _context.Achievements.ToListAsync();
+            //return await _context.Achievements.ToListAsync();
+            IQueryable<Achievement> query = _context.Achievements;
+
+            if (!string.IsNullOrEmpty(title))
+            {
+                query = query.Where(a => a.Title.Contains(title));
+            }
+
+            return await query.ToListAsync();
         }
 
         // GET: api/Achievements/5
@@ -81,7 +85,8 @@ namespace Server.Controllers
             _context.Achievements.Add(achievement);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetAchievement", new { id = achievement.Id }, achievement);
+            //return CreatedAtAction("GetAchievement", new { id = achievement.Id }, achievement);
+            return CreatedAtAction(nameof(GetAchievement), new { id = achievement.Id }, achievement);
         }
 
         // DELETE: api/Achievements/5

@@ -70,7 +70,7 @@ namespace Server.Data
                 entity.Property(e => e.Category)
                       .IsRequired()
                       .HasMaxLength(50)
-                      .HasDefaultValue("默认");
+                      .HasDefaultValue(AchievementCategory.Default);
             });
 
             // 配置 Goal 实体

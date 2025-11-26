@@ -184,8 +184,15 @@ namespace Client.ViewModels
             set { SetProperty(ref searchBarLevel, value); }
         }
 
+        //["默认", "生活经历", "学习成长", "健康运动", "职业发展"];
         public ObservableCollection<string> CategoryComboBoxSource { get; } =
-            ["默认", "生活经历", "学习成长", "健康运动", "职业发展"];
+        [
+            AchievementCategory.Default,
+            AchievementCategory.Life,
+            AchievementCategory.Learning,
+            AchievementCategory.Health,
+            AchievementCategory.Career,
+        ];
         private string? searchBarCategory = null;
         public string? SearchBarCategory
         {
@@ -326,7 +333,7 @@ namespace Client.ViewModels
             Title = "";
             Content = "";
             Level = 1;
-            Category = "默认";
+            Category = AchievementCategory.Default;
 
             AddEditVisibility = Visibility.Visible;
         }
@@ -370,7 +377,7 @@ namespace Client.ViewModels
             get { return level; }
             set { SetProperty(ref level, value); }
         }
-        private string category = "默认";
+        private string category = AchievementCategory.Default;
         public string Category
         {
             get { return category; }

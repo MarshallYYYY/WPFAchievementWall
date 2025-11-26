@@ -1,0 +1,115 @@
+﻿<UserControl
+    x:Class="Client.Views.GoalsManagementViews.AddEditGoalView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Client.Views.GoalsManagementViews"
+    mc:Ignorable="d"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:viewmodels="clr-namespace:Client.ViewModels"
+    d:DataContext="{d:DesignInstance Type=viewmodels:GoalsManagementViewModel}">
+
+
+    <UserControl.Resources>
+
+        <Style
+            x:Key="TextBlockTemplate"
+            TargetType="TextBlock">
+            <Setter
+                Property="FontSize"
+                Value="22" />
+            <Setter
+                Property="VerticalAlignment"
+                Value="Center" />
+        </Style>
+
+    </UserControl.Resources>
+
+    <Grid>
+
+        <!--这俩border只是为了好看-->
+        <Border
+            Background="White" />
+        <Border
+            Background="Gray"
+            Opacity="0.2"
+            CornerRadius="50"
+            Margin="150,80" />
+
+        <StackPanel
+            Margin="0,120,0,0"
+            MinWidth="200"
+            MaxWidth="500">
+
+            <TextBlock
+                Text="{Binding Path=TitleAddEdit}"
+                HorizontalAlignment="Center"
+                Margin="0,-10,0,10"
+                FontSize="50" />
+
+            <StackPanel
+                Orientation="Horizontal">
+
+                <TextBlock
+                    Text="预期达成日期："
+                    Style="{StaticResource TextBlockTemplate}" />
+                <DatePicker
+                    VerticalContentAlignment="Center"
+                    Width="150"
+                    FontSize="18"
+                    SelectedDate="{Binding Path=TargetDate}"
+                    md:TextFieldAssist.HasClearButton="True" />
+
+            </StackPanel>
+
+            <StackPanel
+                Orientation="Horizontal">
+
+                <TextBlock
+                    Text="标题："
+                    Style="{StaticResource TextBlockTemplate}" />
+                <TextBox
+                    MinWidth="150"
+                    FontSize="22"
+                    Text="{Binding Path=Title}"
+                    VerticalAlignment="Center" />
+
+            </StackPanel>
+
+            <TextBlock
+                Text="内容："
+                Style="{StaticResource TextBlockTemplate}" />
+            <TextBox
+                FontSize="22"
+                TextWrapping="Wrap"
+                Text="{Binding Path=Content}"
+                MaxLines="7"
+                VerticalAlignment="Center" />
+
+            <StackPanel
+                HorizontalAlignment="Center"
+                Orientation="Horizontal">
+
+                <Button
+                    Content="确定"
+                    Command="{Binding SaveCommand}"
+                    FontSize="22"
+                    Style="{StaticResource MaterialDesignFlatButton}">
+                </Button>
+
+                <Button
+                    Content="取消"
+                    Command="{Binding Path=CancelCommand}"
+                    FontSize="22"
+                    Style="{StaticResource MaterialDesignFlatButton}">
+                </Button>
+
+            </StackPanel>
+
+        </StackPanel>
+    </Grid>
+
+</UserControl>

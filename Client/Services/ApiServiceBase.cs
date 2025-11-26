@@ -11,6 +11,9 @@ namespace Client.Services
     public abstract class ApiServiceBase
     {
         protected readonly HttpClient _httpClient;
+        /// <summary>
+        /// http://localhost:5045
+        /// </summary>
         protected readonly string _baseUrl;
 
         protected ApiServiceBase(string baseUrl)

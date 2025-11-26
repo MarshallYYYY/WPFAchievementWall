@@ -20,7 +20,7 @@ namespace Client
             // 初始化静态 LoadingHelper
             LoadingHelper.Initialize(eventAggregator);
 
-            return Container.Resolve<MainView>();   
+            return Container.Resolve<MainView>();
         }
 
         // 只能注册类型，没有实例可用
@@ -32,7 +32,7 @@ namespace Client
             containerRegistry.RegisterForNavigation<SettingsView, SettingsViewModel>();
 
             // 注册 API 服务，注意不能用 https！
-            string baseUrl = "http://localhost:5045";
+            const string baseUrl = "http://localhost:5045";
 
             // 注册为单例服务
             containerRegistry.RegisterSingleton<UserService>(() => new UserService(baseUrl));
