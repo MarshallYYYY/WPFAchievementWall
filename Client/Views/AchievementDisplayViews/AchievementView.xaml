@@ -10,7 +10,6 @@
     xmlns:prism="http://prismlibrary.com/"
     xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:viewmodels="clr-namespace:Client.ViewModels"
-    prism:ViewModelLocator.AutoWireViewModel="True"
     xmlns:projectmodels="clr-namespace:Models;assembly=Models"
     xmlns:views="clr-namespace:Client.Views"
     d:DataContext="{d:DesignInstance Type=projectmodels:Achievement}"

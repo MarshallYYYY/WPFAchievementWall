@@ -58,6 +58,13 @@
                 </Image.Clip>
             </Image>
             <Button
+                Command="{Binding Path=TestCommand}"
+                Style="{StaticResource MaterialDesignFlatMidBgButton}"
+                Cursor="Hand">
+                <md:PackIcon
+                    Kind="WindowClose" />
+            </Button>
+            <Button
                 x:Name="btnMin"
                 Click="MinimizeButton_Click"
                 Style="{StaticResource MaterialDesignFlatMidBgButton}">
@@ -80,7 +87,7 @@
                 <md:PackIcon
                     Kind="WindowClose" />
             </Button>
-        </StackPanel>        
-        
+        </StackPanel>
+
     </Grid>
 </UserControl>    

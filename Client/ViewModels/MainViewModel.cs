@@ -4,6 +4,7 @@ using Client.Models;
 using Client.Services;
 using Models;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Windows;
 
 namespace Client.ViewModels
@@ -117,10 +118,32 @@ namespace Client.ViewModels
 
         private void TestButton()
         {
-            if (loadingVisibility is Visibility.Collapsed)
-                LoadingVisibility = Visibility.Visible;
-            else if (loadingVisibility is Visibility.Visible)
-                LoadingVisibility = Visibility.Collapsed;
+            if (Debugger.IsAttached)
+            {
+                // 简单提示开发者
+                Debug.WriteLine("注意：重启后需要手动重新附加调试器");
+
+                // 或者使用更明显的方式
+                if (MessageBox.Show(
+                    "重启后将断开与调试器的连接。继续吗？",
+                    "调试提示",
+                    MessageBoxButton.YesNo) == MessageBoxResult.No)
+                {
+                    return;
+                }
+            }
+
+            // 获取当前应用程序的路径和文件名
+
+            //旧版.NET Framework
+            //string applicationPath = Process.GetCurrentProcess().MainModule!.FileName;
+            string applicationPath = Environment.ProcessPath!;
+
+            // 启动新的应用程序实例
+            Process.Start(applicationPath);
+
+            // 关闭当前应用程序
+            Application.Current.Shutdown();
         }
 
         private readonly UserService userService;
