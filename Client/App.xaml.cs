@@ -1,5 +1,4 @@
-﻿using Client.Events;
-using Client.Services;
+﻿using Client.Services;
 using Client.ViewModels;
 using Client.Views;
 using System.Windows;
@@ -31,15 +30,14 @@ namespace Client
             //containerRegistry.RegisterSingleton<XXX>();
 
             containerRegistry.RegisterSingleton<AchievementService>(() => new AchievementService(baseUrl));
-            containerRegistry.RegisterSingleton<GoalService>(() => new GoalService(baseUrl)); 
+            containerRegistry.RegisterSingleton<GoalService>(() => new GoalService(baseUrl));
             #endregion
+
+            containerRegistry.RegisterSingleton<ILoadingService, LoadingService>();
         }
         // 只要你在 CreateShell 中返回某个 Window，Prism 会自动把这个 Window 注册到容器里作为单例。
         protected override Window CreateShell()
         {
-            IEventAggregator eventAggregator = Container.Resolve<IEventAggregator>();
-            // 初始化静态 LoadingHelper
-            LoadingHelper.Initialize(eventAggregator);
             return Container.Resolve<MainView>();
         }
 

@@ -1,5 +1,4 @@
-﻿using Client.Events;
-using Client.Services;
+﻿using Client.Services;
 using Models;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -8,10 +7,13 @@ namespace Client.ViewModels
 {
     public class GoalsManagementViewModel : BindableBase
     {
-        public GoalsManagementViewModel(GoalService goalService)
+        public GoalsManagementViewModel(
+            GoalService goalService,
+            ILoadingService loadingService)
         {
             service = goalService;
-            _ = LoadingHelper.RunWithLoadingAsync(InitData);
+            this.loadingService = loadingService;
+            _ = loadingService.RunWithLoadingAsync(InitData);
             DeleteCommand = new DelegateCommand<Goal>(Delete);
             OpenAddCommand = new DelegateCommand(OpenAdd);
             OpenEditCommand = new DelegateCommand<Goal>(OpenEdit);
@@ -22,7 +24,7 @@ namespace Client.ViewModels
 
         #region 服务和数据
         private readonly GoalService service;
-
+        private readonly ILoadingService loadingService;
         private List<Goal> goals = [];
         public ObservableCollection<Goal> OngoingGoals { get; set; } = [];
         public ObservableCollection<Goal> AchievedGoals { get; set; } = [];
@@ -58,7 +60,7 @@ namespace Client.ViewModels
             if (boxResult is MessageBoxResult.No)
                 return;
 
-            _ = LoadingHelper.RunWithLoadingAsync(async () =>
+            _ = loadingService.RunWithLoadingAsync(async () =>
             {
                 bool result = await service.DeleteGoalAsync(goal.Id);
                 if (result is true)
@@ -198,7 +200,7 @@ namespace Client.ViewModels
                 AchieveDate = null
             };
 
-            _ = LoadingHelper.RunWithLoadingAsync(async () =>
+            _ = loadingService.RunWithLoadingAsync(async () =>
             {
                 Goal newGoal = await service.CreateGoalAsync(goal);
                 if (newGoal is not null)
@@ -214,7 +216,7 @@ namespace Client.ViewModels
             goalEdit.Content = content;
             goalEdit.TargetDate = targetDate;
 
-            _ = LoadingHelper.RunWithLoadingAsync(async () =>
+            _ = loadingService.RunWithLoadingAsync(async () =>
             {
                 bool result = await service.UpdateGoalAsync(goalEdit);
                 if (result is true)
@@ -234,7 +236,7 @@ namespace Client.ViewModels
             if (boxResult is MessageBoxResult.No)
                 return;
 
-            _ = LoadingHelper.RunWithLoadingAsync(async () =>
+            _ = loadingService.RunWithLoadingAsync(async () =>
             {
                 bool result = await service.UpdateGoalAsync(goal);
                 if (result is true)

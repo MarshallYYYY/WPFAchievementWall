@@ -1,5 +1,4 @@
-﻿using Client.Events;
-using Client.Models;
+﻿using Client.Models;
 using Client.Services;
 using MaterialDesignThemes.Wpf;
 using Models;
@@ -11,7 +10,9 @@ namespace Client.ViewModels
 {
     public partial class AchievementDisplayViewModel : BindableBase
     {
-        public AchievementDisplayViewModel(AchievementService achievementService)
+        public AchievementDisplayViewModel(
+            AchievementService achievementService,
+            ILoadingService loadingService)
         {
             FilterCommand = new DelegateCommand(Filter);
             ClearCommand = new(ClearSearchBar);
@@ -19,18 +20,19 @@ namespace Client.ViewModels
             OpenCloseDetailsCommand = new DelegateCommand<Achievement>(OpenCloseDetails);
 
             service = achievementService;
+            this.loadingService = loadingService;
 
             // C# 7.0 丢弃运算符：直接调用异步初始化方法
             // 我明确知道这是一个异步方法，我故意不等待它完成，让它在后台运行，我不关心它的返回结果
 
             // 下面是两种写法，在功能和行为上 等价
             // ①：lambda 方式一般在你想传入额外参数或多行操作时才需要
-            //_ = LoadingHelper.RunWithLoadingAsync(async () => await InitData());
+            //_ = loadingService.RunWithLoadingAsync(async () => await InitData());
             // ②：
-            _ = LoadingHelper.RunWithLoadingAsync(InitData);
+            _ = loadingService.RunWithLoadingAsync(InitData);
 
             // ③：下面这种写法也可以，但会多一个无用的变量（语义不清晰），所以不推荐使用。
-            //Task t = LoadingHelper.RunWithLoadingAsync(InitData);
+            //Task t = loadingService.RunWithLoadingAsync(InitData);
 
             OpenAddCommand = new DelegateCommand(OpenAdd);
             OpenEditCommand = new DelegateCommand(OpenEdit);
@@ -45,6 +47,7 @@ namespace Client.ViewModels
         /// Achievement API Service
         /// </summary>
         private readonly AchievementService service;
+        private readonly ILoadingService loadingService;
 
         /// <summary>
         /// 从 Web API 获取的所有成就，按年份分组存储；
@@ -288,7 +291,7 @@ namespace Client.ViewModels
             if (boxResult is MessageBoxResult.No)
                 return;
 
-            _ = LoadingHelper.RunWithLoadingAsync(async () =>
+            _ = loadingService.RunWithLoadingAsync(async () =>
             {
                 bool result = await service.DeleteAchievementAsync(selectedAchievement.Id);
                 if (result is true)
@@ -475,7 +478,7 @@ namespace Client.ViewModels
                 ImagePath = "ImgPath"
             };
 
-            _ = LoadingHelper.RunWithLoadingAsync(async () =>
+            _ = loadingService.RunWithLoadingAsync(async () =>
             {
                 Achievement achievementFromApi = await service.CreateAchievementAsync(achievement);
                 if (achievementFromApi is not null)
@@ -498,7 +501,7 @@ namespace Client.ViewModels
             selectedAchievement.Level = Level;
             selectedAchievement.Category = Category;
 
-            _ = LoadingHelper.RunWithLoadingAsync(async () =>
+            _ = loadingService.RunWithLoadingAsync(async () =>
             {
                 bool result = await service.UpdateAchievementAsync(selectedAchievement);
                 if (result is true)

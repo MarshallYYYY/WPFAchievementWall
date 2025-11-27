@@ -1,21 +1,21 @@
-﻿using System.Windows;
+﻿using Client.Events;
+using System.Windows;
 
-namespace Client.Events
+namespace Client.Services
 {
-    public static class LoadingHelper
+    public class LoadingService : ILoadingService
     {
-        private static IEventAggregator? _eventAggregator;
+        private IEventAggregator? _eventAggregator;
 
-        // 初始化一次，通常在 App.xaml.cs 或主 ViewModel 中调用
-        public static void Initialize(IEventAggregator eventAggregator)
+        public LoadingService(IEventAggregator eventAggregator)
         {
             _eventAggregator = eventAggregator;
         }
 
-        public static async Task RunWithLoadingAsync(Func<Task> func)
+        public async Task RunWithLoadingAsync(Func<Task> func)
         {
             if (_eventAggregator is null)
-                throw new InvalidOperationException($"{nameof(LoadingHelper)} 未初始化，请先调用 Initialize()");
+                return;
 
             _eventAggregator.GetEvent<LoadingVisibilityEvent>().Publish(Visibility.Visible);
             try

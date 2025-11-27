@@ -11,7 +11,9 @@ namespace Client.ViewModels
 {
     public class MainViewModel : BindableBase
     {
-        public MainViewModel(IRegionManager regionManager, IEventAggregator eventAggregator,
+        public MainViewModel(
+            IRegionManager regionManager, 
+            IEventAggregator eventAggregator,
             UserService userService, AchievementService achievementService, GoalService goalService)
         {
             InitMenus();
