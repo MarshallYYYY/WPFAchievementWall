@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Client.Services
 {
@@ -14,6 +15,19 @@ namespace Client.Services
         public async Task<List<User>> GetUsersAsync()
         {
             return await GetAsync<List<User>>("api/users");
+        }
+
+        public async Task<User> GetUserAsyncForLogin(string userName, string password)
+        {
+            var (user, errorMessage) = await GetAsyncWithErrorMessage<User>($"api/users?" +
+                $"userName={Uri.EscapeDataString(userName)}&" +
+                $"password={Uri.EscapeDataString(password)}");
+            if (errorMessage is not null)
+            {
+                MessageBox.Show(errorMessage);
+                return null!;
+            }
+            return user!;
         }
 
         public async Task<User> GetUserAsync(int id)

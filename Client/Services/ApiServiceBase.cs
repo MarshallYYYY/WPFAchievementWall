@@ -1,10 +1,6 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Client.Services
 {
@@ -24,7 +20,7 @@ namespace Client.Services
                 Timeout = TimeSpan.FromSeconds(10)
             };
         }
-
+        
         protected async Task<T> GetAsync<T>(string endpoint)
         {
             HttpResponseMessage response = await _httpClient.GetAsync($"{_baseUrl}/{endpoint}");
@@ -33,6 +29,26 @@ namespace Client.Services
             T? result = JsonConvert.DeserializeObject<T>(content);
             // 检查反序列化结果
             return result ?? throw new Exception($"反序列化失败，无法将内容转换为 {typeof(T).Name}");
+        }
+
+        protected async Task<(T?, string?)> GetAsyncWithErrorMessage<T>(string endpoint)
+        {
+            HttpResponseMessage response = await _httpClient.GetAsync($"{_baseUrl}/{endpoint}");
+
+            // 这行代码不能添加，添加的话，在遇到来自WebAPI返回的错误信息时，会直接自动弹窗报错，
+            // 而不会返回我们在WebAPI的Controller中自定义的错误信息了
+            //response.EnsureSuccessStatusCode();
+            // https://www.cnblogs.com/lovefoolself/p/18401391
+
+            string content = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+            {
+                return (default(T), content);
+            }
+
+            // 成功，解析实体
+            T? result = JsonConvert.DeserializeObject<T>(content);
+            return (result, null);
         }
 
         protected async Task<T> PostAsync<T>(string endpoint, object data)

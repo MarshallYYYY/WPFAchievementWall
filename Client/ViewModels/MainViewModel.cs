@@ -1,8 +1,6 @@
 ﻿using Client.Common;
 using Client.Events;
 using Client.Models;
-using Client.Services;
-using Models;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows;
@@ -11,10 +9,7 @@ namespace Client.ViewModels
 {
     public class MainViewModel : BindableBase
     {
-        public MainViewModel(
-            IRegionManager regionManager, 
-            IEventAggregator eventAggregator,
-            UserService userService, AchievementService achievementService, GoalService goalService)
+        public MainViewModel(IRegionManager regionManager, IEventAggregator eventAggregator)
         {
             InitMenus();
             this.regionManager = regionManager;
@@ -24,11 +19,6 @@ namespace Client.ViewModels
             NavigateCommand = new DelegateCommand<Menu>(Navigate);
 
             //Navigate(Menus.First(menu => menu.Title == "成就展示"));
-
-            this.userService = userService;
-            this.achievementService = achievementService;
-            this.goalService = goalService;
-            //Test(userService, achievementService, goalService);
 
             TestCommand = new DelegateCommand(TestButton);
         }
@@ -147,35 +137,6 @@ namespace Client.ViewModels
             // 关闭当前应用程序
             Application.Current.Shutdown();
         }
-
-        private readonly UserService userService;
-        private readonly AchievementService achievementService;
-        private readonly GoalService goalService;
-
-        private async void Test(UserService userService, AchievementService achievementService, GoalService goalService)
-        {
-            List<User> users = await userService.GetUsersAsync();
-            string msg = "";
-            foreach (User user in users)
-            {
-                msg += $"{user.Id}  {user.UserName}  {user.Password}  {user.AvatarPath}  {user.CreateTime}\n";
-            }
-            MessageBox.Show(msg);
-
-            List<Achievement> achievements = await achievementService.GetAchievementsAsync();
-            msg = "";
-            foreach (Achievement achievement in achievements)
-            {
-                msg += $"{achievement.Id}  {achievement.Category}\n";
-            }
-            MessageBox.Show(msg);
-
-            List<Goal> goals = await goalService.GetGoalsAsync();
-            msg = "";
-            goals.ForEach(goal => msg += $"{goal.Id} {goal.Title} {goal.Content} {goal.TargetDate} {goal.AchieveDate}\n");
-            MessageBox.Show(msg);
-        }
-
         #endregion Test
     }
 }

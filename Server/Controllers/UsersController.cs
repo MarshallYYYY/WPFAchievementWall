@@ -21,11 +21,36 @@ namespace Server.Controllers
             _context = context;
         }
 
+        // 不需要查询全部 User，所以下面这个函数不用写
+
         // GET: api/Users
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        //{
+        //    return await _context.Users.ToListAsync();
+        //}
+
+        // GET: api/Users?userName=xxx&password=xxx
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<User>> GetUserForLogin(string userName, string password)
         {
-            return await _context.Users.ToListAsync();
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+
+            if (user is null)
+            {
+                // 404
+                return NotFound("用户不存在！");
+            }
+            if (user.Password != password)
+            {
+                // 400
+                return BadRequest("密码输入错误！");
+                // 或：401
+                //return Unauthorized("密码输入错误！");
+            }
+
+            // 200
+            return Ok(user);
         }
 
         // GET: api/Users/5

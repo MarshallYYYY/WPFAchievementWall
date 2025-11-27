@@ -13,7 +13,7 @@
     xmlns:viewmodels="clr-namespace:Client.ViewModels"
     xmlns:common="clr-namespace:Client.Common"
     xmlns:mainviews="clr-namespace:Client.Views.MainViews"
-    Title="MainView"
+    Title="个人成就记录墙"
     Width="1280"
     Height="720"
     d:DataContext="{d:DesignInstance Type=viewmodels:MainViewModel}"
