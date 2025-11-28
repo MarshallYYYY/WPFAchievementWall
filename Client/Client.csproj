@@ -10,10 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Images\favoicon.ico" />
-    <None Remove="Images\icon3.ico" />
-    <None Remove="Images\icon4.ico" />
-    <None Remove="Images\iicon.ico" />
+    <None Remove="Images\icon.png" />
     <None Remove="Images\Marshall.jpg" />
   </ItemGroup>
 
@@ -33,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Images\icon.png" />
     <Resource Include="Images\Marshall.jpg" />
   </ItemGroup>
 

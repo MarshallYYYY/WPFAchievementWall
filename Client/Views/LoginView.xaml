@@ -8,15 +8,114 @@
     mc:Ignorable="d"
     d:DesignHeight="450"
     d:DesignWidth="800"
-    Width="600"
-    Height="350"
+    Width="400"
+    Height="500"
+    Background="#FFEBF3FB"
     xmlns:lvs="clr-namespace:Client.Views.LoginViews"
     xmlns:prism="http://prismlibrary.com/"
     xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:viewmodels="clr-namespace:Client.ViewModels"
     d:DataContext="{d:DesignInstance Type=viewmodels:LoginViewModel}">
 
-    <Grid>
+    <prism:Dialog.WindowStyle>
+        <Style
+            TargetType="Window">
+            <Setter
+                Property="SizeToContent"
+                Value="WidthAndHeight" />
+            <Setter
+                Property="ResizeMode"
+                Value="NoResize" />
+            <Setter
+                Property="prism:Dialog.WindowStartupLocation"
+                Value="CenterScreen" />
+            <!--下面这两个，可以隐藏上方的标题栏-->
+            <Setter
+                Property="AllowsTransparency"
+                Value="True" />
+            <Setter
+                Property="WindowStyle"
+                Value="None" />
+        </Style>
+    </prism:Dialog.WindowStyle>
+
+    <UserControl.Resources>
+
+        <ControlTemplate
+            x:Key="myBtnTemplate"
+            TargetType="Button">
+
+            <Border
+                Background="Red"
+                CornerRadius="20">
+
+                <StackPanel
+                    Orientation="Horizontal"
+                    HorizontalAlignment="{TemplateBinding HorizontalAlignment}">
+                    <TextBlock
+                        Text="❤"
+                        VerticalAlignment="Center" />
+                    <ContentPresenter
+                        HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                        VerticalAlignment="{TemplateBinding VerticalAlignment}" />
+                </StackPanel>
+
+            </Border>
+
+        </ControlTemplate>
+    </UserControl.Resources>
+
+    <StackPanel>
+        <Grid
+            Background="Transparent"
+            x:Name="TitleBar"
+            MouseLeftButtonDown="TitleBar_MouseLeftButtonDown"
+            Height="auto">
+            
+            <Button
+                x:Name="CloseButton"
+                Click="CloseButton_Click"
+                Width="30"
+                Height="30"
+                HorizontalAlignment="Right"
+                Cursor="Hand">
+
+                <Button.Template>
+
+                    <ControlTemplate
+                        TargetType="Button">
+
+                        <Border
+                            x:Name="BackgroundBorder"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            CornerRadius="2">
+                            <TextBlock
+                                FontSize="22"
+                                Text="×"
+                                Foreground="Black"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center" />
+                        </Border>
+
+                        <ControlTemplate.Triggers>
+                            <Trigger
+                                Property="IsMouseOver"
+                                Value="True">
+                                <Setter
+                                    TargetName="BackgroundBorder"
+                                    Property="Background"
+                                    Value="Red" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+
+                    </ControlTemplate>
+
+                </Button.Template>
+
+            </Button>
+
+        </Grid>
 
         <!--切换面板-->
         <md:Transitioner
@@ -32,6 +131,6 @@
 
         </md:Transitioner>
 
-    </Grid>
+    </StackPanel>
 
 </UserControl>

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using Server.Data;
@@ -34,13 +29,16 @@ namespace Server.Controllers
         [HttpGet]
         public async Task<ActionResult<User>> GetUserForLogin(string userName, string password)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == userName);
+            // 在本次查询中，让 UserName 区分大小写
+            var user = await _context.Users.FirstOrDefaultAsync(
+                u => EF.Functions.Collate(u.UserName, "Chinese_PRC_CS_AS") == userName);
 
             if (user is null)
             {
                 // 404
                 return NotFound("用户不存在！");
             }
+            // 这种方式就直接可以区分大小写了，因为是比较的字符串
             if (user.Password != password)
             {
                 // 400

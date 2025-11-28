@@ -1,4 +1,5 @@
-﻿using Client.Models;
+﻿using Client.Common;
+using Client.Models;
 using Client.Services;
 using MaterialDesignThemes.Wpf;
 using Models;
@@ -12,7 +13,8 @@ namespace Client.ViewModels
     {
         public AchievementDisplayViewModel(
             AchievementService achievementService,
-            ILoadingService loadingService)
+            ILoadingService loadingService,
+            IUserSession userSession)
         {
             FilterCommand = new DelegateCommand(Filter);
             ClearCommand = new(ClearSearchBar);
@@ -21,6 +23,7 @@ namespace Client.ViewModels
 
             service = achievementService;
             this.loadingService = loadingService;
+            this.userSession = userSession;
 
             // C# 7.0 丢弃运算符：直接调用异步初始化方法
             // 我明确知道这是一个异步方法，我故意不等待它完成，让它在后台运行，我不关心它的返回结果
@@ -48,6 +51,7 @@ namespace Client.ViewModels
         /// </summary>
         private readonly AchievementService service;
         private readonly ILoadingService loadingService;
+        private readonly IUserSession userSession;
 
         /// <summary>
         /// 从 Web API 获取的所有成就，按年份分组存储；

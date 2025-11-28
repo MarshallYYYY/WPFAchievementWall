@@ -1,4 +1,5 @@
-﻿using Client.Services;
+﻿using Client.Common;
+using Client.Services;
 using Client.ViewModels;
 using Client.Views;
 using System.Windows;
@@ -11,6 +12,7 @@ namespace Client
         protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
             containerRegistry.RegisterDialog<LoginView, LoginViewModel>();
+            containerRegistry.RegisterSingleton<IUserSession, UserSession>();
 
             containerRegistry.RegisterForNavigation<AchievementDisplayView, AchievementDisplayViewModel>();
             containerRegistry.RegisterForNavigation<GoalsManagementView, GoalsManagementViewModel>();

@@ -1,6 +1,6 @@
-﻿using Client.Services;
+﻿using Client.Common;
+using Client.Services;
 using Models;
-using System.Threading.Tasks;
 using System.Windows;
 
 namespace Client.ViewModels
@@ -8,66 +8,72 @@ namespace Client.ViewModels
     public class LoginViewModel : BindableBase, IDialogAware
     {
         public string Title { get; set; } = "个人成就记录墙";
-        public LoginViewModel(UserService userService)
+        public LoginViewModel(UserService userService, IUserSession userSession)
         {
-            LoginCommand = new DelegateCommand(Login);
+            LoginCommand = new DelegateCommand(Login, CanLogin);
             OpenRegisterCommand = new DelegateCommand(
                 () => TransitionerSelectedIndex = 1);
             this.userService = userService;
+            this.userSession = userSession;
         }
-        private int transitionerSelectedIndex = 0;
-        private readonly UserService userService;
 
+        #region 服务、会话、页面切换
+        private readonly UserService userService;
+        private readonly IUserSession userSession;
+
+        private int transitionerSelectedIndex = 0;
         public int TransitionerSelectedIndex
         {
             get { return transitionerSelectedIndex; }
             set { SetProperty(ref transitionerSelectedIndex, value); }
         }
+
+        public DelegateCommand OpenRegisterCommand { get; }
+        #endregion
+
+        #region 登录验证界面
         private string userName = string.Empty;
         public string UserName
         {
             get { return userName; }
-            set { SetProperty(ref userName, value); }
+            set
+            {
+                // 告诉按钮重新判断
+                SetProperty(ref userName, value);
+                LoginCommand.RaiseCanExecuteChanged();
+            }
         }
         private string password = string.Empty;
         public string Password
         {
             get { return password; }
-            set { SetProperty(ref password, value); }
+            set
+            {
+                SetProperty(ref password, value);
+                LoginCommand.RaiseCanExecuteChanged();
+            }
         }
+
         public DelegateCommand LoginCommand { get; }
-        public DelegateCommand OpenRegisterCommand { get; }
         private async void Login()
         {
-            if (ValidateUser(out string errorMessage) is false)
-            {
-                MessageBox.Show(errorMessage, "输入错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
             User user = await userService.GetUserAsyncForLogin(userName, password);
             if (user is null)
                 return;
-            MessageBox.Show(user.UserName);
+
+            // 保存到全局 Session
+            userSession.CurrentUser = user;
             // 登录成功
             RequestClose.Invoke(new DialogResult(ButtonResult.OK));
         }
-        private bool ValidateUser(out string errorMessage)
+        private bool CanLogin()
         {
-            if (string.IsNullOrWhiteSpace(userName))
-            {
-                errorMessage = "用户名不能为空！";
-                return false;
-            }
-            if (string.IsNullOrWhiteSpace(password))
-            {
-                errorMessage = "密码不能为空！";
-                return false;
-            }
-            // 全部通过
-            errorMessage = string.Empty;
-            return true;
+            return !string.IsNullOrWhiteSpace(UserName)
+                && !string.IsNullOrWhiteSpace(Password);
         }
+        #endregion
 
+        #region IDialogAware
         /* 每次访问都会 new 一个新的 DialogCloseListener 对象。
          * 对于 DialogCloseListener（一般用于事件），用这个写法会有问题，
          * 因为监听者绑定的是 A 实例，而触发是 B 实例 → 不会触发展示关闭事件。*/
@@ -78,6 +84,7 @@ namespace Client.ViewModels
 
         public bool CanCloseDialog() => true;
         public void OnDialogClosed() { }
-        public void OnDialogOpened(IDialogParameters parameters) { }
+        public void OnDialogOpened(IDialogParameters parameters) { } 
+        #endregion
     }
 }
