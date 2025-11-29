@@ -1,7 +1,7 @@
 ﻿using Client.Common;
 using Client.Services;
+using MaterialDesignThemes.Wpf;
 using Models;
-using System.Windows;
 
 namespace Client.ViewModels
 {
@@ -10,14 +10,19 @@ namespace Client.ViewModels
         public string Title { get; set; } = "个人成就记录墙";
         public LoginViewModel(UserService userService, IUserSession userSession)
         {
-            LoginCommand = new DelegateCommand(Login, CanLogin);
-            OpenRegisterCommand = new DelegateCommand(
-                () => TransitionerSelectedIndex = 1);
             this.userService = userService;
             this.userSession = userSession;
+
+            LoginCommand = new DelegateCommand(Login, CanLogin);
+            OpenRegisterCommand = new DelegateCommand(OpenRegister);
+
+            RegisterCommand = new DelegateCommand(Register, CanRegister);
+            OpenLoginCommand = new DelegateCommand(OpenLogin);
+
+            MsgQueue = new SnackbarMessageQueue(TimeSpan.FromSeconds(3));
         }
 
-        #region 服务、会话、页面切换
+        #region 服务、会话、页面切换、SnackbarMessageQueue
         private readonly UserService userService;
         private readonly IUserSession userSession;
 
@@ -28,7 +33,7 @@ namespace Client.ViewModels
             set { SetProperty(ref transitionerSelectedIndex, value); }
         }
 
-        public DelegateCommand OpenRegisterCommand { get; }
+        public SnackbarMessageQueue MsgQueue { get; }
         #endregion
 
         #region 登录验证界面
@@ -57,7 +62,7 @@ namespace Client.ViewModels
         public DelegateCommand LoginCommand { get; }
         private async void Login()
         {
-            User user = await userService.GetUserAsyncForLogin(userName, password);
+            User? user = await userService.GetUserAsyncForLogin(userName, password);
             if (user is null)
                 return;
 
@@ -71,7 +76,6 @@ namespace Client.ViewModels
             return !string.IsNullOrWhiteSpace(UserName)
                 && !string.IsNullOrWhiteSpace(Password);
         }
-        #endregion
 
         #region IDialogAware
         /* 每次访问都会 new 一个新的 DialogCloseListener 对象。
@@ -84,7 +88,116 @@ namespace Client.ViewModels
 
         public bool CanCloseDialog() => true;
         public void OnDialogClosed() { }
-        public void OnDialogOpened(IDialogParameters parameters) { } 
+        public void OnDialogOpened(IDialogParameters parameters) { }
+        #endregion
+
+        public DelegateCommand OpenRegisterCommand { get; }
+        private void OpenRegister()
+        {
+            TransitionerSelectedIndex = 1;
+            UserNameRegister = string.Empty;
+            PasswordRegister = string.Empty;
+            PasswordRegisterAgain = string.Empty;
+        }
+        #endregion
+
+        #region 注册界面
+
+        #region 数据、提示信息
+
+        private string userNameRegister = string.Empty;
+        public string UserNameRegister
+        {
+            get { return userNameRegister; }
+            set
+            {
+                SetProperty(ref userNameRegister, value);
+                RegisterCommand.RaiseCanExecuteChanged();
+            }
+        }
+        private string passwordRegister = string.Empty;
+        public string PasswordRegister
+        {
+            get { return passwordRegister; }
+            set
+            {
+                SetProperty(ref passwordRegister, value);
+                RegisterCommand.RaiseCanExecuteChanged();
+            }
+        }
+        private string passwordRegisterAgain = string.Empty;
+        public string PasswordRegisterAgain
+        {
+            get { return passwordRegisterAgain; }
+            set
+            {
+                SetProperty(ref passwordRegisterAgain, value);
+                RegisterCommand.RaiseCanExecuteChanged();
+            }
+        }
+        private string passwordboxAgainHelperText = string.Empty;
+        public string PasswordboxAgainHelperText
+        {
+            get { return passwordboxAgainHelperText; }
+            set { SetProperty(ref passwordboxAgainHelperText, value); }
+        }
+        #endregion
+
+        public DelegateCommand RegisterCommand { get; }
+        private async void Register()
+        {
+            User user = new()
+            {
+                UserName = userNameRegister,
+                Password = passwordRegister,
+            };
+
+            User newUser;
+            try
+            {
+                newUser = await userService.CreateUserAsync(user);
+            }
+            catch (Exception ex)
+            {
+                MsgQueue.Enqueue(ex.Message);
+                return;
+            }
+
+            MsgQueue.Enqueue("注册成功！返回登录界面");
+            OpenLogin();
+            //OpenLoginCommand.Execute();
+        }
+        private bool CanRegister()
+        {
+            // 三个输入框都不为空
+            bool result =
+                !string.IsNullOrWhiteSpace(UserNameRegister)
+                && !string.IsNullOrWhiteSpace(PasswordRegister)
+                && !string.IsNullOrWhiteSpace(PasswordRegisterAgain);
+            // 两次输入的密码需要一致
+            result = result && IsSamePassword();
+            return result;
+        }
+        private bool IsSamePassword()
+        {
+            if (passwordRegister != passwordRegisterAgain)
+            {
+                PasswordboxAgainHelperText = "两次密码输入不一致！";
+                return false;
+            }
+            else
+            {
+                PasswordboxAgainHelperText = string.Empty;
+                return true;
+            }
+        }
+        public DelegateCommand OpenLoginCommand { get; }
+        private void OpenLogin()
+        {
+            TransitionerSelectedIndex = 0;
+            UserName = string.Empty;
+            Password = string.Empty;
+        }
         #endregion
     }
 }

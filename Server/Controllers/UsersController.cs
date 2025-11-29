@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using Server.Data;
@@ -30,7 +31,7 @@ namespace Server.Controllers
         public async Task<ActionResult<User>> GetUserForLogin(string userName, string password)
         {
             // 在本次查询中，让 UserName 区分大小写
-            var user = await _context.Users.FirstOrDefaultAsync(
+            User? user = await _context.Users.FirstOrDefaultAsync(
                 u => EF.Functions.Collate(u.UserName, "Chinese_PRC_CS_AS") == userName);
 
             if (user is null)
@@ -101,11 +102,35 @@ namespace Server.Controllers
         [HttpPost]
         public async Task<ActionResult<User>> PostUser(User user)
         {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Users.Add(user);
+                int n = await _context.SaveChangesAsync();
 
-            //return CreatedAtAction("GetUser", new { id = user.Id }, user);
-            return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
+                //return CreatedAtAction("GetUser", new { id = user.Id }, user);
+                return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
+            }
+            catch (DbUpdateException ex)
+            {
+                if (ex.InnerException is SqlException sqlException)
+                {
+                    //2627 — Violation of PRIMARY KEY or UNIQUE KEY constraint（违反主键或唯一约束）
+                    //2601 — Cannot insert duplicate key row in object with unique index（违反唯一索引）
+                    // 经过测试，实际获取的是 2601
+                    if (sqlException.Number == 2627 || sqlException.Number == 2601)
+                    {
+                        // Conflict() = 409 状态码，表示资源冲突
+                        //return Conflict(new { message = "用户名已存在！" });
+                        return Conflict("用户名已存在！");
+                    }
+                }
+
+                // 未知异常，返回 500 或 BadRequest（视需求）
+                // 不要把内部异常原文返回给客户端用于安全考虑，可记录日志
+                // Log the exception (not shown here)
+                //return BadRequest(new { message = ex.InnerException?.Message });
+                return BadRequest(ex.InnerException?.Message);
+            }
         }
 
         // DELETE: api/Users/5

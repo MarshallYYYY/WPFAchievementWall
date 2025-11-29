@@ -1,10 +1,13 @@
-﻿using Models;
+﻿using MaterialDesignThemes.Wpf;
+using Models;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Shapes;
 
 namespace Client.Services
 {
@@ -17,7 +20,7 @@ namespace Client.Services
             return await GetAsync<List<User>>("api/users");
         }
 
-        public async Task<User> GetUserAsyncForLogin(string userName, string password)
+        public async Task<User?> GetUserAsyncForLogin(string userName, string password)
         {
             var (user, errorMessage) = await GetAsyncWithErrorMessage<User>($"api/users?" +
                 $"userName={Uri.EscapeDataString(userName)}&" +
@@ -25,9 +28,9 @@ namespace Client.Services
             if (errorMessage is not null)
             {
                 MessageBox.Show(errorMessage);
-                return null!;
+                return null;
             }
-            return user!;
+            return user;
         }
 
         public async Task<User> GetUserAsync(int id)
@@ -37,7 +40,17 @@ namespace Client.Services
 
         public async Task<User> CreateUserAsync(User user)
         {
-            return await PostAsync<User>("api/users", user);
+            //try
+            //{
+            //    return await PostAsyncWtihErrorMessage<User>("api/users", user);
+            //}
+            //catch
+            //{
+            //    throw;
+            //}
+
+            // catch 块中只是 throw;，完全等价于什么都不写。
+            return await PostAsyncWtihErrorMessage<User>("api/users", user);
         }
 
         public async Task<bool> UpdateUserAsync(User user)

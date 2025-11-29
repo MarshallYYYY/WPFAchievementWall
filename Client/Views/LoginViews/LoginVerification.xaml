@@ -8,6 +8,7 @@
     mc:Ignorable="d"
     d:DesignHeight="450"
     d:DesignWidth="800"
+    xmlns:prism="http://prismlibrary.com/"
     xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:viewmodels="clr-namespace:Client.ViewModels"
@@ -48,14 +49,25 @@
             Width="auto"
             Command="{Binding Path=LoginCommand}" />
 
-        <Button
-            Content="注册账号"
-            Margin="50,20"
+        <!--父元素是StackPanel，会自动拉伸子元素的宽度/高度-->
+        <!--设置 HorizontalAlignment="Center"，让 TextBlock 不拉伸-->
+        <TextBlock
+            Text="注册账号"
             Foreground="Blue"
+            Margin="50,20"
+            HorizontalAlignment="Center"
             FontSize="16"
-            Width="auto"
-            Style="{StaticResource MaterialDesignToolForegroundButton}"
-            Command="{Binding Path=OpenRegisterCommand}" />
+            Cursor="Hand">
+            
+            <i:Interaction.Triggers>
+                <i:EventTrigger
+                    EventName="MouseLeftButtonDown">
+                    <prism:InvokeCommandAction
+                        Command="{Binding Path=OpenRegisterCommand}" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
+            
+        </TextBlock>
 
     </StackPanel>
 

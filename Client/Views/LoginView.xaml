@@ -64,73 +64,85 @@
 
         </ControlTemplate>
     </UserControl.Resources>
+    
+    <Grid>
 
-    <StackPanel>
-        <Grid
-            Background="Transparent"
-            x:Name="TitleBar"
-            MouseLeftButtonDown="TitleBar_MouseLeftButtonDown"
-            Height="auto">
-            
-            <Button
-                x:Name="CloseButton"
-                Click="CloseButton_Click"
-                Width="30"
-                Height="30"
-                HorizontalAlignment="Right"
-                Cursor="Hand">
+        <md:Snackbar
+            VerticalAlignment="Top"
+            Background="#FF3F51B5"
+            MessageQueue="{Binding MsgQueue}" />
 
-                <Button.Template>
+        <StackPanel>
 
-                    <ControlTemplate
-                        TargetType="Button">
+            <!--上方的可拖拽的标题栏和关闭按钮-->
+            <Grid
+                Background="Transparent"
+                x:Name="TitleBar"
+                MouseLeftButtonDown="TitleBar_MouseLeftButtonDown"
+                Height="auto">
 
-                        <Border
-                            x:Name="BackgroundBorder"
-                            Background="Transparent"
-                            BorderThickness="0"
-                            CornerRadius="2">
-                            <TextBlock
-                                FontSize="22"
-                                Text="×"
-                                Foreground="Black"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center" />
-                        </Border>
+                <Button
+                    x:Name="CloseButton"
+                    Click="CloseButton_Click"
+                    Width="30"
+                    Height="30"
+                    HorizontalAlignment="Right"
+                    Cursor="Hand">
 
-                        <ControlTemplate.Triggers>
-                            <Trigger
-                                Property="IsMouseOver"
-                                Value="True">
-                                <Setter
-                                    TargetName="BackgroundBorder"
-                                    Property="Background"
-                                    Value="Red" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
+                    <Button.Template>
 
-                    </ControlTemplate>
+                        <ControlTemplate
+                            TargetType="Button">
 
-                </Button.Template>
+                            <Border
+                                x:Name="BackgroundBorder"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                CornerRadius="2">
+                                <TextBlock
+                                    FontSize="22"
+                                    Text="×"
+                                    Foreground="Black"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center" />
+                            </Border>
 
-            </Button>
+                            <ControlTemplate.Triggers>
+                                <Trigger
+                                    Property="IsMouseOver"
+                                    Value="True">
+                                    <Setter
+                                        TargetName="BackgroundBorder"
+                                        Property="Background"
+                                        Value="Red" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
 
-        </Grid>
+                        </ControlTemplate>
 
-        <!--切换面板-->
-        <md:Transitioner
-            SelectedIndex="{Binding Path=TransitionerSelectedIndex}">
+                    </Button.Template>
 
-            <md:TransitionerSlide>
-                <lvs:LoginVerification />
-            </md:TransitionerSlide>
+                </Button>
 
-            <md:TransitionerSlide>
-                <lvs:RegisterView />
-            </md:TransitionerSlide>
+            </Grid>
 
-        </md:Transitioner>
+            <!--切换面板-->
+            <md:Transitioner
+                SelectedIndex="{Binding Path=TransitionerSelectedIndex}">
 
-    </StackPanel>
+                <md:TransitionerSlide
+                    OpeningEffect="{md:TransitionEffect Kind=SlideInFromBottom}">
+                    <lvs:LoginVerification />
+                </md:TransitionerSlide>
+
+                <md:TransitionerSlide
+                    OpeningEffect="{md:TransitionEffect Kind=SlideInFromBottom}">
+                    <lvs:RegisterView />
+                </md:TransitionerSlide>
+
+            </md:Transitioner>
+
+        </StackPanel>
+    </Grid>
 
 </UserControl>
