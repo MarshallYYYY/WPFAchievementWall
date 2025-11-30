@@ -26,6 +26,7 @@
     mc:Ignorable="d">
 
     <md:DialogHost
+        IsOpen="{Binding Path=IsOpenDialogContent}"
         x:Name="DialogHost"
         DialogTheme="Inherit"
         Identifier="RootDialog">
@@ -67,14 +68,19 @@
 
                 <ContentControl
                     Grid.Row="1"
-                    prism:RegionManager.RegionName="{x:Static common:PrismRegionName.MainViewRegion}"
-                    Visibility="{Binding Path=RegionVisibility}" />
+                    prism:RegionManager.RegionName="{x:Static common:PrismRegionName.MainViewRegion}" />
 
-                <!--  加载指示器  -->
+            </Grid>
+
+        </md:DrawerHost>
+
+        <md:DialogHost.DialogContent>
+            
+            <!--  加载指示器  -->
+            <Grid
+                Width="200"
+                Height="200">
                 <StackPanel
-                    Grid.Row="1"
-                    Visibility="{Binding Path=LoadingVisibility}"
-                    HorizontalAlignment="Center"
                     VerticalAlignment="Center">
                     <ProgressBar
                         Width="100"
@@ -88,10 +94,9 @@
                         HorizontalAlignment="Center"
                         FontSize="18" />
                 </StackPanel>
-
             </Grid>
-
-        </md:DrawerHost>
+            
+        </md:DialogHost.DialogContent>
 
     </md:DialogHost>
 

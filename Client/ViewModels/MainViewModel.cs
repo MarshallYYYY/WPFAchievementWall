@@ -14,13 +14,13 @@ namespace Client.ViewModels
             InitMenus();
             this.regionManager = regionManager;
             this.eventAggregator = eventAggregator;
-            eventAggregator.GetEvent<LoadingVisibilityEvent>().Subscribe(
-                visibility => LoadingVisibility = visibility);
+            eventAggregator.GetEvent<LoadingOpenEvent>().Subscribe(LoadingSubscribe);
             NavigateCommand = new DelegateCommand<Menu>(Navigate);
 
             //Navigate(Menus.First(menu => menu.Title == "成就展示"));
 
             TestCommand = new DelegateCommand(TestButton);
+            //TestCommand = new(() => IsOpenDialogContent = !IsOpenDialogContent);
         }
 
         #region 上方工具栏
@@ -59,7 +59,6 @@ namespace Client.ViewModels
         }
 
         private readonly IRegionManager regionManager;
-        private readonly IEventAggregator eventAggregator;
         public DelegateCommand<Menu> NavigateCommand { get; private set; }
 
         private void Navigate(Menu menu)
@@ -76,30 +75,18 @@ namespace Client.ViewModels
 
         #region 加载窗口
 
-        private Visibility loadingVisibility = Visibility.Collapsed;
-
-        /// <summary>
-        /// 加载窗口的显示与否
-        /// </summary>
-        public Visibility LoadingVisibility
+        private readonly IEventAggregator eventAggregator;
+        private void LoadingSubscribe((bool isOpen, bool isLogin) tuple)
         {
-            get { return loadingVisibility; }
-            set
-            {
-                SetProperty(ref loadingVisibility, value);
-                if (loadingVisibility is Visibility.Collapsed)
-                    RegionVisibility = Visibility.Visible;
-                else if (loadingVisibility is Visibility.Visible)
-                    RegionVisibility = Visibility.Collapsed;
-            }
+            // MainViewModel 只监听自己的标识
+            if (tuple.isLogin is false)
+                IsOpenDialogContent = tuple.isOpen;
         }
-
-        private Visibility regionVisibility;
-
-        public Visibility RegionVisibility
+        private bool isOpenDialogContent = false;
+        public bool IsOpenDialogContent
         {
-            get { return regionVisibility; }
-            set { SetProperty(ref regionVisibility, value); }
+            get { return isOpenDialogContent; }
+            set { SetProperty(ref isOpenDialogContent, value); }
         }
 
         #endregion 加载窗口

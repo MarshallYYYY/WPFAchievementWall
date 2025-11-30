@@ -1,4 +1,5 @@
 ﻿using Client.Common;
+using Client.Events;
 using Client.Services;
 using MaterialDesignThemes.Wpf;
 using Models;
@@ -8,10 +9,18 @@ namespace Client.ViewModels
     public class LoginViewModel : BindableBase, IDialogAware
     {
         public string Title { get; set; } = "个人成就记录墙";
-        public LoginViewModel(UserService userService, IUserSession userSession)
+        public LoginViewModel(
+            UserService userService,
+            IUserSession userSession,
+            IEventAggregator eventAggregator,
+            ILoadingService loadingService)
         {
             this.userService = userService;
             this.userSession = userSession;
+            this.eventAggregator = eventAggregator;
+            this.loadingService = loadingService;
+
+            eventAggregator.GetEvent<LoadingOpenEvent>().Subscribe(LoadingSubscribe);
 
             LoginCommand = new DelegateCommand(Login, CanLogin);
             OpenRegisterCommand = new DelegateCommand(OpenRegister);
@@ -22,7 +31,7 @@ namespace Client.ViewModels
             MsgQueue = new SnackbarMessageQueue(TimeSpan.FromSeconds(3));
         }
 
-        #region 服务、会话、页面切换、SnackbarMessageQueue
+        #region WebAPI用户服务、全局当前用户、页面切换、SnackbarMessageQueue
         private readonly UserService userService;
         private readonly IUserSession userSession;
 
@@ -36,6 +45,27 @@ namespace Client.ViewModels
         public SnackbarMessageQueue MsgQueue { get; }
         #endregion
 
+
+        #region 加载窗口
+
+        private readonly IEventAggregator eventAggregator;
+        private readonly ILoadingService loadingService;
+
+        private bool isOpenDialogContent = false;
+        public bool IsOpenDialogContent
+        {
+            get { return isOpenDialogContent; }
+            set { SetProperty(ref isOpenDialogContent, value); }
+        }
+        private void LoadingSubscribe((bool isOpen, bool isLogin) tuple)
+        {
+            // LoginViewModel 只监听自己的标识
+            if (tuple.isLogin is true)
+                IsOpenDialogContent = tuple.isOpen;
+        }
+
+        #endregion 加载窗口
+
         #region 登录验证界面
         private string userName = string.Empty;
         public string UserName
@@ -43,8 +73,8 @@ namespace Client.ViewModels
             get { return userName; }
             set
             {
-                // 告诉按钮重新判断
                 SetProperty(ref userName, value);
+                // 告诉按钮重新判断
                 LoginCommand.RaiseCanExecuteChanged();
             }
         }
@@ -62,14 +92,17 @@ namespace Client.ViewModels
         public DelegateCommand LoginCommand { get; }
         private async void Login()
         {
-            User? user = await userService.GetUserAsyncForLogin(userName, password);
-            if (user is null)
-                return;
+            await loadingService.RunWithLoadingAsync(async () =>
+            {
+                User? user = await userService.GetUserAsyncForLogin(userName, password);
+                if (user is null)
+                    return;
 
-            // 保存到全局 Session
-            userSession.CurrentUser = user;
-            // 登录成功
-            RequestClose.Invoke(new DialogResult(ButtonResult.OK));
+                // 保存到全局 Session
+                userSession.CurrentUser = user;
+                // 登录成功
+                RequestClose.Invoke(new DialogResult(ButtonResult.OK));
+            }, true);
         }
         private bool CanLogin()
         {
@@ -152,20 +185,22 @@ namespace Client.ViewModels
                 Password = passwordRegister,
             };
 
-            User newUser;
-            try
+            await loadingService.RunWithLoadingAsync(async () =>
             {
-                newUser = await userService.CreateUserAsync(user);
-            }
-            catch (Exception ex)
-            {
-                MsgQueue.Enqueue(ex.Message);
-                return;
-            }
-
-            MsgQueue.Enqueue("注册成功！返回登录界面");
-            OpenLogin();
-            //OpenLoginCommand.Execute();
+                User newUser;
+                try
+                {
+                    newUser = await userService.CreateUserAsync(user);
+                }
+                catch (Exception ex)
+                {
+                    MsgQueue.Enqueue(ex.Message);
+                    return;
+                }
+                MsgQueue.Enqueue("注册成功！返回登录界面");
+                OpenLogin();
+                //OpenLoginCommand.Execute();
+            }, true);
         }
         private bool CanRegister()
         {

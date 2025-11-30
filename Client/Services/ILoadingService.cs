@@ -2,6 +2,6 @@
 {
     public interface ILoadingService
     {
-        Task RunWithLoadingAsync(Func<Task> action);
+        Task RunWithLoadingAsync(Func<Task> action, bool isLogin = false);
     }
 }

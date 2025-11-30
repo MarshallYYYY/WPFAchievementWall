@@ -12,12 +12,12 @@ namespace Client.Services
             _eventAggregator = eventAggregator;
         }
 
-        public async Task RunWithLoadingAsync(Func<Task> func)
+        public async Task RunWithLoadingAsync(Func<Task> func, bool isLogin = false)
         {
             if (_eventAggregator is null)
                 return;
 
-            _eventAggregator.GetEvent<LoadingVisibilityEvent>().Publish(Visibility.Visible);
+            _eventAggregator.GetEvent<LoadingOpenEvent>().Publish((true, isLogin));
             try
             {
                 await func();
@@ -28,7 +28,7 @@ namespace Client.Services
             }
             finally
             {
-                _eventAggregator.GetEvent<LoadingVisibilityEvent>().Publish(Visibility.Collapsed);
+                _eventAggregator.GetEvent<LoadingOpenEvent>().Publish((false, isLogin));
             }
         }
     }
