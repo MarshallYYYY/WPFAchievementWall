@@ -23,113 +23,129 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <Grid>
+    <!--切换面板-->
+    <md:Transitioner
+        SelectedIndex="{Binding Path=IsShowAddEdit}">
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
+        <!--第一页：未完成和已完成的目标显示-->
+        <md:TransitionerSlide
+            OpeningEffect="{md:TransitionEffect Kind=SlideInFromBottom}">
 
-        <!--左侧：进行中的目标-->
-        <Grid
-            Grid.Column="0">
-
-            <Grid.RowDefinitions>
-                <RowDefinition
-                    Height="auto" />
-                <RowDefinition />
-            </Grid.RowDefinitions>
-
-            <Grid
-                Margin="0,10,0,0"
-                Grid.Row="0">
+            <Grid>
 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
-                    <ColumnDefinition
-                        Width="auto" />
+                    <ColumnDefinition />
                 </Grid.ColumnDefinitions>
 
-                <TextBlock
-                    Text="进行中..."
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    FontSize="38" />
-                <Button
-                    Content="添加目标 +"
-                    Command="{Binding OpenAddCommand}"
-                    CommandParameter="{Binding}"
-                    Margin="0,0,50,0"
-                    FontSize="18"
-                    Background="Green"
-                    Opacity="0.8"
-                    VerticalAlignment="Center"
-                    VerticalContentAlignment="Center"
-                    HorizontalAlignment="Right" />
+                <!--左侧：进行中的目标-->
+                <Grid
+                    Grid.Column="0">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition
+                            Height="auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <!--上方的标题和添加目标按钮-->
+                    <Grid
+                        Margin="0,10,0,0"
+                        Grid.Row="0">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition
+                                Width="auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock
+                            Text="进行中..."
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            FontSize="38" />
+                        <Button
+                            Content="添加目标 +"
+                            Command="{Binding OpenAddCommand}"
+                            CommandParameter="{Binding}"
+                            Margin="0,0,50,0"
+                            FontSize="18"
+                            Background="Green"
+                            Opacity="0.8"
+                            VerticalAlignment="Center"
+                            VerticalContentAlignment="Center"
+                            HorizontalAlignment="Right" />
+                    </Grid>
+
+                    <!--所有进行中的目标-->
+                    <ScrollViewer
+                        Grid.Row="1"
+                        Margin="50,10,25,27"
+                        Width="auto"
+                        ScrollViewer.VerticalScrollBarVisibility="Visible">
+
+                        <ItemsControl
+                            ItemsSource="{Binding Path=OngoingGoals}">
+                            <ItemsControl.ItemTemplate>
+
+                                <DataTemplate>
+                                    <gmvs:OngoingGoalDataTemplate />
+                                </DataTemplate>
+
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+
+                </Grid>
+
+                <!--右侧：已完成的目标-->
+                <Grid
+                    Grid.Column="1">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition
+                            Height="auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock
+                        Grid.Row="0"
+                        Margin="0,10,0,0"
+                        Text="已完成"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontSize="38" />
+
+                    <ScrollViewer
+                        Grid.Row="1"
+                        Margin="50,10,25,27"
+                        Width="auto"
+                        ScrollViewer.VerticalScrollBarVisibility="Visible">
+
+                        <ItemsControl
+                            ItemsSource="{Binding Path=AchievedGoals}">
+                            <ItemsControl.ItemTemplate>
+
+                                <DataTemplate>
+                                    <gmvs:AchievedGoalDataTemplate />
+                                </DataTemplate>
+
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+
+                </Grid>
+
             </Grid>
 
-            <ScrollViewer
-                Grid.Row="1"
-                Margin="50,10,25,27"
-                Width="auto"
-                ScrollViewer.VerticalScrollBarVisibility="Visible">
+        </md:TransitionerSlide>
 
-                <ItemsControl
-                    ItemsSource="{Binding Path=OngoingGoals}">
-                    <ItemsControl.ItemTemplate>
+        <!--第二页：新增/编辑 目标-->
+        <md:TransitionerSlide
+            OpeningEffect="{md:TransitionEffect Kind=SlideInFromTop}">
+            <gmvs:AddEditGoalView />
+        </md:TransitionerSlide>
 
-                        <DataTemplate>
-                            <gmvs:OngoingGoalDataTemplate />
-                        </DataTemplate>
-
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
-
-        </Grid>
-
-        <!--右侧：已完成的目标-->
-        <Grid
-            Grid.Column="1">
-
-            <Grid.RowDefinitions>
-                <RowDefinition
-                    Height="auto" />
-                <RowDefinition />
-            </Grid.RowDefinitions>
-
-            <TextBlock
-                Grid.Row="0"
-                Margin="0,10,0,0"
-                Text="已完成"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                FontSize="38" />
-
-            <ScrollViewer
-                Grid.Row="1"
-                Margin="50,10,25,27"
-                Width="auto"
-                ScrollViewer.VerticalScrollBarVisibility="Visible">
-
-                <ItemsControl
-                    ItemsSource="{Binding Path=AchievedGoals}">
-                    <ItemsControl.ItemTemplate>
-
-                        <DataTemplate>
-                            <gmvs:AchievedGoalDataTemplate />
-                        </DataTemplate>
-
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
-
-        </Grid>
-
-        <!--新增、编辑 目标的页面-->
-        <gmvs:AddEditGoalView
-            Grid.ColumnSpan="2"
-            Visibility="{Binding Path=AddEditVisibility}" />
-    </Grid>
+    </md:Transitioner>
 
 </UserControl>

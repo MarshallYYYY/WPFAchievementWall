@@ -1,5 +1,5 @@
 ﻿using Client.Services;
-using Client.Services.WebAPI;
+using Client.Services.WebApi;
 using Models;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -20,7 +20,7 @@ namespace Client.ViewModels
             OpenEditCommand = new DelegateCommand<Goal>(OpenEdit);
             SaveCommand = new DelegateCommand(Save);
             AchieveCommand = new DelegateCommand<Goal>(Achieve);
-            CancelCommand = new(() => AddEditVisibility = Visibility.Collapsed);
+            CancelCommand = new(() => IsShowAddEdit = 0);
         }
 
         #region 服务和数据
@@ -31,7 +31,6 @@ namespace Client.ViewModels
         public ObservableCollection<Goal> AchievedGoals { get; set; } = [];
         private async Task InitData()
         {
-            await Task.Delay(1 * 1000);
             goals.Clear();
             OngoingGoals.Clear();
             AchievedGoals.Clear();
@@ -72,11 +71,15 @@ namespace Client.ViewModels
         #endregion
 
         #region OngoingGoals 新增、编辑、达成 功能
-        private Visibility addEditVisibility = Visibility.Collapsed;
-        public Visibility AddEditVisibility
+
+        private int isAddEditShow = 0;
+        /// <summary>
+        /// Transitioner的SelectedIndex，0：不显示AddEdit，1：显示AddEdit。
+        /// </summary>
+        public int IsShowAddEdit
         {
-            get { return addEditVisibility; }
-            set { SetProperty(ref addEditVisibility, value); }
+            get { return isAddEditShow; }
+            set { SetProperty(ref isAddEditShow, value); }
         }
         private string titleAddEdit = "新增";
         public string TitleAddEdit
@@ -116,7 +119,7 @@ namespace Client.ViewModels
             Content = "";
             TargetDate = DateTime.Now;
 
-            AddEditVisibility = Visibility.Visible;
+            IsShowAddEdit = 1;
         }
         /// <summary>
         /// 要进行编辑更新的Goal
@@ -133,8 +136,7 @@ namespace Client.ViewModels
             Content = goalEdit.Content;
             TargetDate = goalEdit.TargetDate;
 
-            AddEditVisibility = Visibility.Visible;
-
+            IsShowAddEdit = 1;
         }
         private void Save()
         {
@@ -207,7 +209,7 @@ namespace Client.ViewModels
                 Goal newGoal = await service.CreateGoalAsync(goal);
                 if (newGoal is not null)
                 {
-                    AddEditVisibility = Visibility.Collapsed;
+                    IsShowAddEdit = 0;
                     await InitData();
                 }
             });
@@ -223,7 +225,7 @@ namespace Client.ViewModels
                 bool result = await service.UpdateGoalAsync(goalEdit);
                 if (result is true)
                 {
-                    AddEditVisibility = Visibility.Collapsed;
+                    IsShowAddEdit = 0;
                     await InitData();
                 }
             });

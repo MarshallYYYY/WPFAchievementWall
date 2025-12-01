@@ -1,7 +1,7 @@
 ﻿using Client.Common;
 using Client.Models;
 using Client.Services;
-using Client.Services.WebAPI;
+using Client.Services.WebApi;
 using MaterialDesignThemes.Wpf;
 using Models;
 using System.Collections.ObjectModel;
@@ -42,7 +42,7 @@ namespace Client.ViewModels
             OpenEditCommand = new DelegateCommand(OpenEdit);
             DeleteCommand = new DelegateCommand(DeleteAchievement);
             SaveCommand = new DelegateCommand(Save);
-            CancelCommand = new(() => AddEditVisibility = Visibility.Collapsed);
+            CancelCommand = new(() => IsShowAddEdit = 0);
         }
 
         #region 成就展示（首层页面）
@@ -76,7 +76,6 @@ namespace Client.ViewModels
 
         private async Task InitData()
         {
-            await Task.Delay(1 * 1000);
             await InitLocalAllAchievement();
             SetAllAchievement(localAllAchievement);
             InitSearchBarYearComboBoxSource();
@@ -315,11 +314,15 @@ namespace Client.ViewModels
         #endregion 成就详情（右侧界面）
 
         #region 新增、编辑成就功能
-        private Visibility addEditVisibility = Visibility.Collapsed;
-        public Visibility AddEditVisibility
+
+        private int isShowAddEdit = 0;
+        /// <summary>
+        /// Transitioner的SelectedIndex，0：不显示AddEdit，1：显示AddEdit。
+        /// </summary>
+        public int IsShowAddEdit
         {
-            get { return addEditVisibility; }
-            set { SetProperty(ref addEditVisibility, value); }
+            get { return isShowAddEdit; }
+            set { SetProperty(ref isShowAddEdit, value); }
         }
         private string titleAddEdit = "新增";
         public string TitleAddEdit
@@ -344,7 +347,7 @@ namespace Client.ViewModels
             Level = 1;
             Category = AchievementCategory.Default;
 
-            AddEditVisibility = Visibility.Visible;
+            IsShowAddEdit = 1;
         }
 
         private void OpenEdit()
@@ -358,7 +361,7 @@ namespace Client.ViewModels
             Level = selectedAchievement.Level;
             Category = selectedAchievement.Category;
 
-            AddEditVisibility = Visibility.Visible;
+            IsShowAddEdit = 1;
         }
 
         #region 数据
@@ -489,7 +492,7 @@ namespace Client.ViewModels
                 Achievement achievementFromApi = await service.CreateAchievementAsync(achievement);
                 if (achievementFromApi is not null)
                 {
-                    AddEditVisibility = Visibility.Collapsed;
+                    IsShowAddEdit = 0;
                     // 下面两个函数中都有 SetAllAchievement(localAllAchievement);，
                     // 所以在 ClearSearchBar(); 中的那一次调用属于多余调用
                     await InitData();
@@ -512,7 +515,7 @@ namespace Client.ViewModels
                 bool result = await service.UpdateAchievementAsync(selectedAchievement);
                 if (result is true)
                 {
-                    AddEditVisibility = Visibility.Collapsed;
+                    IsShowAddEdit = 0;
                     await InitData();
                     ClearSearchBar();
                 }

@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Text;
 
-namespace Client.Services.WebAPI
+namespace Client.Services.WebApi
 {
     public abstract class ApiServiceBase
     {

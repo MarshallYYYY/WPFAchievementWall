@@ -1,7 +1,7 @@
 ﻿using Models;
 using System.Windows;
 
-namespace Client.Services.WebAPI
+namespace Client.Services.WebApi
 {
     public class UserService : ApiServiceBase
     {

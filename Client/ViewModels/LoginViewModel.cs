@@ -1,7 +1,7 @@
 ﻿using Client.Common;
 using Client.Events;
 using Client.Services;
-using Client.Services.WebAPI;
+using Client.Services.WebApi;
 using MaterialDesignThemes.Wpf;
 using Models;
 

@@ -1,6 +1,6 @@
 ﻿using Models;
 
-namespace Client.Services.WebAPI
+namespace Client.Services.WebApi
 {
     public class GoalService : ApiServiceBase
     {

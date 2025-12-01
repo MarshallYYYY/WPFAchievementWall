@@ -1,6 +1,6 @@
 ﻿using Client.Common;
 using Client.Services;
-using Client.Services.WebAPI;
+using Client.Services.WebApi;
 using Client.ViewModels;
 using Client.Views;
 using System.Windows;
@@ -43,6 +43,7 @@ namespace Client
         protected override Window CreateShell()
         {
             // MainViewModel 的构造函数在 MainView 被 Container.Resolve 时就已经执行了。
+            // Prism 会在解析 MainView 时：✔ 自动解析 ViewModel，并设置为 DataContext
             return Container.Resolve<MainView>();
         }
 
@@ -54,6 +55,8 @@ namespace Client
                 if (result.Result is not ButtonResult.OK)
                     Current.Shutdown();
             });
+
+            // Prism 会自动把 MainViewModel 作为 MainView 的 DataContext。
 
             // 写法一
             //IConfigureService? service = Current.MainWindow.DataContext as IConfigureService;

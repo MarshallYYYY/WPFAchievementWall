@@ -18,6 +18,7 @@ namespace Client.Services
                 return;
 
             _eventAggregator.GetEvent<LoadingOpenEvent>().Publish((true, isLogin));
+            //await Task.Delay(1 * 1000);
             try
             {
                 await func();
