@@ -1,9 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System.Net.Http;
 using System.Text;
-using System.Windows;
 
-namespace Client.Services
+namespace Client.Services.WebAPI
 {
     public abstract class ApiServiceBase
     {

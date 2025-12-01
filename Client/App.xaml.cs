@@ -1,5 +1,6 @@
 ﻿using Client.Common;
 using Client.Services;
+using Client.Services.WebAPI;
 using Client.ViewModels;
 using Client.Views;
 using System.Windows;
@@ -14,11 +15,12 @@ namespace Client
             containerRegistry.RegisterDialog<LoginView, LoginViewModel>();
             containerRegistry.RegisterSingleton<IUserSession, UserSession>();
 
+            containerRegistry.RegisterForNavigation<IndexView, IndexViewModel>();
             containerRegistry.RegisterForNavigation<AchievementDisplayView, AchievementDisplayViewModel>();
             containerRegistry.RegisterForNavigation<GoalsManagementView, GoalsManagementViewModel>();
             containerRegistry.RegisterForNavigation<DataStatisticsView, DataStatisticsViewModel>();
             containerRegistry.RegisterForNavigation<SettingsView, SettingsViewModel>();
-            
+
             #region WebApi Service
             // 注册 API 服务，注意不能用 https！
             const string baseUrl = "http://localhost:5045";
@@ -40,6 +42,7 @@ namespace Client
         // 只要你在 CreateShell 中返回某个 Window，Prism 会自动把这个 Window 注册到容器里作为单例。
         protected override Window CreateShell()
         {
+            // MainViewModel 的构造函数在 MainView 被 Container.Resolve 时就已经执行了。
             return Container.Resolve<MainView>();
         }
 
@@ -51,6 +54,19 @@ namespace Client
                 if (result.Result is not ButtonResult.OK)
                     Current.Shutdown();
             });
+
+            // 写法一
+            //IConfigureService? service = Current.MainWindow.DataContext as IConfigureService;
+            //if (service != null)
+            //    service.Configure();
+
+            // 写法二
+            //IConfigureService? service = Current.MainWindow.DataContext as IConfigureService;
+            //service?.Configure();
+
+            // 写法三
+            if (Current.MainWindow.DataContext is IConfigureService service)
+                service.Configure();
 
             //没有马上 base.OnInitialized()，所以 Shell(MainView) 还不会显示，
             //登录成功后 MainView 才开始生命周期（Loaded、Activated 等）

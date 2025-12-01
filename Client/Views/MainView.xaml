@@ -26,6 +26,7 @@
     mc:Ignorable="d">
 
     <md:DialogHost
+        CloseOnClickAway="False"
         IsOpen="{Binding Path=IsOpenDialogContent}"
         x:Name="DialogHost"
         DialogTheme="Inherit"

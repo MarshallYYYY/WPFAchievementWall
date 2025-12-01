@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Client.Services
+namespace Client.Services.WebAPI
 {
     public class AchievementService : ApiServiceBase
     {

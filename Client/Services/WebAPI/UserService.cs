@@ -1,15 +1,7 @@
-﻿using MaterialDesignThemes.Wpf;
-using Models;
-using System;
-using System.CodeDom;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Models;
 using System.Windows;
-using System.Windows.Shapes;
 
-namespace Client.Services
+namespace Client.Services.WebAPI
 {
     public class UserService : ApiServiceBase
     {

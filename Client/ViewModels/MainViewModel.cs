@@ -1,26 +1,40 @@
 ﻿using Client.Common;
 using Client.Events;
 using Client.Models;
+using Client.Services;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows;
 
 namespace Client.ViewModels
 {
-    public class MainViewModel : BindableBase
+    public class MainViewModel : BindableBase,IConfigureService
     {
-        public MainViewModel(IRegionManager regionManager, IEventAggregator eventAggregator)
+        public MainViewModel(
+            IRegionManager regionManager,
+            IEventAggregator eventAggregator,
+            IUserSession userSession)
         {
-            InitMenus();
             this.regionManager = regionManager;
             this.eventAggregator = eventAggregator;
+            this.userSession = userSession;
+
             eventAggregator.GetEvent<LoadingOpenEvent>().Subscribe(LoadingSubscribe);
             NavigateCommand = new DelegateCommand<Menu>(Navigate);
 
-            //Navigate(Menus.First(menu => menu.Title == "成就展示"));
-
             TestCommand = new DelegateCommand(TestButton);
             //TestCommand = new(() => IsOpenDialogContent = !IsOpenDialogContent);
+        }
+
+        /// <summary>
+        /// 当用户在登录窗口成功登录后，App.xaml.cs 调用该函数
+        /// </summary>
+        public void Configure()
+        {
+            InitMenus();
+            UserName = userSession.CurrentUser.UserName;
+            //Navigate(Menus.First(menu => menu.Title == "成就展示"));
+            Navigate(Menus.First(menu => menu.Title == "主页"));
         }
 
         #region 上方工具栏
@@ -35,7 +49,9 @@ namespace Client.ViewModels
         }
 
         private bool menuToggleButtonIsChecked = false;
-
+        /// <summary>
+        /// 左侧菜单栏的显示与否
+        /// </summary>
         public bool MenuToggleButtonIsChecked
         {
             get { return menuToggleButtonIsChecked; }
@@ -46,12 +62,21 @@ namespace Client.ViewModels
 
         #region 左侧菜单栏
 
+        private readonly IUserSession userSession;
+        // TDOO：找个位置设置左侧菜单栏的用户名
+        private string userName = string.Empty;
+        public string UserName
+        {
+            get { return userName; }
+            set { SetProperty(ref userName, value); }
+        }
+
         //  { get; set; } 是必要的！！！
         public ObservableCollection<Menu> Menus { get; set; } = [];
 
         private void InitMenus()
         {
-            //Menus.Add(new Menu() { Icon = "🏠", Title = "主页", ViewName = "MainView" });
+            Menus.Add(new Menu() { Icon = "🏠", Title = "主页", ViewName = "IndexView" });
             Menus.Add(new Menu() { Icon = "🏆", Title = "成就展示", ViewName = "AchievementDisplayView" });
             Menus.Add(new Menu() { Icon = "🎯", Title = "目标管理", ViewName = "GoalsManagementView" });
             Menus.Add(new Menu() { Icon = "📈", Title = "数据统计", ViewName = "DataStatisticsView" });

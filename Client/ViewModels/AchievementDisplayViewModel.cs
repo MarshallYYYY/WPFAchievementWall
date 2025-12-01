@@ -1,6 +1,7 @@
 ﻿using Client.Common;
 using Client.Models;
 using Client.Services;
+using Client.Services.WebAPI;
 using MaterialDesignThemes.Wpf;
 using Models;
 using System.Collections.ObjectModel;
@@ -75,6 +76,7 @@ namespace Client.ViewModels
 
         private async Task InitData()
         {
+            await Task.Delay(1 * 1000);
             await InitLocalAllAchievement();
             SetAllAchievement(localAllAchievement);
             InitSearchBarYearComboBoxSource();

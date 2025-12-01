@@ -1,4 +1,5 @@
 ﻿using Client.Services;
+using Client.Services.WebAPI;
 using Models;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -30,6 +31,7 @@ namespace Client.ViewModels
         public ObservableCollection<Goal> AchievedGoals { get; set; } = [];
         private async Task InitData()
         {
+            await Task.Delay(1 * 1000);
             goals.Clear();
             OngoingGoals.Clear();
             AchievedGoals.Clear();

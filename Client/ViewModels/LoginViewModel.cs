@@ -1,6 +1,7 @@
 ﻿using Client.Common;
 using Client.Events;
 using Client.Services;
+using Client.Services.WebAPI;
 using MaterialDesignThemes.Wpf;
 using Models;
 
@@ -44,7 +45,6 @@ namespace Client.ViewModels
 
         public SnackbarMessageQueue MsgQueue { get; }
         #endregion
-
 
         #region 加载窗口
 
