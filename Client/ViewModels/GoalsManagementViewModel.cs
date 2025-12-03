@@ -1,4 +1,5 @@
-﻿using Client.Services;
+﻿using Client.Common;
+using Client.Services;
 using Client.Services.WebApi;
 using Models;
 using System.Collections.ObjectModel;
@@ -12,12 +13,14 @@ namespace Client.ViewModels
             GoalService goalService,
             ILoadingService loadingService,
             IMessageBoxService messageBoxService,
-            ISnackbarService snackbarService)
+            ISnackbarService snackbarService,
+            IUserSession userSession)
         {
             service = goalService;
             this.loadingService = loadingService;
             this.messageBoxService = messageBoxService;
             this.snackbarService = snackbarService;
+            this.userSession = userSession;
 
             _ = loadingService.RunWithLoadingAsync(InitData);
 
@@ -34,6 +37,7 @@ namespace Client.ViewModels
         private readonly ILoadingService loadingService;
         private readonly IMessageBoxService messageBoxService;
         private readonly ISnackbarService snackbarService;
+        private readonly IUserSession userSession;
 
         private List<Goal> goals = [];
         public ObservableCollection<Goal> OngoingGoals { get; set; } = [];
@@ -44,7 +48,7 @@ namespace Client.ViewModels
             OngoingGoals.Clear();
             AchievedGoals.Clear();
 
-            goals = await service.GetGoalsAsync();
+            goals = await service.GetGoalsByUserIdAsync(userSession.CurrentUser.Id);
 
             foreach (Goal goal in
                 goals.Where(goal => goal.AchieveDate is null).OrderBy(goal => goal.TargetDate))
@@ -205,6 +209,7 @@ namespace Client.ViewModels
         {
             Goal goal = new()
             {
+                UserId = userSession.CurrentUser.Id,
                 Title = title,
                 Content = content,
                 TargetDate = targetDate,

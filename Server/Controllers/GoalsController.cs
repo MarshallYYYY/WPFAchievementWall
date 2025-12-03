@@ -21,27 +21,12 @@ namespace Server.Controllers
             _context = context;
         }
 
-        // GET: api/Goals
+        // GET: api/Goals?userId=xxx
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Goal>>> GetGoals()
+        public async Task<ActionResult<IEnumerable<Goal>>> GetGoals([FromQuery] int userId)
         {
-            return await _context.Goals.ToListAsync();
+            return await _context.Goals.Where(g => g.UserId.Equals(userId)).ToListAsync();
         }
-
-        // GET: api/Goals/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Goal>> GetGoal(int id)
-        {
-            var goal = await _context.Goals.FindAsync(id);
-
-            if (goal == null)
-            {
-                return NotFound();
-            }
-
-            return goal;
-        }
-
         // PUT: api/Goals/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -73,6 +58,11 @@ namespace Server.Controllers
             return NoContent();
         }
 
+        private bool GoalExists(int id)
+        {
+            return _context.Goals.Any(e => e.Id == id);
+        }
+
         // POST: api/Goals
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
@@ -81,7 +71,22 @@ namespace Server.Controllers
             _context.Goals.Add(goal);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetGoal", new { id = goal.Id }, goal);
+            //return CreatedAtAction("GetGoal", new { id = goal.Id }, goal);
+            return CreatedAtAction(nameof(GetGoal), new { id = goal.Id }, goal);
+        }
+
+        // GET: api/Goals/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Goal>> GetGoal(int id)
+        {
+            var goal = await _context.Goals.FindAsync(id);
+
+            if (goal == null)
+            {
+                return NotFound();
+            }
+
+            return goal;
         }
 
         // DELETE: api/Goals/5
@@ -98,11 +103,6 @@ namespace Server.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool GoalExists(int id)
-        {
-            return _context.Goals.Any(e => e.Id == id);
         }
     }
 }

@@ -6,14 +6,9 @@ namespace Client.Services.WebApi
     {
         public GoalService(string baseUrl) : base(baseUrl) { }
 
-        public async Task<List<Goal>> GetGoalsAsync()
+        public async Task<List<Goal>> GetGoalsByUserIdAsync(int userId)
         {
-            return await GetAsync<List<Goal>>("api/goals");
-        }
-
-        public async Task<Goal> GetGoalAsync(int id)
-        {
-            return await GetAsync<Goal>($"api/goals/{id}");
+            return await GetAsync<List<Goal>>($"api/goals?userid={userId}");
         }
 
         public async Task<Goal> CreateGoalAsync(Goal goal)

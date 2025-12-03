@@ -70,7 +70,13 @@ namespace Server.Data
                 entity.Property(e => e.Category)
                       .IsRequired()
                       .HasMaxLength(50)
-                      .HasDefaultValue(AchievementCategory.Default);
+                      .HasDefaultValue(AchievementCategory.Default);                            
+
+                // ⭐ 添加外键 UserId → User(Id)
+                entity.HasOne<User>()                     // Achievement *→1 User
+                      .WithMany()                         // 一个 User 可以有多个 Achievement
+                      .HasForeignKey(a => a.UserId)       // 外键字段
+                      .OnDelete(DeleteBehavior.Cascade);   // 删除用户时删除该用户所有成就
             });
 
             // 配置 Goal 实体
@@ -94,6 +100,12 @@ namespace Server.Data
                 // TargetDate: 目标日期，非空
                 entity.Property(e => e.TargetDate)
                       .IsRequired();
+
+                // ⭐ 添加外键 UserId → User(Id)
+                entity.HasOne<User>()                   // Goal *→1 User
+                      .WithMany()                       // 一个 User 可以有多个 Goal
+                      .HasForeignKey(g => g.UserId)
+                      .OnDelete(DeleteBehavior.Cascade);
             });
         }
     }

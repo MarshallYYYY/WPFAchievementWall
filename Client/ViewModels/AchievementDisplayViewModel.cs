@@ -93,7 +93,8 @@ namespace Client.ViewModels
         {
             localAllAchievement.Clear();
             // 获取所有的成就
-            List<Achievement> allAchievement = await service.GetAchievementsAsync();
+            List<Achievement> allAchievement =
+                await service.GetAchievementsByUserIdAsync(userSession.CurrentUser.Id);
             // 将所有的成就按照年份分组
             List<YearAchievements> allYearGroup = allAchievement
                 .GroupBy(achievement => achievement.AchieveDate?.Year)
@@ -483,6 +484,7 @@ namespace Client.ViewModels
         {
             Achievement achievement = new()
             {
+                UserId = userSession.CurrentUser.Id,
                 AchieveDate = achieveDate,
                 Title = title,
                 Content = content,

@@ -5,6 +5,7 @@
         // 主键，自增
         public int Id { get; set; }
         // TODO：增加UserId，不同用户显示各自的成就和目标
+        public int UserId { get; set; }
         // 非空
         public string Title { get; set; } = string.Empty;
         // 非空
