@@ -1,4 +1,5 @@
-﻿using Models;
+﻿using Client.Models;
+using Models;
 
 namespace Client.Services.WebApi
 {
@@ -6,13 +7,13 @@ namespace Client.Services.WebApi
     {
         public AchievementService(string baseUrl) : base(baseUrl) { }
 
-        public async Task<List<Achievement>> GetAchievementsByUserIdAsync(int userId)
+        public async Task<ApiResult<List<Achievement>>> GetAchievementsByUserIdAsync(int userId)
         {
             string endpoint = $"api/achievements?userId={userId}";
             return await GetAsync<List<Achievement>>(endpoint);
         }
 
-        public async Task<Achievement> CreateAchievementAsync(Achievement achievement)
+        public async Task<ApiResult<Achievement>> CreateAchievementAsync(Achievement achievement)
         {
             return await PostAsync<Achievement>("api/achievements", achievement);
         }

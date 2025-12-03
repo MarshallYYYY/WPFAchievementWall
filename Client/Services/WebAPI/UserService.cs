@@ -1,4 +1,5 @@
-﻿using Models;
+﻿using Client.Models;
+using Models;
 using System.Windows;
 
 namespace Client.Services.WebApi
@@ -7,35 +8,20 @@ namespace Client.Services.WebApi
     {
         public UserService(string baseUrl) : base(baseUrl) { }
 
-        public async Task<User?> GetUserAsyncForLogin(string userName, string password)
+        public async Task<ApiResult<User>> GetUserAsyncForLogin(string userName, string password)
         {
             // Uri.EscapeDataString(title)
             // 处理特殊情况：空格、中文、? & = / 等特殊字符、非 ASCII 字符
             // 把字符串安全地转换成 URL 可用的格式（URL 编码），也叫 percent-encoding 百分号编码。
-            var (user, errorMessage) = await GetAsyncWithErrorMessage<User>($"api/users?" +
+            ApiResult<User> apiResult = await GetAsync<User>($"api/users?" +
                 $"userName={Uri.EscapeDataString(userName)}&" +
                 $"password={Uri.EscapeDataString(password)}");
-            if (errorMessage is not null)
-            {
-                MessageBox.Show(errorMessage);
-                return null;
-            }
-            return user;
+            return apiResult;
         }
 
-        public async Task<User> CreateUserAsync(User user)
+        public async Task<ApiResult<User>> CreateUserAsync(User user)
         {
-            //try
-            //{
-            //    return await PostAsyncWtihErrorMessage<User>("api/users", user);
-            //}
-            //catch
-            //{
-            //    throw;
-            //}
-
-            // catch 块中只是 throw;，完全等价于什么都不写。
-            return await PostAsyncWtihErrorMessage<User>("api/users", user);
+            return await PostAsync<User>("api/users", user);
         }
 
         public async Task<bool> UpdateUserAsync(User user)

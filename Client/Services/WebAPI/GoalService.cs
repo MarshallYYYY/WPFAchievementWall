@@ -1,4 +1,5 @@
-﻿using Models;
+﻿using Client.Models;
+using Models;
 
 namespace Client.Services.WebApi
 {
@@ -6,12 +7,12 @@ namespace Client.Services.WebApi
     {
         public GoalService(string baseUrl) : base(baseUrl) { }
 
-        public async Task<List<Goal>> GetGoalsByUserIdAsync(int userId)
+        public async Task<ApiResult<List<Goal>>> GetGoalsByUserIdAsync(int userId)
         {
             return await GetAsync<List<Goal>>($"api/goals?userid={userId}");
         }
 
-        public async Task<Goal> CreateGoalAsync(Goal goal)
+        public async Task<ApiResult<Goal>> CreateGoalAsync(Goal goal)
         {
             return await PostAsync<Goal>("api/goals", goal);
         }

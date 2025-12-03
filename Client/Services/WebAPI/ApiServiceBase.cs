@@ -1,6 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using Client.Models;
+using Newtonsoft.Json;
+using System.Linq.Expressions;
 using System.Net.Http;
 using System.Text;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Client.Services.WebApi
 {
@@ -21,20 +24,7 @@ namespace Client.Services.WebApi
             };
         }
 
-        protected async Task<T> GetAsync<T>(string endpoint)
-        {
-            HttpResponseMessage response = await _httpClient.GetAsync($"{_baseUrl}/{endpoint}");
-            response.EnsureSuccessStatusCode();
-            string content = await response.Content.ReadAsStringAsync();
-            T? result = JsonConvert.DeserializeObject<T>(content);
-            // 检查反序列化结果
-            return result ?? throw new Exception($"反序列化失败，无法将内容转换为 {typeof(T).Name}");
-        }
-
-        // CS1988：异步方法不能使用 ref、in或out 参数，
-        // 所以让返回值类型是元组了。
-        // 注意：这不是唯一方案，下面的 PostAsyncWtihErrorMessage 使用了 抛出异常 的方案，不用改变返回值类型。
-        protected async Task<(T?, string?)> GetAsyncWithErrorMessage<T>(string endpoint)
+        protected async Task<ApiResult<T>> GetAsync<T>(string endpoint)
         {
             HttpResponseMessage response = await _httpClient.GetAsync($"{_baseUrl}/{endpoint}");
 
@@ -44,44 +34,63 @@ namespace Client.Services.WebApi
             // https://www.cnblogs.com/lovefoolself/p/18401391
 
             string content = await response.Content.ReadAsStringAsync();
+
             if (response.IsSuccessStatusCode is false)
             {
-                return (default(T), content);
+                return new ApiResult<T>()
+                {
+                    IsSuccess = false,
+                    ErrorMessage = content,
+                };
             }
 
             // 成功，解析实体
-            T? result = JsonConvert.DeserializeObject<T>(content);
-            return (result, null);
+            T? data = JsonConvert.DeserializeObject<T>(content);
+            return new ApiResult<T>()
+            {
+                IsSuccess = true,
+                Data = data,
+            };
         }
 
-        protected async Task<T> PostAsync<T>(string endpoint, object data)
+        //protected async Task<T> PostAsync<T>(string endpoint, object data)
+        //{
+        //    string json = JsonConvert.SerializeObject(data);
+        //    StringContent content = new(json, Encoding.UTF8, "application/json");
+        //    // PostAsync：发送 POST 请求
+        //    HttpResponseMessage response = await _httpClient.PostAsync($"{_baseUrl}/{endpoint}", content);
+        //    response.EnsureSuccessStatusCode();
+        //    string responseContent = await response.Content.ReadAsStringAsync();
+        //    T? result = JsonConvert.DeserializeObject<T>(responseContent);
+        //    // 检查反序列化结果
+        //    return result ?? throw new Exception($"反序列化失败，无法将内容转换为 {typeof(T).Name}");
+        //}
+
+        protected async Task<ApiResult<T>> PostAsync<T>(string endpoint, object data)
         {
             string json = JsonConvert.SerializeObject(data);
             StringContent content = new(json, Encoding.UTF8, "application/json");
             // PostAsync：发送 POST 请求
             HttpResponseMessage response = await _httpClient.PostAsync($"{_baseUrl}/{endpoint}", content);
-            response.EnsureSuccessStatusCode();
+            
             string responseContent = await response.Content.ReadAsStringAsync();
-            T? result = JsonConvert.DeserializeObject<T>(responseContent);
-            // 检查反序列化结果
-            return result ?? throw new Exception($"反序列化失败，无法将内容转换为 {typeof(T).Name}");
-        }
 
-        protected async Task<T> PostAsyncWtihErrorMessage<T>(string endpoint, object data)
-        {
-            string json = JsonConvert.SerializeObject(data);
-            StringContent content = new(json, Encoding.UTF8, "application/json");
-            // PostAsync：发送 POST 请求
-            HttpResponseMessage response = await _httpClient.PostAsync($"{_baseUrl}/{endpoint}", content);
-            //response.EnsureSuccessStatusCode();
-            string responseContent = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode is false)
             {
-                throw new Exception(responseContent);
+                return new ApiResult<T>()
+                {
+                    IsSuccess = false,
+                    ErrorMessage = responseContent,
+                };
             }
-            T? result = JsonConvert.DeserializeObject<T>(responseContent);
-            // 检查反序列化结果
-            return result ?? throw new Exception($"反序列化失败，无法将内容转换为 {typeof(T).Name}");
+
+            // 成功，解析实体
+            T? newData = JsonConvert.DeserializeObject<T>(responseContent);
+            return new ApiResult<T>()
+            {
+                IsSuccess = true,
+                Data = newData,
+            };
         }
 
         protected async Task<bool> PutAsync(string endpoint, object data)

@@ -44,11 +44,6 @@
         
         <Grid>
 
-            <md:Snackbar
-                VerticalAlignment="Top"
-                Background="#FF3F51B5"
-                MessageQueue="{Binding Path=MsgQueue}" />
-
             <StackPanel>
 
                 <!--上方的可拖拽的标题栏和关闭按钮-->
@@ -120,6 +115,12 @@
                 </md:Transitioner>
 
             </StackPanel>
+
+            <md:Snackbar
+                VerticalAlignment="Top"
+                Background="#FF3F51B5"
+                MessageQueue="{Binding Path=MsgQueue}" />
+            
         </Grid>
 
         <md:DialogHost.DialogContent>

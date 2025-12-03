@@ -3,6 +3,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Models;
 using Server.Data;
+using System.Diagnostics;
 
 namespace Server.Controllers
 {
@@ -17,15 +18,6 @@ namespace Server.Controllers
             _context = context;
         }
 
-        // 不需要查询全部 User，所以下面这个函数不用写
-
-        // GET: api/Users
-        //[HttpGet]
-        //public async Task<ActionResult<IEnumerable<User>>> GetUsers()
-        //{
-        //    return await _context.Users.ToListAsync();
-        //}
-
         // GET: api/Users?userName=xxx&password=xxx
         [HttpGet]
         public async Task<ActionResult<User>> GetUserForLogin(string userName, string password)
@@ -34,18 +26,19 @@ namespace Server.Controllers
             User? user = await _context.Users.FirstOrDefaultAsync(
                 u => EF.Functions.Collate(u.UserName, "Chinese_PRC_CS_AS") == userName);
 
+            // 其实最好不要区分用户不存在和密码错误，统一返回401即可。
             if (user is null)
             {
                 // 404
-                return NotFound("用户不存在！");
+                return NotFound("用户名不存在！");
             }
             // 这种方式就直接可以区分大小写了，因为是比较的字符串
             if (user.Password != password)
             {
                 // 400
-                return BadRequest("密码输入错误！");
+                //return BadRequest("密码输入错误！");
                 // 或：401
-                //return Unauthorized("密码输入错误！");
+                return Unauthorized("密码输入错误！");
             }
 
             // 200
@@ -105,7 +98,7 @@ namespace Server.Controllers
             try
             {
                 _context.Users.Add(user);
-                int n = await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
 
                 //return CreatedAtAction("GetUser", new { id = user.Id }, user);
                 return CreatedAtAction(nameof(GetUser), new { id = user.Id }, user);
@@ -130,6 +123,11 @@ namespace Server.Controllers
                 // Log the exception (not shown here)
                 //return BadRequest(new { message = ex.InnerException?.Message });
                 return BadRequest(ex.InnerException?.Message);
+                // 使用 Problem() 返回标准的 RFC 7807 错误格式
+                //return Problem(
+                //    statusCode: StatusCodes.Status500InternalServerError,
+                //    title: "服务器错误"
+                //);
             }
         }
 

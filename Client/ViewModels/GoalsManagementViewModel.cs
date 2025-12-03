@@ -1,4 +1,5 @@
 ﻿using Client.Common;
+using Client.Models;
 using Client.Services;
 using Client.Services.WebApi;
 using Models;
@@ -48,8 +49,14 @@ namespace Client.ViewModels
             OngoingGoals.Clear();
             AchievedGoals.Clear();
 
-            goals = await service.GetGoalsByUserIdAsync(userSession.CurrentUser.Id);
+            ApiResult<List<Goal>> apiResult = await service.GetGoalsByUserIdAsync(userSession.CurrentUser.Id);
+            if (apiResult.IsSuccess is false)
+            {
+                snackbarService.SendMessage(apiResult.ErrorMessage!);
+                return;
+            }
 
+            goals = apiResult.Data!;
             foreach (Goal goal in
                 goals.Where(goal => goal.AchieveDate is null).OrderBy(goal => goal.TargetDate))
             {
@@ -218,12 +225,16 @@ namespace Client.ViewModels
 
             _ = loadingService.RunWithLoadingAsync(async () =>
             {
-                Goal newGoal = await service.CreateGoalAsync(goal);
-                if (newGoal is not null)
+                ApiResult<Goal> apiResult = await service.CreateGoalAsync(goal);
+                if (apiResult.IsSuccess is false)
                 {
-                    IsShowAddEdit = 0;
-                    await InitData();
+                    snackbarService.SendMessage(apiResult.ErrorMessage!);
+                    return;
                 }
+
+                Goal newGoal = apiResult.Data!;
+                IsShowAddEdit = 0;
+                await InitData();
             });
         }
         private void EditGoal()

@@ -1,5 +1,6 @@
 ﻿using Client.Common;
 using Client.Events;
+using Client.Models;
 using Client.Services;
 using Client.Services.WebApi;
 using MaterialDesignThemes.Wpf;
@@ -32,7 +33,7 @@ namespace Client.ViewModels
             MsgQueue = new SnackbarMessageQueue(TimeSpan.FromSeconds(3));
         }
 
-        #region WebAPI用户服务、全局当前用户、页面切换、SnackbarMessageQueue
+        #region 服务、会话、页面切换、SnackbarMessageQueue
         private readonly UserService userService;
         private readonly IUserSession userSession;
 
@@ -50,7 +51,6 @@ namespace Client.ViewModels
 
         private readonly IEventAggregator eventAggregator;
         private readonly ILoadingService loadingService;
-
         private bool isOpenDialogContent = false;
         public bool IsOpenDialogContent
         {
@@ -94,15 +94,18 @@ namespace Client.ViewModels
         {
             await loadingService.RunWithLoadingAsync(async () =>
             {
-                User? user = await userService.GetUserAsyncForLogin(userName, password);
-                if (user is null)
+                ApiResult<User> apiResult = await userService.GetUserAsyncForLogin(userName, password);
+                if (apiResult.IsSuccess is false)
+                {
+                    MsgQueue.Enqueue(apiResult.ErrorMessage!);
                     return;
+                }
 
                 // 保存到全局 Session
-                userSession.CurrentUser = user;
+                userSession.CurrentUser = apiResult.Data!;
                 // 登录成功
                 RequestClose.Invoke(new DialogResult(ButtonResult.OK));
-            }, true);
+            }, isLogin: true);
         }
         private bool CanLogin()
         {
@@ -187,20 +190,18 @@ namespace Client.ViewModels
 
             await loadingService.RunWithLoadingAsync(async () =>
             {
-                User newUser;
-                try
+                ApiResult<User> apiResult = await userService.CreateUserAsync(user);
+                if (apiResult.IsSuccess is false)
                 {
-                    newUser = await userService.CreateUserAsync(user);
-                }
-                catch (Exception ex)
-                {
-                    MsgQueue.Enqueue(ex.Message);
+                    MsgQueue.Enqueue(apiResult.ErrorMessage!);
                     return;
                 }
+
+                User newUser = apiResult.Data!;
                 MsgQueue.Enqueue("注册成功！返回登录界面");
                 OpenLogin();
                 //OpenLoginCommand.Execute();
-            }, true);
+            }, isLogin: true);
         }
         private bool CanRegister()
         {

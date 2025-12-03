@@ -92,9 +92,15 @@ namespace Client.ViewModels
         private async Task InitLocalAllAchievement()
         {
             localAllAchievement.Clear();
-            // 获取所有的成就
-            List<Achievement> allAchievement =
+            ApiResult<List<Achievement>> apiResult =
                 await service.GetAchievementsByUserIdAsync(userSession.CurrentUser.Id);
+            if (apiResult.IsSuccess is false)
+            {
+                snackbarService.SendMessage(apiResult.ErrorMessage!);
+                return;
+            }
+            // 获取所有的成就
+            List<Achievement> allAchievement = apiResult.Data!;
             // 将所有的成就按照年份分组
             List<YearAchievements> allYearGroup = allAchievement
                 .GroupBy(achievement => achievement.AchieveDate?.Year)
@@ -495,15 +501,19 @@ namespace Client.ViewModels
 
             _ = loadingService.RunWithLoadingAsync(async () =>
             {
-                Achievement achievementFromApi = await service.CreateAchievementAsync(achievement);
-                if (achievementFromApi is not null)
+                ApiResult<Achievement> apiResult = await service.CreateAchievementAsync(achievement);
+                if (apiResult.IsSuccess is false)
                 {
-                    IsShowAddEdit = 0;
-                    // 下面两个函数中都有 SetAllAchievement(localAllAchievement);，
-                    // 所以在 ClearSearchBar(); 中的那一次调用属于多余调用
-                    await InitData();
-                    ClearSearchBar();
+                    snackbarService.SendMessage(apiResult.ErrorMessage!);
+                    return;
                 }
+
+                Achievement newAchievement = apiResult.Data!;
+                IsShowAddEdit = 0;
+                // 下面两个函数中都有 SetAllAchievement(localAllAchievement);，
+                // 所以在 ClearSearchBar(); 中的那一次调用属于多余调用
+                await InitData();
+                ClearSearchBar();
             });
         }
         private void EditAchievement()
