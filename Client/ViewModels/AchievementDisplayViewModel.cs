@@ -15,7 +15,9 @@ namespace Client.ViewModels
         public AchievementDisplayViewModel(
             AchievementService achievementService,
             ILoadingService loadingService,
-            IUserSession userSession)
+            IUserSession userSession,
+            IMessageBoxService messageBoxService,
+            ISnackbarService snackbarService)
         {
             FilterCommand = new DelegateCommand(Filter);
             ClearCommand = new(ClearSearchBar);
@@ -25,6 +27,8 @@ namespace Client.ViewModels
             service = achievementService;
             this.loadingService = loadingService;
             this.userSession = userSession;
+            this.messageBoxService = messageBoxService;
+            this.snackbarService = snackbarService;
 
             // C# 7.0 丢弃运算符：直接调用异步初始化方法
             // 我明确知道这是一个异步方法，我故意不等待它完成，让它在后台运行，我不关心它的返回结果
@@ -45,14 +49,18 @@ namespace Client.ViewModels
             CancelCommand = new(() => IsShowAddEdit = 0);
         }
 
-        #region 成就展示（首层页面）
-
+        #region 服务、会话
         /// <summary>
         /// Achievement API Service
         /// </summary>
         private readonly AchievementService service;
         private readonly ILoadingService loadingService;
         private readonly IUserSession userSession;
+        private readonly IMessageBoxService messageBoxService;
+        private readonly ISnackbarService snackbarService;
+        #endregion
+
+        #region 成就展示（首层页面）
 
         /// <summary>
         /// 从 Web API 获取的所有成就，按年份分组存储；
@@ -284,16 +292,12 @@ namespace Client.ViewModels
         /// </summary>
         public DelegateCommand DeleteCommand { get; private set; }
 
-        private void DeleteAchievement()
+        private async void DeleteAchievement()
         {
             if (selectedAchievement is null)
                 return;
-            // TODO：新的弹窗设计
-            //var result = await DialogHost.Show("这是提示内容", "RootDialog");
-            MessageBoxResult boxResult = MessageBox.Show(
-                "是否删除？", "警告",
-                MessageBoxButton.YesNo, MessageBoxImage.Warning);
-            if (boxResult is MessageBoxResult.No)
+            ButtonResult boxResult = await messageBoxService.ShowAsync("警告", "是否删除？");
+            if (boxResult == ButtonResult.Cancel)
                 return;
 
             _ = loadingService.RunWithLoadingAsync(async () =>
@@ -402,7 +406,7 @@ namespace Client.ViewModels
         {
             if (ValidateAchievement(out string errorMessage) is false)
             {
-                MessageBox.Show(errorMessage, "输入错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                snackbarService.SendMessage(errorMessage);
                 return;
             }
             switch (titleAddEdit)

@@ -38,6 +38,8 @@ namespace Client
             #endregion
 
             containerRegistry.RegisterSingleton<ILoadingService, LoadingService>();
+            containerRegistry.RegisterSingleton<IMessageBoxService, MessageBoxService>();
+            containerRegistry.RegisterSingleton<ISnackbarService, SnackbarService>();
         }
         // 只要你在 CreateShell 中返回某个 Window，Prism 会自动把这个 Window 注册到容器里作为单例。
         protected override Window CreateShell()
@@ -53,27 +55,30 @@ namespace Client
             dialogService.ShowDialog(nameof(LoginView), null, result =>
             {
                 if (result.Result is not ButtonResult.OK)
+                {
                     Current.Shutdown();
+                    return;
+                }
+
+                // Prism 会自动把 MainViewModel 作为 MainView 的 DataContext。
+
+                // 写法一
+                //IConfigureService? service = Current.MainWindow.DataContext as IConfigureService;
+                //if (service != null)
+                //    service.Configure();
+
+                // 写法二
+                //IConfigureService? service = Current.MainWindow.DataContext as IConfigureService;
+                //service?.Configure();
+
+                // 写法三
+                if (Current.MainWindow.DataContext is IConfigureService service)
+                    service.Configure();
+
+                //没有马上 base.OnInitialized()，所以 Shell(MainView) 还不会显示，
+                //登录成功后 MainView 才开始生命周期（Loaded、Activated 等）
+                base.OnInitialized();
             });
-
-            // Prism 会自动把 MainViewModel 作为 MainView 的 DataContext。
-
-            // 写法一
-            //IConfigureService? service = Current.MainWindow.DataContext as IConfigureService;
-            //if (service != null)
-            //    service.Configure();
-
-            // 写法二
-            //IConfigureService? service = Current.MainWindow.DataContext as IConfigureService;
-            //service?.Configure();
-
-            // 写法三
-            if (Current.MainWindow.DataContext is IConfigureService service)
-                service.Configure();
-
-            //没有马上 base.OnInitialized()，所以 Shell(MainView) 还不会显示，
-            //登录成功后 MainView 才开始生命周期（Loaded、Activated 等）
-            base.OnInitialized();
         }
     }
 }

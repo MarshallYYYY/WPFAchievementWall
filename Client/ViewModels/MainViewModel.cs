@@ -2,13 +2,14 @@
 using Client.Events;
 using Client.Models;
 using Client.Services;
+using MaterialDesignThemes.Wpf;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows;
 
 namespace Client.ViewModels
 {
-    public class MainViewModel : BindableBase,IConfigureService
+    public class MainViewModel : BindableBase, IConfigureService
     {
         public MainViewModel(
             IRegionManager regionManager,
@@ -20,11 +21,18 @@ namespace Client.ViewModels
             this.userSession = userSession;
 
             eventAggregator.GetEvent<LoadingOpenEvent>().Subscribe(LoadingSubscribe);
+            eventAggregator.GetEvent<SnackbarMessageEvent>().Subscribe(ShowMessage);
             NavigateCommand = new DelegateCommand<Menu>(Navigate);
+
+            MsgQueue = new SnackbarMessageQueue(TimeSpan.FromSeconds(3));
 
             TestCommand = new DelegateCommand(TestButton);
             //TestCommand = new(() => IsOpenDialogContent = !IsOpenDialogContent);
         }
+
+
+        #region 初始化配置
+        private readonly IUserSession userSession;
 
         /// <summary>
         /// 当用户在登录窗口成功登录后，App.xaml.cs 调用该函数
@@ -36,6 +44,7 @@ namespace Client.ViewModels
             //Navigate(Menus.First(menu => menu.Title == "成就展示"));
             Navigate(Menus.First(menu => menu.Title == "主页"));
         }
+        #endregion
 
         #region 上方工具栏
 
@@ -61,8 +70,6 @@ namespace Client.ViewModels
         #endregion 上方工具栏
 
         #region 左侧菜单栏
-
-        private readonly IUserSession userSession;
         // TDOO：找个位置设置左侧菜单栏的用户名
         private string userName = string.Empty;
         public string UserName
@@ -82,7 +89,6 @@ namespace Client.ViewModels
             Menus.Add(new Menu() { Icon = "📈", Title = "数据统计", ViewName = "DataStatisticsView" });
             Menus.Add(new Menu() { Icon = "⚙️", Title = "设置", ViewName = "SettingsView" });
         }
-
         private readonly IRegionManager regionManager;
         public DelegateCommand<Menu> NavigateCommand { get; private set; }
 
@@ -91,7 +97,7 @@ namespace Client.ViewModels
             if (menu == null || string.IsNullOrEmpty(menu.ViewName))
                 return;
 
-            regionManager.Regions[PrismRegionName.MainViewRegion].RequestNavigate(menu.ViewName);
+            regionManager.Regions[AppConstants.MainViewRegion].RequestNavigate(menu.ViewName);
             MainViewTitle = $"个人成就记录墙 - {menu.Title}";
             MenuToggleButtonIsChecked = false;
         }
@@ -99,8 +105,8 @@ namespace Client.ViewModels
         #endregion 左侧菜单栏
 
         #region 加载窗口
-
         private readonly IEventAggregator eventAggregator;
+
         private void LoadingSubscribe((bool isOpen, bool isLogin) tuple)
         {
             // MainViewModel 只监听自己的标识
@@ -115,6 +121,14 @@ namespace Client.ViewModels
         }
 
         #endregion 加载窗口
+
+        #region Snackbar消息队列
+        public SnackbarMessageQueue MsgQueue { get; }
+        private void ShowMessage(string msg)
+        {
+            MsgQueue.Enqueue(msg);
+        }
+        #endregion
 
         #region Test
 

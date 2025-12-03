@@ -42,7 +42,7 @@
                     <TextBlock
                         Grid.ColumnSpan="3"
                         HorizontalAlignment="Center"
-                        Text="{Binding SelectedAchievement.Title}"
+                        Text="{Binding Path=SelectedAchievement.Title}"
                         FontSize="38" />
 
                     <Button
@@ -70,7 +70,7 @@
 
                     <!--  达成时间  -->
                     <TextBlock
-                        Text="{Binding SelectedAchievement.AchieveDate, StringFormat='yyyy年MM月dd日'}"
+                        Text="{Binding Path=SelectedAchievement.AchieveDate, StringFormat='yyyy年MM月dd日'}"
                         VerticalAlignment="Center"
                         Margin="5,0,0,0"
                         FontSize="16"
@@ -94,7 +94,7 @@
 
                     <!--  重要性等级 星星  -->
                     <TextBlock
-                        Text="{Binding SelectedAchievement.Level, Converter={StaticResource IntToStar}}"
+                        Text="{Binding Path=SelectedAchievement.Level, Converter={StaticResource IntToStar}}"
                         FontSize="18"
                         Margin="10,0,0,0"
                         Background="#FFF3E0"
@@ -110,7 +110,7 @@
                     <Run
                         Text="    " />    
                     <Run
-                        Text="{Binding SelectedAchievement.Content}" />
+                        Text="{Binding Path=SelectedAchievement.Content}" />
                 </TextBlock>
 
             </StackPanel>

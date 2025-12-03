@@ -10,11 +10,17 @@ namespace Client.ViewModels
     {
         public GoalsManagementViewModel(
             GoalService goalService,
-            ILoadingService loadingService)
+            ILoadingService loadingService,
+            IMessageBoxService messageBoxService,
+            ISnackbarService snackbarService)
         {
             service = goalService;
             this.loadingService = loadingService;
+            this.messageBoxService = messageBoxService;
+            this.snackbarService = snackbarService;
+
             _ = loadingService.RunWithLoadingAsync(InitData);
+
             DeleteCommand = new DelegateCommand<Goal>(Delete);
             OpenAddCommand = new DelegateCommand(OpenAdd);
             OpenEditCommand = new DelegateCommand<Goal>(OpenEdit);
@@ -26,6 +32,9 @@ namespace Client.ViewModels
         #region 服务和数据
         private readonly GoalService service;
         private readonly ILoadingService loadingService;
+        private readonly IMessageBoxService messageBoxService;
+        private readonly ISnackbarService snackbarService;
+
         private List<Goal> goals = [];
         public ObservableCollection<Goal> OngoingGoals { get; set; } = [];
         public ObservableCollection<Goal> AchievedGoals { get; set; } = [];
@@ -53,12 +62,10 @@ namespace Client.ViewModels
 
         #region 共用的删除功能
         public DelegateCommand<Goal> DeleteCommand { get; private set; }
-        private void Delete(Goal goal)
+        private async void Delete(Goal goal)
         {
-            MessageBoxResult boxResult = MessageBox.Show(
-                "是否删除？", "警告",
-                MessageBoxButton.YesNo, MessageBoxImage.Warning);
-            if (boxResult is MessageBoxResult.No)
+            ButtonResult boxResult = await messageBoxService.ShowAsync("警告", "是否删除？");
+            if (boxResult == ButtonResult.Cancel)
                 return;
 
             _ = loadingService.RunWithLoadingAsync(async () =>
@@ -142,7 +149,7 @@ namespace Client.ViewModels
         {
             if (ValidateAchievement(out string errorMessage) is false)
             {
-                MessageBox.Show(errorMessage, "输入错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                snackbarService.SendMessage(errorMessage);
                 return;
             }
             switch (titleAddEdit)
@@ -230,14 +237,12 @@ namespace Client.ViewModels
                 }
             });
         }
-        private void Achieve(Goal goal)
+        private async void Achieve(Goal goal)
         {
             goal.AchieveDate = DateTime.Now;
 
-            MessageBoxResult boxResult = MessageBox.Show(
-                "将该目标设置为完成吗？", "提示",
-                MessageBoxButton.YesNo, MessageBoxImage.Question);
-            if (boxResult is MessageBoxResult.No)
+            ButtonResult boxResult = await messageBoxService.ShowAsync("提示", "将该目标设置为完成吗？");
+            if (boxResult == ButtonResult.Cancel)
                 return;
 
             _ = loadingService.RunWithLoadingAsync(async () =>

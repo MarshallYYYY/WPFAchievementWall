@@ -5,7 +5,7 @@ namespace Client.Services
 {
     public class LoadingService : ILoadingService
     {
-        private IEventAggregator? _eventAggregator;
+        private readonly IEventAggregator? _eventAggregator;
 
         public LoadingService(IEventAggregator eventAggregator)
         {
@@ -18,7 +18,7 @@ namespace Client.Services
                 return;
 
             _eventAggregator.GetEvent<LoadingOpenEvent>().Publish((true, isLogin));
-            //await Task.Delay(1 * 1000);
+            await Task.Delay(1 * 1000);
             try
             {
                 await func();

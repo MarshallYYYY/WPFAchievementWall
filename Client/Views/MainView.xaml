@@ -25,80 +25,91 @@
     StateChanged="Window_StateChange"
     mc:Ignorable="d">
 
-    <md:DialogHost
-        CloseOnClickAway="False"
-        IsOpen="{Binding Path=IsOpenDialogContent}"
-        x:Name="DialogHost"
-        DialogTheme="Inherit"
-        Identifier="RootDialog">
-
-        <!--
+    <Grid>
+        <md:DialogHost
+            CloseOnClickAway="False"
+            IsOpen="{Binding Path=IsOpenDialogContent}"
+            x:Name="DialogHost"
+            DialogTheme="Inherit"
+            Identifier="{x:Static common:AppConstants.RootDialog}">
+            <!--
             跨界面访问 Toggle 不生效，所以添加了一个
             MenuToggleButtonIsChecked 属性用来控制左侧菜单的出现与否。
-        -->
-        <md:DrawerHost
-            x:Name="drawerHost"
-            IsLeftDrawerOpen="{Binding MenuToggleButtonIsChecked}">
+            -->
+            <md:DrawerHost
+                x:Name="drawerHost"
+                IsLeftDrawerOpen="{Binding MenuToggleButtonIsChecked}">
 
-            <!--  左边弹出的菜单  -->
-            <md:DrawerHost.LeftDrawerContent>
-                <mainviews:LeftDrawerContentView />
-            </md:DrawerHost.LeftDrawerContent>
+                <!--  左边弹出的菜单  -->
+                <md:DrawerHost.LeftDrawerContent>
+                    <mainviews:LeftDrawerContentView />
+                </md:DrawerHost.LeftDrawerContent>
 
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition
-                        Height="auto" />
-                    <RowDefinition />
-                </Grid.RowDefinitions>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition
+                            Height="auto" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
 
-                <!--  导航条色块：上方的一整块  -->
-                <md:ColorZone
-                    x:Name="ColorZone"
-                    Padding="5"
-                    md:ElevationAssist.Elevation="Dp4"
-                    MouseDoubleClick="ColorZone_MouseDoubleClick"
-                    MouseMove="ColorZone_MouseMove"
-                    DockPanel.Dock="Top"
-                    Mode="PrimaryMid">
+                    <!--  导航条色块：上方的一整块  -->
+                    <md:ColorZone
+                        x:Name="ColorZone"
+                        Padding="5"
+                        md:ElevationAssist.Elevation="Dp4"
+                        MouseDoubleClick="ColorZone_MouseDoubleClick"
+                        MouseMove="ColorZone_MouseMove"
+                        DockPanel.Dock="Top"
+                        Mode="PrimaryMid">
 
-                    <mainviews:ColorZoneView
-                        x:Name="colorZoneView" />
+                        <mainviews:ColorZoneView
+                            x:Name="colorZoneView" />
 
-                </md:ColorZone>
+                    </md:ColorZone>
 
-                <ContentControl
-                    Grid.Row="1"
-                    prism:RegionManager.RegionName="{x:Static common:PrismRegionName.MainViewRegion}" />
+                    <ContentControl
+                        Grid.Row="1"
+                        prism:RegionManager.RegionName="{x:Static common:AppConstants.MainViewRegion}" />
 
-            </Grid>
+                    <md:Snackbar
+                        Grid.Row="1"
+                        VerticalAlignment="Top"
+                        Background="#FF3F51B5"
+                        MessageQueue="{Binding Path=MsgQueue}" />
 
-        </md:DrawerHost>
+                </Grid>
 
-        <md:DialogHost.DialogContent>
-            
-            <!--  加载指示器  -->
-            <Grid
-                Width="200"
-                Height="200">
-                <StackPanel
-                    VerticalAlignment="Center">
-                    <ProgressBar
-                        Width="100"
-                        Height="100"
-                        IsIndeterminate="True"
-                        Style="{StaticResource MaterialDesignCircularProgressBar}"
-                        Value="0" />
-                    <TextBlock
-                        Text="正在加载中..."
-                        Margin="0,20,0,0"
-                        HorizontalAlignment="Center"
-                        FontSize="18" />
-                </StackPanel>
-            </Grid>
-            
-        </md:DialogHost.DialogContent>
+            </md:DrawerHost>
 
-    </md:DialogHost>
+            <md:DialogHost.DialogContent>
+
+                <!--  加载指示器  -->
+                <Grid
+                    Width="200"
+                    Height="200">
+                    <StackPanel
+                        VerticalAlignment="Center">
+                        <ProgressBar
+                            Width="100"
+                            Height="100"
+                            IsIndeterminate="True"
+                            Style="{StaticResource MaterialDesignCircularProgressBar}"
+                            Value="0" />
+                        <TextBlock
+                            Text="正在加载中..."
+                            Margin="0,20,0,0"
+                            HorizontalAlignment="Center"
+                            FontSize="18" />
+                    </StackPanel>
+                </Grid>
+
+            </md:DialogHost.DialogContent>
+        </md:DialogHost>
+
+        <!-- 全局 MessageBox -->
+        <!--可以设置多个 DialogHost-->
+        <md:DialogHost
+            Identifier="{x:Static common:AppConstants.MessageBoxDialog}" />
+    </Grid>
 
 </Window>

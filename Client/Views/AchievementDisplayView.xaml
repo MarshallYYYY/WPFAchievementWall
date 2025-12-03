@@ -19,7 +19,7 @@
 
         <!--第一页：成就显示-->
         <md:TransitionerSlide
-            OpeningEffect="{md:TransitionEffect Kind=SlideInFromBottom}">
+            OpeningEffect="{md:TransitionEffect Kind=None}">
 
             <Grid>
 

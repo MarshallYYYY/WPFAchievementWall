@@ -39,32 +39,6 @@
         </Style>
     </prism:Dialog.WindowStyle>
 
-    <UserControl.Resources>
-
-        <ControlTemplate
-            x:Key="myBtnTemplate"
-            TargetType="Button">
-
-            <Border
-                Background="Red"
-                CornerRadius="20">
-
-                <StackPanel
-                    Orientation="Horizontal"
-                    HorizontalAlignment="{TemplateBinding HorizontalAlignment}">
-                    <TextBlock
-                        Text="❤"
-                        VerticalAlignment="Center" />
-                    <ContentPresenter
-                        HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
-                        VerticalAlignment="{TemplateBinding VerticalAlignment}" />
-                </StackPanel>
-
-            </Border>
-
-        </ControlTemplate>
-    </UserControl.Resources>
-
     <md:DialogHost
         IsOpen="{Binding Path=IsOpenDialogContent}">
         
@@ -73,7 +47,7 @@
             <md:Snackbar
                 VerticalAlignment="Top"
                 Background="#FF3F51B5"
-                MessageQueue="{Binding MsgQueue}" />
+                MessageQueue="{Binding Path=MsgQueue}" />
 
             <StackPanel>
 

@@ -45,6 +45,7 @@
         <ListBox
             x:Name="menuBar"
             ItemsSource="{Binding Menus}"
+            SelectedIndex="0"
             ItemContainerStyle="{StaticResource MyListBoxItemStyle}">
 
             <!--菜单选项改变时的触发器-->
