@@ -23,6 +23,7 @@
             Source="/Images/icon.png">
         </Image>
 
+        <!--md:TextFieldAssist.HasClearButton 容易偏上，设置 VerticalContentAlignment="Center" 即可修正-->
         <TextBox
             Text="{Binding Path=UserName, UpdateSourceTrigger=PropertyChanged}"
             MaxLength="12"

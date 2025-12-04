@@ -17,11 +17,10 @@
 
             <!--  时间线部分  -->
             <StackPanel
-                Width="120"
+                Width="150"
                 VerticalAlignment="Top">
                 <TextBlock
                     Text="{Binding Year}"
-                    Margin="30,0"
                     FontSize="27"
                     FontWeight="Bold"
                     HorizontalAlignment="Center"

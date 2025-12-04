@@ -17,7 +17,7 @@ namespace Client.Services.WebApi
             return await PostAsync<Goal>("api/goals", goal);
         }
 
-        public async Task<bool> UpdateGoalAsync(Goal goal)
+        public async Task<ApiResult> UpdateGoalAsync(Goal goal)
         {
             return await PutAsync($"api/goals/{goal.Id}", goal);
         }

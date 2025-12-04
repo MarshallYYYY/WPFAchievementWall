@@ -86,7 +86,19 @@ namespace Server.Controllers
                     throw;
                 }
             }
+            catch (DbUpdateException ex)
+            {
+                if (ex.InnerException is SqlException sqlException)
+                {
+                    if (sqlException.Number == 2627 || sqlException.Number == 2601)
+                    {
+                        return Conflict("用户名已存在！");
+                    }
+                }
+                return BadRequest("数据更新失败！");
+            }
 
+            // 204：更新成功
             return NoContent();
         }
 

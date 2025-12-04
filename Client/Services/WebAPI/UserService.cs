@@ -24,7 +24,7 @@ namespace Client.Services.WebApi
             return await PostAsync<User>("api/users", user);
         }
 
-        public async Task<bool> UpdateUserAsync(User user)
+        public async Task<ApiResult> UpdateUserAsync(User user)
         {
             return await PutAsync($"api/users/{user.Id}", user);
         }

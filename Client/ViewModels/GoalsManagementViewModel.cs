@@ -92,7 +92,7 @@ namespace Client.ViewModels
 
         private int isAddEditShow = 0;
         /// <summary>
-        /// Transitioner的SelectedIndex，0：不显示AddEdit，1：显示AddEdit。
+        /// Transitioner的SelectedIndex，0：显示目标管理页面，1：显示AddEdit页面。
         /// </summary>
         public int IsShowAddEdit
         {
@@ -232,7 +232,7 @@ namespace Client.ViewModels
                     return;
                 }
 
-                Goal newGoal = apiResult.Data!;
+                //Goal newGoal = apiResult.Data!;
                 IsShowAddEdit = 0;
                 await InitData();
             });
@@ -245,11 +245,15 @@ namespace Client.ViewModels
 
             _ = loadingService.RunWithLoadingAsync(async () =>
             {
-                bool result = await service.UpdateGoalAsync(goalEdit);
-                if (result is true)
+                ApiResult apiResult = await service.UpdateGoalAsync(goalEdit);
+                if (apiResult.IsSuccess is true)
                 {
                     IsShowAddEdit = 0;
                     await InitData();
+                }
+                else
+                {
+                    snackbarService.SendMessage(apiResult.ErrorMessage!);
                 }
             });
         }
@@ -263,10 +267,14 @@ namespace Client.ViewModels
 
             _ = loadingService.RunWithLoadingAsync(async () =>
             {
-                bool result = await service.UpdateGoalAsync(goal);
-                if (result is true)
+                ApiResult apiResult = await service.UpdateGoalAsync(goal);
+                if (apiResult.IsSuccess is true)
                 {
                     await InitData();
+                }
+                else
+                {
+                    snackbarService.SendMessage(apiResult.ErrorMessage!);
                 }
             });
         }

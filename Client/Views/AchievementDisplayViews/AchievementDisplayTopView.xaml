@@ -47,6 +47,7 @@
 
         <TextBlock
             Text="年份："
+            Margin="5,0,0,0"
             Style="{StaticResource TextBlockTemplate}" />
         <ComboBox
             Width="80"
@@ -99,7 +100,7 @@
 
         <Button
             Content="筛选"
-            Grid.Row="0"
+            Height="38"
             Command="{Binding Path=FilterCommand}"
             Margin="5,0,0,0"
             Background="Green"
@@ -108,7 +109,7 @@
 
         <Button
             Content="清空"
-            Grid.Row="0"
+            Height="38"
             Command="{Binding Path=ClearCommand}"
             Margin="5,0,0,0"
             Background="Green"
@@ -116,9 +117,9 @@
             FontSize="22" />
 
         <Button
-            Grid.Row="0"
-            Command="{Binding Path=OpenAddCommand}"
             Content="New +"
+            Height="38"
+            Command="{Binding Path=OpenAddCommand}"
             Margin="5,0,10,0"
             DockPanel.Dock="Right"
             Background="Green"

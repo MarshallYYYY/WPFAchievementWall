@@ -508,7 +508,7 @@ namespace Client.ViewModels
                     return;
                 }
 
-                Achievement newAchievement = apiResult.Data!;
+                //Achievement newAchievement = apiResult.Data!;
                 IsShowAddEdit = 0;
                 // 下面两个函数中都有 SetAllAchievement(localAllAchievement);，
                 // 所以在 ClearSearchBar(); 中的那一次调用属于多余调用
@@ -528,12 +528,16 @@ namespace Client.ViewModels
 
             _ = loadingService.RunWithLoadingAsync(async () =>
             {
-                bool result = await service.UpdateAchievementAsync(selectedAchievement);
-                if (result is true)
+                ApiResult apiResult = await service.UpdateAchievementAsync(selectedAchievement);
+                if (apiResult.IsSuccess is true)
                 {
                     IsShowAddEdit = 0;
                     await InitData();
                     ClearSearchBar();
+                }
+                else
+                {
+                    snackbarService.SendMessage(apiResult.ErrorMessage!);
                 }
             });
         }

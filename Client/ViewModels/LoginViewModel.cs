@@ -197,7 +197,7 @@ namespace Client.ViewModels
                     return;
                 }
 
-                User newUser = apiResult.Data!;
+                //User newUser = apiResult.Data!;
                 MsgQueue.Enqueue("注册成功！返回登录界面");
                 OpenLogin();
                 //OpenLoginCommand.Execute();

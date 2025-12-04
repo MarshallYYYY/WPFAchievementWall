@@ -25,11 +25,7 @@ namespace Client.ViewModels
             NavigateCommand = new DelegateCommand<Menu>(Navigate);
 
             MsgQueue = new SnackbarMessageQueue(TimeSpan.FromSeconds(3));
-
-            TestCommand = new DelegateCommand(TestButton);
-            //TestCommand = new(() => IsOpenDialogContent = !IsOpenDialogContent);
         }
-
 
         #region 初始化配置
         private readonly IUserSession userSession;
@@ -129,40 +125,5 @@ namespace Client.ViewModels
             MsgQueue.Enqueue(msg);
         }
         #endregion
-
-        #region Test
-
-        public DelegateCommand TestCommand { get; private set; }
-
-        private void TestButton()
-        {
-            if (Debugger.IsAttached)
-            {
-                // 简单提示开发者
-                Debug.WriteLine("注意：重启后需要手动重新附加调试器");
-
-                // 或者使用更明显的方式
-                if (MessageBox.Show(
-                    "重启后将断开与调试器的连接。继续吗？",
-                    "调试提示",
-                    MessageBoxButton.YesNo) == MessageBoxResult.No)
-                {
-                    return;
-                }
-            }
-
-            // 获取当前应用程序的路径和文件名
-
-            //旧版.NET Framework
-            //string applicationPath = Process.GetCurrentProcess().MainModule!.FileName;
-            string applicationPath = Environment.ProcessPath!;
-
-            // 启动新的应用程序实例
-            Process.Start(applicationPath);
-
-            // 关闭当前应用程序
-            Application.Current.Shutdown();
-        }
-        #endregion Test
     }
 }

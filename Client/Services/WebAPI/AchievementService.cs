@@ -9,8 +9,7 @@ namespace Client.Services.WebApi
 
         public async Task<ApiResult<List<Achievement>>> GetAchievementsByUserIdAsync(int userId)
         {
-            string endpoint = $"api/achievements?userId={userId}";
-            return await GetAsync<List<Achievement>>(endpoint);
+            return await GetAsync<List<Achievement>>($"api/achievements?userId={userId}");
         }
 
         public async Task<ApiResult<Achievement>> CreateAchievementAsync(Achievement achievement)
@@ -18,7 +17,7 @@ namespace Client.Services.WebApi
             return await PostAsync<Achievement>("api/achievements", achievement);
         }
 
-        public async Task<bool> UpdateAchievementAsync(Achievement achievement)
+        public async Task<ApiResult> UpdateAchievementAsync(Achievement achievement)
         {
             return await PutAsync($"api/achievements/{achievement.Id}", achievement);
         }
