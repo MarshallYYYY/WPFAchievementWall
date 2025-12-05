@@ -12,7 +12,7 @@ namespace Client.ViewModels
     {
         public string Title { get; set; } = "个人成就记录墙";
         public LoginViewModel(
-            UserService userService,
+            IUserService userService,
             IUserSession userSession,
             IEventAggregator eventAggregator,
             ILoadingService loadingService)
@@ -34,7 +34,7 @@ namespace Client.ViewModels
         }
 
         #region 服务、会话、页面切换、SnackbarMessageQueue
-        private readonly UserService userService;
+        private readonly IUserService userService;
         private readonly IUserSession userSession;
 
         private int transitionerSelectedIndex = 0;
@@ -94,7 +94,7 @@ namespace Client.ViewModels
         {
             await loadingService.RunWithLoadingAsync(async () =>
             {
-                ApiResult<User> apiResult = await userService.GetUserAsyncForLogin(userName, password);
+                ApiResult<User> apiResult = await userService.GetUserForLoginAsync(userName, password);
                 if (apiResult.IsSuccess is false)
                 {
                     MsgQueue.Enqueue(apiResult.ErrorMessage!);

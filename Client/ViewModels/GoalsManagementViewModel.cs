@@ -11,7 +11,7 @@ namespace Client.ViewModels
     public class GoalsManagementViewModel : BindableBase
     {
         public GoalsManagementViewModel(
-            GoalService goalService,
+            IGoalService goalService,
             ILoadingService loadingService,
             IMessageBoxService messageBoxService,
             ISnackbarService snackbarService,
@@ -34,7 +34,7 @@ namespace Client.ViewModels
         }
 
         #region 服务和数据
-        private readonly GoalService service;
+        private readonly IGoalService service;
         private readonly ILoadingService loadingService;
         private readonly IMessageBoxService messageBoxService;
         private readonly ISnackbarService snackbarService;
@@ -45,28 +45,12 @@ namespace Client.ViewModels
         public ObservableCollection<Goal> AchievedGoals { get; set; } = [];
         private async Task InitData()
         {
-            goals.Clear();
-            OngoingGoals.Clear();
-            AchievedGoals.Clear();
-
-            ApiResult<List<Goal>> apiResult = await service.GetGoalsByUserIdAsync(userSession.CurrentUser.Id);
+            ApiResult apiResult = await service.SplitUserGoalsAsync(
+                userSession.CurrentUser.Id, goals,
+                OngoingGoals, AchievedGoals);
             if (apiResult.IsSuccess is false)
             {
                 snackbarService.SendMessage(apiResult.ErrorMessage!);
-                return;
-            }
-
-            goals = apiResult.Data!;
-            foreach (Goal goal in
-                goals.Where(goal => goal.AchieveDate is null).OrderBy(goal => goal.TargetDate))
-            {
-                OngoingGoals.Add(goal);
-            }
-
-            foreach (Goal goal in
-                goals.Where(goal => goal.AchieveDate is not null).OrderByDescending(goal => goal.AchieveDate))
-            {
-                AchievedGoals.Add(goal);
             }
         }
         #endregion

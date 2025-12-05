@@ -1,9 +1,7 @@
 ﻿using Client.Models;
 using Newtonsoft.Json;
-using System.Linq.Expressions;
 using System.Net.Http;
 using System.Text;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Client.Services.WebApi
 {

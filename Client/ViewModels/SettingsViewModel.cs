@@ -2,14 +2,7 @@
 using Client.Models;
 using Client.Services;
 using Client.Services.WebApi;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Reflection.Metadata;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -21,7 +14,7 @@ namespace Client.ViewModels
             IMessageBoxService messageBoxService,
             ILoadingService loadingService,
             IUserSession userSession,
-            UserService userService,
+            IUserService userService,
             ISnackbarService snackbarService)
         {
             TabChangedCommand = new DelegateCommand<object>(TabSelectionChanged);
@@ -39,7 +32,7 @@ namespace Client.ViewModels
         private readonly IMessageBoxService messageBoxService;
         private readonly ILoadingService loadingService;
         private readonly IUserSession userSession;
-        private readonly UserService userService;
+        private readonly IUserService userService;
         private readonly ISnackbarService snackbarService;
         #endregion
 
@@ -79,9 +72,13 @@ namespace Client.ViewModels
             }
         }
         #endregion
+
+        #region 修改头像
+        // TODO：修改头像
         private void ChangeAvatar()
         {
-        }
+        } 
+        #endregion
 
         #region 更换昵称
         private string newUserName = string.Empty;
@@ -188,6 +185,7 @@ namespace Client.ViewModels
         }
         #endregion
 
+        #region 注销账号、退出登录
         private async void DeleteAccount()
         {
             ButtonResult boxResult = await messageBoxService.ShowAsync(
@@ -238,5 +236,6 @@ namespace Client.ViewModels
             // 关闭当前应用程序
             Application.Current.Shutdown();
         }
+        #endregion
     }
 }

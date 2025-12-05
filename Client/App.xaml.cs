@@ -28,13 +28,13 @@ namespace Client
             // 注册为单例服务
 
             // 当服务构造函数需要外部参数或容器无法自动创建的类型时，必须用 lambda / 工厂方法注册
-            containerRegistry.RegisterSingleton<UserService>(() => new UserService(baseUrl));
+            containerRegistry.RegisterSingleton<IUserService>(() => new UserService(baseUrl));
             // 构造函数没有参数或者构造函数依赖的类型都已经注册在容器里，可以用下面的写法，
             // 这个方法容器会自动通过 反射 找到构造函数，自动 Resolve 所需的依赖。
             //containerRegistry.RegisterSingleton<XXX>();
 
-            containerRegistry.RegisterSingleton<AchievementService>(() => new AchievementService(baseUrl));
-            containerRegistry.RegisterSingleton<GoalService>(() => new GoalService(baseUrl));
+            containerRegistry.RegisterSingleton<IAchievementService>(() => new AchievementService(baseUrl));
+            containerRegistry.RegisterSingleton<IGoalService>(() => new GoalService(baseUrl));
             #endregion
 
             containerRegistry.RegisterSingleton<ILoadingService, LoadingService>();

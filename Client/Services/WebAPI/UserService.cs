@@ -1,14 +1,13 @@
 ﻿using Client.Models;
 using Models;
-using System.Windows;
 
 namespace Client.Services.WebApi
 {
-    public class UserService : ApiServiceBase
+    public class UserService : ApiServiceBase, IUserService
     {
         public UserService(string baseUrl) : base(baseUrl) { }
 
-        public async Task<ApiResult<User>> GetUserAsyncForLogin(string userName, string password)
+        public async Task<ApiResult<User>> GetUserForLoginAsync(string userName, string password)
         {
             // Uri.EscapeDataString(title)
             // 处理特殊情况：空格、中文、? & = / 等特殊字符、非 ASCII 字符

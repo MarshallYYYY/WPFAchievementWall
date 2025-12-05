@@ -13,7 +13,7 @@ namespace Client.ViewModels
     public partial class AchievementDisplayViewModel : BindableBase
     {
         public AchievementDisplayViewModel(
-            AchievementService achievementService,
+            IAchievementService achievementService,
             ILoadingService loadingService,
             IUserSession userSession,
             IMessageBoxService messageBoxService,
@@ -53,7 +53,7 @@ namespace Client.ViewModels
         /// <summary>
         /// Achievement API Service
         /// </summary>
-        private readonly AchievementService service;
+        private readonly IAchievementService service;
         private readonly ILoadingService loadingService;
         private readonly IUserSession userSession;
         private readonly IMessageBoxService messageBoxService;
@@ -91,34 +91,12 @@ namespace Client.ViewModels
 
         private async Task InitLocalAllAchievement()
         {
-            localAllAchievement.Clear();
-            ApiResult<List<Achievement>> apiResult =
-                await service.GetAchievementsByUserIdAsync(userSession.CurrentUser.Id);
+            ApiResult apiResult = await service.SetUserAchievementsGroupedByYearAsync(
+                userSession.CurrentUser.Id, localAllAchievement);
             if (apiResult.IsSuccess is false)
             {
                 snackbarService.SendMessage(apiResult.ErrorMessage!);
-                return;
             }
-            // 获取所有的成就
-            List<Achievement> allAchievement = apiResult.Data!;
-            // 将所有的成就按照年份分组
-            List<YearAchievements> allYearGroup = allAchievement
-                .GroupBy(achievement => achievement.AchieveDate?.Year)
-                // 按年份降序排列
-                // yearGroup.Key 是刚刚分组的 Key（年份字符串）
-                .OrderByDescending(yearGroup => yearGroup.Key)
-                //  Select(转换为YearAchievements)
-                .Select(yearGroup => new YearAchievements
-                {
-                    Year = Convert.ToInt32(yearGroup.Key),
-                    // 调用构造函数来进行赋值
-                    Achievements = new List<Achievement>(
-                        yearGroup.OrderByDescending(achievement => achievement.AchieveDate).ToList())
-                })
-                .ToList();
-            // 按照年份依次添加到 AllAchievement 中
-            // allYearGroup.ForEach(yearGroup => localAllAchievement.Add(yearGroup));
-            allYearGroup.ForEach(localAllAchievement.Add);
         }
 
         private void SetAllAchievement(List<YearAchievements> allAchievement)
