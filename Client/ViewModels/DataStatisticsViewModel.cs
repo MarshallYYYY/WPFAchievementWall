@@ -1,11 +1,15 @@
 ﻿using Client.Common;
+using Client.Models;
 using Client.Services;
 using Client.Services.WebApi;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
+using LiveChartsCore.Measure;
 using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Extensions;
 using LiveChartsCore.SkiaSharpView.Painting;
 using LiveChartsCore.SkiaSharpView.VisualElements;
+using Models;
 using SkiaSharp;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -19,13 +23,14 @@ namespace Client.ViewModels
                     IUserSession userSession,
                     IAchievementService achievementService,
                     IGoalService goalService,
-                    ILoadingService loadingService)
+                    ILoadingService loadingService,
+                    ISnackbarService snackbarService)
         {
             this.userSession = userSession;
             this.achievementService = achievementService;
             this.goalService = goalService;
             this.loadingService = loadingService;
-
+            this.snackbarService = snackbarService;
             PlotCommand = new DelegateCommand(Plot);
         }
 
@@ -34,6 +39,7 @@ namespace Client.ViewModels
         private readonly IAchievementService achievementService;
         private readonly IGoalService goalService;
         private readonly ILoadingService loadingService;
+        private readonly ISnackbarService snackbarService;
         #endregion
 
         #region INavigationAware
@@ -47,41 +53,43 @@ namespace Client.ViewModels
         }
         #endregion
 
-        #region 每次进入页面时的初始化
+        #region 每次进入页面时的初始化（UI初始化、数据初始化）
         private void Init()
         {
+            // 设置第一个ComboBox的选项为成就
             SelectedAnalysisObject = AnalysisObject.Achievement;
+            // 设置第二个ComboBox的选项为年份
             SelectedDataDimension = DataDimension.Year;
-            SetDataDimensionOptions();
-            SetChartTypeOptions();
-        }
-        private void SetDataDimensionOptions()
-        {
-            DataDimensionOptions.Clear();
-            switch (selectedAnalysisObject)
+            // 设置第三个ComboBox的选项为折线图
+            selectedChartType = ChartType.LineChart;
+
+            // 设置右侧TabControl显示的图表类型为折线图
+            TabControlSelectedIndex = 0;
+            // 加载数据，然后显示图表：成就 - 年份 - 折线图
+            _ = loadingService.RunWithLoadingAsync(async () =>
             {
-                case AnalysisObject.Achievement:
-                    DataDimensionOptions.Add(DataDimension.Year);
-                    DataDimensionOptions.Add(DataDimension.Level);
-                    DataDimensionOptions.Add(DataDimension.Category);
-                    break;
-                case AnalysisObject.Goal:
-                    DataDimensionOptions.Add(DataDimension.CompletionStatus);
-                    DataDimensionOptions.Add(DataDimension.OntimeAchievementRate);
-                    break;
-            }
-            SelectedDataDimension = DataDimensionOptions.First();
+                await InitData();
+                Plot();
+            });
         }
-        private void SetChartTypeOptions()
+        private readonly List<YearAchievements> achievements = [];
+        private readonly ObservableCollection<Goal> ongoingGoals = [];
+        private readonly ObservableCollection<Goal> achievedGoals = [];
+        private async Task InitData()
         {
-            ChartTypeOptions.Clear();
-            if (selectedDataDimension == DataDimension.Year)
+            ApiResult achievementApiResult = await achievementService.SetUserAchievementsGroupedByYearAsync(
+                userSession.CurrentUser.Id, achievements);
+            if (achievementApiResult.IsSuccess is false)
             {
-                ChartTypeOptions.Add(ChartType.LineChart);
+                snackbarService.SendMessage(achievementApiResult.ErrorMessage!);
             }
-            ChartTypeOptions.Add(ChartType.BarChart);
-            ChartTypeOptions.Add(ChartType.PieChart);
-            SelectedChartType = ChartTypeOptions.First();
+
+            ApiResult goalApiResult = await goalService.SplitUserGoalsAsync(
+                userSession.CurrentUser.Id, ongoingGoals, achievedGoals);
+            if (goalApiResult.IsSuccess is false)
+            {
+                snackbarService.SendMessage(goalApiResult.ErrorMessage!);
+            }
         }
         #endregion
 
@@ -103,6 +111,24 @@ namespace Client.ViewModels
         }
         #endregion
 
+        private void SetDataDimensionOptions()
+        {
+            DataDimensionOptions.Clear();
+            switch (selectedAnalysisObject)
+            {
+                case AnalysisObject.Achievement:
+                    DataDimensionOptions.Add(DataDimension.Year);
+                    DataDimensionOptions.Add(DataDimension.Level);
+                    DataDimensionOptions.Add(DataDimension.Category);
+                    break;
+                case AnalysisObject.Goal:
+                    DataDimensionOptions.Add(DataDimension.CompletionStatus);
+                    DataDimensionOptions.Add(DataDimension.OntimeAchievementRate);
+                    break;
+            }
+            SelectedDataDimension = DataDimensionOptions.First();
+        }
+
         #region 数据维度
         /// <summary>
         /// 第二个ComboBox（数据维度）的Source 
@@ -119,6 +145,18 @@ namespace Client.ViewModels
                 SetChartTypeOptions();
             }
         }
+
+        private void SetChartTypeOptions()
+        {
+            ChartTypeOptions.Clear();
+            if (selectedDataDimension == DataDimension.Year)
+            {
+                ChartTypeOptions.Add(ChartType.LineChart);
+            }
+            ChartTypeOptions.Add(ChartType.BarChart);
+            ChartTypeOptions.Add(ChartType.PieChart);
+            SelectedChartType = ChartTypeOptions.First();
+        }
         #endregion
 
         #region 图表类型
@@ -130,23 +168,7 @@ namespace Client.ViewModels
         public string SelectedChartType
         {
             get { return selectedChartType; }
-            set
-            {
-                SetProperty(ref selectedChartType, value);
-                // 当第三个ComboBox的选项改变时，改变右侧TabControl显示的图表。
-                switch (value)
-                {
-                    case ChartType.LineChart:
-                        TabControlSelectedIndex = 0;
-                        break;
-                    case ChartType.BarChart:
-                        TabControlSelectedIndex = 1;
-                        break;
-                    case ChartType.PieChart:
-                        TabControlSelectedIndex = 2;
-                        break;
-                }
-            }
+            set { SetProperty(ref selectedChartType, value); }
         }
         #endregion 
         #endregion
@@ -161,27 +183,160 @@ namespace Client.ViewModels
         public DelegateCommand PlotCommand { get; private set; }
         private void Plot()
         {
-            TabControlSelectedIndex = tabControlSelectedIndex == 0 ? 1 : 0;
-        }
-        public ISeries[] LineSeries { get; set; } =
-        [
-        new LineSeries<DateTimePoint>
-        {
-            Values = new ObservableCollection<DateTimePoint>
+            switch (selectedChartType)
             {
-                new DateTimePoint(new DateTime(2005, 1, 1), 3),
-                new DateTimePoint(new DateTime(2006, 1, 2), 6),
-                new DateTimePoint(new DateTime(2008, 1, 3), 5),
-                new DateTimePoint(new DateTime(2010, 1, 4), 3),
-                new DateTimePoint(new DateTime(2015, 1, 5), 5),
-                new DateTimePoint(new DateTime(2020, 1, 6), 8),
-                new DateTimePoint(new DateTime(2025, 1, 7), 6)
+                case ChartType.LineChart:
+                    PlotLineChart();
+                    break;
+                case ChartType.BarChart:
+                    PlotBarChart();
+                    break;
+                case ChartType.PieChart:
+                    PlotPieChart();
+                    break;
             }
-        },
-    ];
+        }
+
+        #region 折线图 LineChart
+        private ISeries[] lineSeries = [];
+        public ISeries[] LineSeries
+        {
+            get { return lineSeries; }
+            set { SetProperty(ref lineSeries, value); }
+        }
         public Axis[] LineXAxes { get; } =
           // 365.25 是考虑了闰年的情况
           [new DateTimeAxis(TimeSpan.FromDays(365.25), date => date.ToString("yyyy")),];
+
+        private void PlotLineChart()
+        {
+            // 点击绘制按钮后，改变右侧TabControl显示的图表类型。
+            TabControlSelectedIndex = 0;
+
+            var points = new ObservableCollection<DateTimePoint>();
+            foreach (YearAchievements yearAchievements in achievements)
+            {
+                // Convert.ToDateTime(yearAchievements.Year) 会失败，所以在后面补充 1月1日。
+                DateTime dateTime = new(yearAchievements.Year ?? 2000, 1, 1);
+                DateTimePoint dateTimePoint = new(dateTime, yearAchievements.Achievements.Count);
+                points.Add(dateTimePoint);
+            }
+            LineSeries<DateTimePoint> lineSeries = new()
+            {
+                Values = points,
+                //Fill = null, // 不要填充
+                //Stroke = new SolidColorPaint(SKColors.SteelBlue) // 固定颜色
+                
+                // 让数值显示在数据点的上方
+                DataLabelsPaint = new SolidColorPaint(new SKColor(30, 30, 30)),
+                DataLabelsPosition = DataLabelsPosition.Top
+            };
+            LineSeries = [lineSeries];
+        }
+        #endregion
+
+        #region 柱状图 BarChart
+        private ISeries[] barSeries = [];
+        public ISeries[] BarSeries
+        {
+            get { return barSeries; }
+            set { SetProperty(ref barSeries, value); }
+        }
+        private Axis[] barXAxes = [];
+        public Axis[] BarXAxes
+        {
+            get { return barXAxes; }
+            set { SetProperty(ref barXAxes, value); }
+        }
+        private void PlotBarChart()
+        {
+            TabControlSelectedIndex = 1;
+            switch (selectedDataDimension)
+            {
+                case DataDimension.Year:
+                    PlotYearBarChart();
+                    break;
+                case DataDimension.Level:
+                    break;
+                case DataDimension.Category:
+                    break;
+
+                case DataDimension.CompletionStatus:
+                    break;
+                case DataDimension.OntimeAchievementRate:
+                    break;
+            }
+        }
+        private void PlotYearBarChart()
+        {
+            var points = new ObservableCollection<DateTimePoint>();
+            foreach (YearAchievements yearAchievements in achievements)
+            {
+                DateTime dateTime = new(yearAchievements.Year ?? 2000, 1, 1);
+                DateTimePoint dateTimePoint = new(dateTime, yearAchievements.Achievements.Count);
+                points.Add(dateTimePoint);
+            }
+            ColumnSeries<DateTimePoint> columnSeries = new()
+            {
+                Values = points,
+                //Fill = new SolidColorPaint(SKColors.LightSkyBlue),
+                DataLabelsPaint = new SolidColorPaint(new SKColor(30, 30, 30)),
+                DataLabelsPosition = DataLabelsPosition.Top
+            };
+            BarSeries = [columnSeries];
+
+            BarXAxes = [new DateTimeAxis(TimeSpan.FromDays(365.25), date => date.ToString("yyyy")),];
+        }
+        #endregion
+
+        #region 饼图 PieChart
+        private IEnumerable<ISeries> pieSeries = [];
+        public IEnumerable<ISeries> PieSeries
+        {
+            get { return pieSeries; }
+            set { SetProperty(ref pieSeries, value); }
+        }
+        private void PlotPieChart()
+        {
+            TabControlSelectedIndex = 2;
+            switch (selectedDataDimension)
+            {
+                case DataDimension.Year:
+                    PlotYearPieChart();
+                    break;
+                case DataDimension.Level:
+                    break;
+                case DataDimension.Category:
+                    break;
+
+                case DataDimension.CompletionStatus:
+                    break;
+                case DataDimension.OntimeAchievementRate:
+                    break;
+            }
+        }
+        private void PlotYearPieChart()
+        {
+            int[] data = new int[achievements.Count];
+            for (int i = 0; i < data.Length; i++)
+            {
+                YearAchievements yearAchievements = achievements[i];
+                data[i] = yearAchievements.Achievements.Count;
+            }
+            int index = 0;
+            PieSeries = data.AsPieSeries((value, series) =>
+            {
+                series.Name = achievements[index++].Year.ToString();
+                series.DataLabelsPosition = LiveChartsCore.Measure.PolarLabelsPosition.Middle;
+                series.DataLabelsSize = 18;
+                series.DataLabelsPaint = new SolidColorPaint(new SKColor(30, 30, 30));
+                series.DataLabelsFormatter = point =>
+                   $"{series.Name}: {point.Coordinate.PrimaryValue}/{point.StackedValue!.Total}";
+                series.ToolTipLabelFormatter = point => $"{point.StackedValue!.Share:P2}";
+            });
+
+        }
+        #endregion
         #endregion
     }
 }

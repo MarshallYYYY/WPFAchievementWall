@@ -111,8 +111,7 @@
                 Tag="{x:Static common:ChartType.BarChart}">
                 <lvc:CartesianChart
                     Series="{Binding BarSeries}"
-                    XAxes="{Binding BarXAxes}"
-                    LegendPosition="Right">
+                    XAxes="{Binding BarXAxes}">
                 </lvc:CartesianChart>
             </TabItem>
 
