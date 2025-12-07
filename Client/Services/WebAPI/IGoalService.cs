@@ -7,7 +7,7 @@ namespace Client.Services.WebApi
     public interface IGoalService
     {
         Task<ApiResult<List<Goal>>> GetUserGoalsAsync(int userId);
-        Task<ApiResult> SplitUserGoalsAsync(int userId, List<Goal> goals,
+        Task<ApiResult> SplitUserGoalsAsync(int userId,
             ObservableCollection<Goal> ongoingGoals,
             ObservableCollection<Goal> achievedGoals);
         Task<ApiResult<Goal>> CreateGoalAsync(Goal goal);

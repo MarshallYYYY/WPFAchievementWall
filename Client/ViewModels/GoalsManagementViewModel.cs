@@ -40,13 +40,12 @@ namespace Client.ViewModels
         private readonly ISnackbarService snackbarService;
         private readonly IUserSession userSession;
 
-        private List<Goal> goals = [];
         public ObservableCollection<Goal> OngoingGoals { get; set; } = [];
         public ObservableCollection<Goal> AchievedGoals { get; set; } = [];
         private async Task InitData()
         {
             ApiResult apiResult = await service.SplitUserGoalsAsync(
-                userSession.CurrentUser.Id, goals,
+                userSession.CurrentUser.Id,
                 OngoingGoals, AchievedGoals);
             if (apiResult.IsSuccess is false)
             {

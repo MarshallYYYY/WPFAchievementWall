@@ -22,6 +22,8 @@ namespace Client.ViewModels
 
             eventAggregator.GetEvent<LoadingOpenEvent>().Subscribe(LoadingSubscribe);
             eventAggregator.GetEvent<SnackbarMessageEvent>().Subscribe(ShowMessage);
+            eventAggregator.GetEvent<ChangeUserNameEvent>().Subscribe(ChangeUserName);
+
             NavigateCommand = new DelegateCommand<Menu>(Navigate);
 
             MsgQueue = new SnackbarMessageQueue(TimeSpan.FromSeconds(3));
@@ -97,7 +99,10 @@ namespace Client.ViewModels
             MainViewTitle = $"个人成就记录墙 - {menu.Title}";
             MenuToggleButtonIsChecked = false;
         }
-
+        private void ChangeUserName(string userName)
+        {
+            UserName = userName;
+        }
         #endregion 左侧菜单栏
 
         #region 加载窗口

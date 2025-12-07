@@ -15,7 +15,8 @@ namespace Client.ViewModels
             ILoadingService loadingService,
             IUserSession userSession,
             IUserService userService,
-            ISnackbarService snackbarService)
+            ISnackbarService snackbarService,
+            IChangeUserNameService changeUserNameService)
         {
             TabChangedCommand = new DelegateCommand<object>(TabSelectionChanged);
             this.messageBoxService = messageBoxService;
@@ -23,7 +24,7 @@ namespace Client.ViewModels
             this.userSession = userSession;
             this.userService = userService;
             this.snackbarService = snackbarService;
-
+            this.changeUserNameService = changeUserNameService;
             SaveUserNameCommand = new DelegateCommand(SaveUserName);
             SavePasswordCommand = new DelegateCommand(SavePassword);
         }
@@ -34,6 +35,7 @@ namespace Client.ViewModels
         private readonly IUserSession userSession;
         private readonly IUserService userService;
         private readonly ISnackbarService snackbarService;
+        private readonly IChangeUserNameService changeUserNameService;
         #endregion
 
         #region TabItem 切换
@@ -77,7 +79,7 @@ namespace Client.ViewModels
         // TODO：修改头像
         private void ChangeAvatar()
         {
-        } 
+        }
         #endregion
 
         #region 更换昵称
@@ -96,24 +98,29 @@ namespace Client.ViewModels
         {
             if (string.IsNullOrWhiteSpace(newUserName))
             {
+                // TODO：多次点击按钮后，会逐次弹出所有的提示信息，这个问题需要修改。
                 snackbarService.SendMessage("昵称不能为空！");
                 return;
             }
 
-            userSession.CurrentUser.UserName = newUserName;
+            string oldUserName = userSession.CurrentUser.UserName;
 
             _ = loadingService.RunWithLoadingAsync(async () =>
             {
+                userSession.CurrentUser.UserName = newUserName;
                 ApiResult apiResult = await userService.UpdateUserAsync(userSession.CurrentUser);
                 if (apiResult.IsSuccess)
                 {
                     snackbarService.SendMessage("更换昵称成功！");
+
+                    changeUserNameService.ChangeUserNname(newUserName);
                     // 清空输入框的内容
                     ChangeUserName();
                 }
                 else
                 {
                     snackbarService.SendMessage(apiResult.ErrorMessage!);
+                    userSession.CurrentUser.UserName = oldUserName;
                 }
             });
         }

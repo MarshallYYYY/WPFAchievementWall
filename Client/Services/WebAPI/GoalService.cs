@@ -7,19 +7,16 @@ namespace Client.Services.WebApi
     public class GoalService : ApiServiceBase, IGoalService
     {
         public GoalService(string baseUrl) : base(baseUrl) { }
+        private const string endpointPrefix = "api/goals";
 
         public async Task<ApiResult<List<Goal>>> GetUserGoalsAsync(int userId)
         {
-            return await GetAsync<List<Goal>>($"api/goals?userid={userId}");
+            return await GetAsync<List<Goal>>($"{endpointPrefix}?userid={userId}");
         }
-        public async Task<ApiResult> SplitUserGoalsAsync(int userId, List<Goal> goals,
+        public async Task<ApiResult> SplitUserGoalsAsync(int userId,
             ObservableCollection<Goal> ongoingGoals,
             ObservableCollection<Goal> achievedGoals)
         {
-            goals.Clear();
-            ongoingGoals.Clear();
-            achievedGoals.Clear();
-
             ApiResult<List<Goal>> apiResult = await GetUserGoalsAsync(userId);
             if (apiResult.IsSuccess is false)
             {
@@ -30,7 +27,10 @@ namespace Client.Services.WebApi
                 };
             }
 
-            goals = apiResult.Data!;
+            List<Goal> goals = apiResult.Data!;
+            ongoingGoals.Clear();
+            achievedGoals.Clear();
+
             foreach (Goal goal in
                 goals.Where(goal => goal.AchieveDate is null).OrderBy(goal => goal.TargetDate))
             {
@@ -52,17 +52,17 @@ namespace Client.Services.WebApi
 
         public async Task<ApiResult<Goal>> CreateGoalAsync(Goal goal)
         {
-            return await PostAsync<Goal>("api/goals", goal);
+            return await PostAsync<Goal>(endpointPrefix, goal);
         }
 
         public async Task<ApiResult> UpdateGoalAsync(Goal goal)
         {
-            return await PutAsync($"api/goals/{goal.Id}", goal);
+            return await PutAsync($"{endpointPrefix}/{goal.Id}", goal);
         }
 
         public async Task<bool> DeleteGoalAsync(int id)
         {
-            return await DeleteAsync($"api/goals/{id}");
+            return await DeleteAsync($"{endpointPrefix}/{id}");
         }
     }
 }

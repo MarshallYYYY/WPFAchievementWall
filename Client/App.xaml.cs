@@ -40,6 +40,7 @@ namespace Client
             containerRegistry.RegisterSingleton<ILoadingService, LoadingService>();
             containerRegistry.RegisterSingleton<IMessageBoxService, MessageBoxService>();
             containerRegistry.RegisterSingleton<ISnackbarService, SnackbarService>();
+            containerRegistry.RegisterSingleton<IChangeUserNameService, ChangeUserNameService>();
         }
         // 只要你在 CreateShell 中返回某个 Window，Prism 会自动把这个 Window 注册到容器里作为单例。
         protected override Window CreateShell()

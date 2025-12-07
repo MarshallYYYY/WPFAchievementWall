@@ -15,278 +15,275 @@
     xmlns:common="clr-namespace:Client.Common"
     d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}">
 
-    <md:Card>
+    <TabControl
+        SelectedIndex="{Binding Path=TabControlSelectedIndex}"
+        md:NavigationRailAssist.ShowSelectionBackground="True"
+        SnapsToDevicePixels="True"
+        Style="{StaticResource MaterialDesignNavigationRailTabControl}"
+        TabStripPlacement="Left">
 
-        <TabControl
-            SelectedIndex="{Binding Path=TabControlSelectedIndex}"
-            md:NavigationRailAssist.ShowSelectionBackground="True"
-            SnapsToDevicePixels="True"
-            Style="{StaticResource MaterialDesignNavigationRailTabControl}"
-            TabStripPlacement="Left">
-
-            <i:Interaction.Triggers>
-                <i:EventTrigger
-                    EventName="SelectionChanged">
-                    <prism:InvokeCommandAction
-                        Command="{Binding Path=TabChangedCommand}"
-                        CommandParameter="{Binding Path=SelectedItem,          
+        <i:Interaction.Triggers>
+            <i:EventTrigger
+                EventName="SelectionChanged">
+                <prism:InvokeCommandAction
+                    Command="{Binding Path=TabChangedCommand}"
+                    CommandParameter="{Binding Path=SelectedItem,          
                         RelativeSource={RelativeSource AncestorType=TabControl}}" />
-                </i:EventTrigger>
-            </i:Interaction.Triggers>
+            </i:EventTrigger>
+        </i:Interaction.Triggers>
 
-            <!--关于我们-->
-            <TabItem
-                Tag="{x:Static common:SettingsTabItemTags.About}"
-                Padding="20"
-                Width="auto">
+        <!--关于我们-->
+        <TabItem
+            Tag="{x:Static common:SettingsTabItemTags.About}"
+            Padding="20"
+            Width="auto">
 
-                <TabItem.Header>
-                    <TextBlock
-                        FontSize="22"
-                        HorizontalAlignment="Center"
-                        Text="{x:Static common:SettingsTabItemTags.About}" />
-                </TabItem.Header>
+            <TabItem.Header>
+                <TextBlock
+                    FontSize="22"
+                    HorizontalAlignment="Center"
+                    Text="{x:Static common:SettingsTabItemTags.About}" />
+            </TabItem.Header>
 
-                <StackPanel
-                    Margin="16">
-                    <TextBlock
-                        FontSize="27"
-                        Margin="0,0,0,8"
-                        HorizontalAlignment="Center"
-                        Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                        Text="{x:Static common:SettingsTabItemTags.About}" />
-                    <TextBlock
-                        HorizontalAlignment="Center"
-                        FontSize="18">
+            <StackPanel
+                Margin="16">
+                <TextBlock
+                    FontSize="27"
+                    Margin="0,0,0,8"
+                    HorizontalAlignment="Center"
+                    Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                    Text="{x:Static common:SettingsTabItemTags.About}" />
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    FontSize="18">
                         <LineBreak />
                         <Run
-                            Text="软件名称：个人成就记录墙" />
-                        <LineBreak />
-                        <LineBreak />
-                        <Run
-                            Text="作    者：古法编程师" />
+                        Text="软件名称：个人成就记录墙" />
                         <LineBreak />
                         <LineBreak />
                         <Run
-                            Text="联系方式：1746155023@qq.com" />
-                    </TextBlock>
-                </StackPanel>
-            </TabItem>
-
-            <!--更换头像-->
-            <TabItem
-                Visibility="Collapsed"
-                Tag="{x:Static common:SettingsTabItemTags.ChangeAvatar}"
-                Padding="20"
-                Width="auto">
-
-                <TabItem.Header>
-                    <TextBlock
-                        FontSize="22"
-                        HorizontalAlignment="Center"
-                        Text="{x:Static common:SettingsTabItemTags.ChangeAvatar}" />
-                </TabItem.Header>
-
-                <StackPanel
-                    Margin="16">
-                    <TextBlock
-                        FontSize="27"
-                        Margin="0,0,0,8"
-                        Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                        Text="{x:Static common:SettingsTabItemTags.ChangeAvatar}" />
-                    <TextBlock
-                        FontSize="18">
-                        <Run
-                            Text="个人成就记录墙 软件" />
+                        Text="作    者：古法编程师" />
                         <LineBreak />
                         <LineBreak />
                         <Run
-                            Text="作者：1746155023@qq.com">
+                        Text="联系方式：1746155023@qq.com" />
+                </TextBlock>
+            </StackPanel>
+        </TabItem>
+
+        <!--更换头像-->
+        <TabItem
+            Visibility="Collapsed"
+            Tag="{x:Static common:SettingsTabItemTags.ChangeAvatar}"
+            Padding="20"
+            Width="auto">
+
+            <TabItem.Header>
+                <TextBlock
+                    FontSize="22"
+                    HorizontalAlignment="Center"
+                    Text="{x:Static common:SettingsTabItemTags.ChangeAvatar}" />
+            </TabItem.Header>
+
+            <StackPanel
+                Margin="16">
+                <TextBlock
+                    FontSize="27"
+                    Margin="0,0,0,8"
+                    Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                    Text="{x:Static common:SettingsTabItemTags.ChangeAvatar}" />
+                <TextBlock
+                    FontSize="18">
+                        <Run
+                        Text="个人成就记录墙 软件" />
+                        <LineBreak />
+                        <LineBreak />
+                        <Run
+                        Text="作者：1746155023@qq.com">
                         </Run>
-                    </TextBlock>
-                </StackPanel>
-            </TabItem>
+                </TextBlock>
+            </StackPanel>
+        </TabItem>
 
-            <!--更换昵称-->
-            <TabItem
-                Tag="{x:Static common:SettingsTabItemTags.ChangeUserName}"
-                Padding="20"
-                Width="auto">
+        <!--更换昵称-->
+        <TabItem
+            Tag="{x:Static common:SettingsTabItemTags.ChangeUserName}"
+            Padding="20"
+            Width="auto">
 
-                <TabItem.Header>
-                    <TextBlock
-                        FontSize="22"
-                        HorizontalAlignment="Center"
-                        Text="{x:Static common:SettingsTabItemTags.ChangeUserName}" />
-                </TabItem.Header>
+            <TabItem.Header>
+                <TextBlock
+                    FontSize="22"
+                    HorizontalAlignment="Center"
+                    Text="{x:Static common:SettingsTabItemTags.ChangeUserName}" />
+            </TabItem.Header>
+
+            <Grid
+                Margin="16">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition
+                        Height="auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+
+                <TextBlock
+                    Grid.Row="0"
+                    HorizontalAlignment="Center"
+                    FontSize="27"
+                    Margin="0,0,0,8"
+                    Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                    Text="{x:Static common:SettingsTabItemTags.ChangeUserName}" />
 
                 <Grid
-                    Margin="16">
+                    Grid.Row="1">
 
-                    <Grid.RowDefinitions>
-                        <RowDefinition
-                            Height="auto" />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
+                    <StackPanel
+                        VerticalAlignment="Top"
+                        HorizontalAlignment="Center">
 
-                    <TextBlock
-                        Grid.Row="0"
-                        HorizontalAlignment="Center"
-                        FontSize="27"
-                        Margin="0,0,0,8"
-                        Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                        Text="{x:Static common:SettingsTabItemTags.ChangeUserName}" />
+                        <TextBox
+                            Text="{Binding Path=NewUserName}"
+                            Margin="0,50"
+                            Width="380"
+                            MaxLength="12"
+                            VerticalContentAlignment="Center"
+                            Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                            md:TextFieldAssist.HasClearButton="True"
+                            md:HintAssist.Hint="请输入新昵称"
+                            FontSize="22" />
+                        <Button
+                            Command="{Binding Path=SaveUserNameCommand}"
+                            FontSize="22"
+                            Width="120"
+                            Height="38"
+                            Content="保存" />
 
-                    <Grid
-                        Grid.Row="1">
-
-                        <StackPanel
-                            VerticalAlignment="Top"
-                            HorizontalAlignment="Center">
-
-                            <TextBox
-                                Text="{Binding Path=NewUserName}"
-                                Margin="0,50"
-                                Width="380"
-                                MaxLength="12"
-                                VerticalContentAlignment="Center"
-                                Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                md:TextFieldAssist.HasClearButton="True"
-                                md:HintAssist.Hint="请输入新昵称"
-                                FontSize="22" />
-                            <Button
-                                Command="{Binding Path=SaveUserNameCommand}"
-                                FontSize="22"
-                                Width="120"
-                                Height="38"
-                                Content="保存" />
-
-                        </StackPanel>
-
-                    </Grid>
+                    </StackPanel>
 
                 </Grid>
 
-            </TabItem>
+            </Grid>
 
-            <!--修改密码-->
-            <TabItem
-                Tag="{x:Static common:SettingsTabItemTags.ChangePassword}"
-                Padding="20"
-                Width="auto">
+        </TabItem>
 
-                <TabItem.Header>
-                    <TextBlock
-                        FontSize="22"
-                        HorizontalAlignment="Center"
-                        Text="{x:Static common:SettingsTabItemTags.ChangePassword}" />
-                </TabItem.Header>
+        <!--修改密码-->
+        <TabItem
+            Tag="{x:Static common:SettingsTabItemTags.ChangePassword}"
+            Padding="20"
+            Width="auto">
+
+            <TabItem.Header>
+                <TextBlock
+                    FontSize="22"
+                    HorizontalAlignment="Center"
+                    Text="{x:Static common:SettingsTabItemTags.ChangePassword}" />
+            </TabItem.Header>
+
+            <Grid
+                Margin="16">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition
+                        Height="auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+
+                <TextBlock
+                    Grid.Row="0"
+                    HorizontalAlignment="Center"
+                    FontSize="27"
+                    Margin="0,0,0,8"
+                    Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                    Text="{x:Static common:SettingsTabItemTags.ChangePassword}" />
 
                 <Grid
-                    Margin="16">
+                    Grid.Row="1">
 
-                    <Grid.RowDefinitions>
-                        <RowDefinition
-                            Height="auto" />
-                        <RowDefinition />
-                    </Grid.RowDefinitions>
+                    <StackPanel
+                        VerticalAlignment="Top"
+                        HorizontalAlignment="Center">
 
-                    <TextBlock
-                        Grid.Row="0"
-                        HorizontalAlignment="Center"
-                        FontSize="27"
-                        Margin="0,0,0,8"
-                        Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                        Text="{x:Static common:SettingsTabItemTags.ChangePassword}" />
+                        <PasswordBox
+                            md:PasswordBoxAssist.Password="{Binding Path=OldPassword, UpdateSourceTrigger=PropertyChanged}"
+                            MaxLength="12"
+                            Style="{StaticResource MaterialDesignOutlinedPasswordBox}"
+                            Margin="0,50,0,30"
+                            Width="380"
+                            VerticalContentAlignment="Center"
+                            FontSize="22"
+                            md:HintAssist.Hint="请输入旧密码"
+                            md:TextFieldAssist.HasClearButton="True" />
 
-                    <Grid
-                        Grid.Row="1">
+                        <PasswordBox
+                            md:PasswordBoxAssist.Password="{Binding Path=NewPassword, UpdateSourceTrigger=PropertyChanged}"
+                            MaxLength="12"
+                            Style="{StaticResource MaterialDesignOutlinedPasswordBox}"
+                            Margin="0,30"
+                            Width="380"
+                            VerticalContentAlignment="Center"
+                            FontSize="22"
+                            md:HintAssist.Hint="请输入新密码"
+                            md:TextFieldAssist.HasClearButton="True" />
 
-                        <StackPanel
-                            VerticalAlignment="Top"
-                            HorizontalAlignment="Center">
-
-                            <PasswordBox
-                                md:PasswordBoxAssist.Password="{Binding Path=OldPassword, UpdateSourceTrigger=PropertyChanged}"
-                                MaxLength="12"
-                                Style="{StaticResource MaterialDesignOutlinedPasswordBox}"
-                                Margin="0,50,0,30"
-                                Width="380"
-                                VerticalContentAlignment="Center"
-                                FontSize="22"
-                                md:HintAssist.Hint="请输入旧密码"
-                                md:TextFieldAssist.HasClearButton="True" />
-
-                            <PasswordBox
-                                md:PasswordBoxAssist.Password="{Binding Path=NewPassword, UpdateSourceTrigger=PropertyChanged}"
-                                MaxLength="12"
-                                Style="{StaticResource MaterialDesignOutlinedPasswordBox}"
-                                Margin="0,30"
-                                Width="380"
-                                VerticalContentAlignment="Center"
-                                FontSize="22"
-                                md:HintAssist.Hint="请输入新密码"
-                                md:TextFieldAssist.HasClearButton="True" />
-
-                            <!--Style:MaterialDesignOutlinedRevealPasswordBox 带有一个显示密码的按钮-->
-                            <PasswordBox
-                                md:PasswordBoxAssist.Password="{Binding Path=NewPasswordAgain, 
+                        <!--Style:MaterialDesignOutlinedRevealPasswordBox 带有一个显示密码的按钮-->
+                        <PasswordBox
+                            md:PasswordBoxAssist.Password="{Binding Path=NewPasswordAgain, 
                                 UpdateSourceTrigger=PropertyChanged}"
-                                MaxLength="12"
-                                Style="{StaticResource MaterialDesignOutlinedPasswordBox}"
-                                Margin="0,30,0,50"
-                                Width="380"
-                                VerticalContentAlignment="Center"
-                                FontSize="22"
-                                md:HintAssist.Hint="请再次输入新密码"
-                                md:TextFieldAssist.HasClearButton="True" />
-                            <Button
-                                Command="{Binding Path=SavePasswordCommand}"
-                                FontSize="22"
-                                Width="120"
-                                Height="38"
-                                Content="保存" />
+                            MaxLength="12"
+                            Style="{StaticResource MaterialDesignOutlinedPasswordBox}"
+                            Margin="0,30,0,50"
+                            Width="380"
+                            VerticalContentAlignment="Center"
+                            FontSize="22"
+                            md:HintAssist.Hint="请再次输入新密码"
+                            md:TextFieldAssist.HasClearButton="True" />
+                        <Button
+                            Command="{Binding Path=SavePasswordCommand}"
+                            FontSize="22"
+                            Width="120"
+                            Height="38"
+                            Content="保存" />
 
-                        </StackPanel>
-
-                    </Grid>
+                    </StackPanel>
 
                 </Grid>
 
-            </TabItem>
+            </Grid>
 
-            <!--注销账号-->
-            <TabItem
-                Tag="{x:Static common:SettingsTabItemTags.DeleteAccount}"
-                Padding="20"
-                Width="auto">
+        </TabItem>
 
-                <TabItem.Header>
-                    <TextBlock
-                        FontSize="22"
-                        HorizontalAlignment="Center"
-                        Text="{x:Static common:SettingsTabItemTags.DeleteAccount}" />
-                </TabItem.Header>
+        <!--注销账号-->
+        <TabItem
+            Tag="{x:Static common:SettingsTabItemTags.DeleteAccount}"
+            Padding="20"
+            Width="auto">
 
-            </TabItem>
+            <TabItem.Header>
+                <TextBlock
+                    FontSize="22"
+                    HorizontalAlignment="Center"
+                    Text="{x:Static common:SettingsTabItemTags.DeleteAccount}" />
+            </TabItem.Header>
 
-            <!--退出登录-->
-            <TabItem
-                Tag="{x:Static common:SettingsTabItemTags.LogOut}"
-                Padding="20"
-                Width="auto">
+        </TabItem>
 
-                <TabItem.Header>
-                    <TextBlock
-                        FontSize="22"
-                        HorizontalAlignment="Center"
-                        Text="{x:Static common:SettingsTabItemTags.LogOut}" />
-                </TabItem.Header>
+        <!--退出登录-->
+        <TabItem
+            Tag="{x:Static common:SettingsTabItemTags.LogOut}"
+            Padding="20"
+            Width="auto">
 
-            </TabItem>
+            <TabItem.Header>
+                <TextBlock
+                    FontSize="22"
+                    HorizontalAlignment="Center"
+                    Text="{x:Static common:SettingsTabItemTags.LogOut}" />
+            </TabItem.Header>
 
-        </TabControl>
+        </TabItem>
 
-    </md:Card>
+    </TabControl>
+
 
 </UserControl>

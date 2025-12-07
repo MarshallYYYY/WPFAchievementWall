@@ -6,16 +6,16 @@ namespace Client.Services.WebApi
     public class AchievementService : ApiServiceBase, IAchievementService
     {
         public AchievementService(string baseUrl) : base(baseUrl) { }
+        private const string endpointPrefix = "api/achievements";
 
         public async Task<ApiResult<List<Achievement>>> GetUserAchievementsdAsync(int userId)
         {
-            return await GetAsync<List<Achievement>>($"api/achievements?userId={userId}");
+            return await GetAsync<List<Achievement>>($"{endpointPrefix}?userId={userId}");
         }
 
         public async Task<ApiResult> SetUserAchievementsGroupedByYearAsync(
             int userId, List<YearAchievements> result)
         {
-            result.Clear();
             ApiResult<List<Achievement>> apiResult = await GetUserAchievementsdAsync(userId);
             if (apiResult.IsSuccess is false)
             {
@@ -51,6 +51,8 @@ namespace Client.Services.WebApi
                     //    group.OrderByDescending(achievement => achievement.AchieveDate).ToList())
                 })
                 .ToList();
+
+            result.Clear();
             // 按照年份依次添加到 AllAchievement 中
             //yearGroups.ForEach(group => result.Add(group));
             yearGroups.ForEach(result.Add);
@@ -64,17 +66,17 @@ namespace Client.Services.WebApi
 
         public async Task<ApiResult<Achievement>> CreateAchievementAsync(Achievement achievement)
         {
-            return await PostAsync<Achievement>("api/achievements", achievement);
+            return await PostAsync<Achievement>(endpointPrefix, achievement);
         }
 
         public async Task<ApiResult> UpdateAchievementAsync(Achievement achievement)
         {
-            return await PutAsync($"api/achievements/{achievement.Id}", achievement);
+            return await PutAsync($"{endpointPrefix}/{achievement.Id}", achievement);
         }
 
         public async Task<bool> DeleteAchievementAsync(int id)
         {
-            return await DeleteAsync($"api/achievements/{id}");
+            return await DeleteAsync($"{endpointPrefix}/{id}");
         }
     }
 }
