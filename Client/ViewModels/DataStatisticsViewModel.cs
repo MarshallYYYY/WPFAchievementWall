@@ -72,13 +72,25 @@ namespace Client.ViewModels
                 Plot();
             });
         }
-        private readonly List<YearAchievements> achievements = [];
+        private List<Achievement> achievements = [];
+        private readonly List<YearAchievements> groupedByYearAchievements = [];
         private readonly ObservableCollection<Goal> ongoingGoals = [];
         private readonly ObservableCollection<Goal> achievedGoals = [];
         private async Task InitData()
         {
+            ApiResult<List<Achievement>> apiResult = await achievementService.GetUserAchievementsdAsync(
+                userSession.CurrentUser.Id);
+            if (apiResult.IsSuccess is false)
+            {
+                snackbarService.SendMessage(apiResult.ErrorMessage!);
+            }
+            else
+            {
+                achievements = apiResult.Data!;
+            }
+
             ApiResult achievementApiResult = await achievementService.SetUserAchievementsGroupedByYearAsync(
-                userSession.CurrentUser.Id, achievements);
+                userSession.CurrentUser.Id, groupedByYearAchievements);
             if (achievementApiResult.IsSuccess is false)
             {
                 snackbarService.SendMessage(achievementApiResult.ErrorMessage!);
@@ -186,7 +198,7 @@ namespace Client.ViewModels
             switch (selectedChartType)
             {
                 case ChartType.LineChart:
-                    PlotLineChart();
+                    PlotYearLineChart();
                     break;
                 case ChartType.BarChart:
                     PlotBarChart();
@@ -208,13 +220,13 @@ namespace Client.ViewModels
           // 365.25 是考虑了闰年的情况
           [new DateTimeAxis(TimeSpan.FromDays(365.25), date => date.ToString("yyyy")),];
 
-        private void PlotLineChart()
+        private void PlotYearLineChart()
         {
             // 点击绘制按钮后，改变右侧TabControl显示的图表类型。
             TabControlSelectedIndex = 0;
 
-            var points = new ObservableCollection<DateTimePoint>();
-            foreach (YearAchievements yearAchievements in achievements)
+            ObservableCollection<DateTimePoint> points = [];
+            foreach (YearAchievements yearAchievements in groupedByYearAchievements)
             {
                 // Convert.ToDateTime(yearAchievements.Year) 会失败，所以在后面补充 1月1日。
                 DateTime dateTime = new(yearAchievements.Year ?? 2000, 1, 1);
@@ -224,9 +236,10 @@ namespace Client.ViewModels
             LineSeries<DateTimePoint> lineSeries = new()
             {
                 Values = points,
+
                 //Fill = null, // 不要填充
                 //Stroke = new SolidColorPaint(SKColors.SteelBlue) // 固定颜色
-                
+
                 // 让数值显示在数据点的上方
                 DataLabelsPaint = new SolidColorPaint(new SKColor(30, 30, 30)),
                 DataLabelsPosition = DataLabelsPosition.Top
@@ -257,6 +270,7 @@ namespace Client.ViewModels
                     PlotYearBarChart();
                     break;
                 case DataDimension.Level:
+                    PlotLevelBarChart();
                     break;
                 case DataDimension.Category:
                     break;
@@ -269,8 +283,8 @@ namespace Client.ViewModels
         }
         private void PlotYearBarChart()
         {
-            var points = new ObservableCollection<DateTimePoint>();
-            foreach (YearAchievements yearAchievements in achievements)
+            ObservableCollection<DateTimePoint> points = [];
+            foreach (YearAchievements yearAchievements in groupedByYearAchievements)
             {
                 DateTime dateTime = new(yearAchievements.Year ?? 2000, 1, 1);
                 DateTimePoint dateTimePoint = new(dateTime, yearAchievements.Achievements.Count);
@@ -279,6 +293,7 @@ namespace Client.ViewModels
             ColumnSeries<DateTimePoint> columnSeries = new()
             {
                 Values = points,
+
                 //Fill = new SolidColorPaint(SKColors.LightSkyBlue),
                 DataLabelsPaint = new SolidColorPaint(new SKColor(30, 30, 30)),
                 DataLabelsPosition = DataLabelsPosition.Top
@@ -286,6 +301,40 @@ namespace Client.ViewModels
             BarSeries = [columnSeries];
 
             BarXAxes = [new DateTimeAxis(TimeSpan.FromDays(365.25), date => date.ToString("yyyy")),];
+        }
+        private void PlotLevelBarChart()
+        {
+            ObservableCollection<int> points = [];
+            List<string> labels = [];
+            for (int i = 1; i <= 5; i++)
+            {
+                points.Add(achievements.Where(a => a.Level == i).Count());
+                labels.Add(i.ToString());
+            }
+            ColumnSeries<int> columnSeries = new()
+            {
+                Values = points,
+                DataLabelsPaint = new SolidColorPaint(new SKColor(30, 30, 30)),
+                DataLabelsPosition = DataLabelsPosition.Top
+            };
+            BarSeries = [columnSeries];
+
+            Axis axis = new()
+            {
+                Labels = labels,
+
+                LabelsRotation = 0,
+                SeparatorsPaint = new SolidColorPaint(new SKColor(200, 200, 200)),
+                SeparatorsAtCenter = false,
+                TicksPaint = new SolidColorPaint(new SKColor(35, 35, 35)),
+                TicksAtCenter = true,
+                // By default the axis tries to optimize the number of 
+                // labels to fit the available space, 
+                // when you need to force the axis to show all the labels then you must: 
+                ForceStepToMin = true,
+                MinStep = 1
+            };
+            BarXAxes = [axis,];
         }
         #endregion
 
@@ -305,6 +354,7 @@ namespace Client.ViewModels
                     PlotYearPieChart();
                     break;
                 case DataDimension.Level:
+                    PlotLevelPieChart();
                     break;
                 case DataDimension.Category:
                     break;
@@ -317,24 +367,55 @@ namespace Client.ViewModels
         }
         private void PlotYearPieChart()
         {
-            int[] data = new int[achievements.Count];
-            for (int i = 0; i < data.Length; i++)
+            // 下面两种方式均可
+            //int[] data = new int[groupedByYearAchievements.Count];
+            //for (int i = 0; i < data.Length; i++)
+            //{
+            //    YearAchievements yearAchievements = groupedByYearAchievements[i];
+            //    data[i] = yearAchievements.Achievements.Count;
+            //}
+
+            List<int> data = [];
+            foreach (YearAchievements yearAchievements in groupedByYearAchievements)
             {
-                YearAchievements yearAchievements = achievements[i];
-                data[i] = yearAchievements.Achievements.Count;
+                data.Add(yearAchievements.Achievements.Count);
             }
+
             int index = 0;
             PieSeries = data.AsPieSeries((value, series) =>
             {
-                series.Name = achievements[index++].Year.ToString();
-                series.DataLabelsPosition = LiveChartsCore.Measure.PolarLabelsPosition.Middle;
+                series.Name = groupedByYearAchievements[index++].Year.ToString();
+
+                series.DataLabelsPosition = PolarLabelsPosition.Middle;
                 series.DataLabelsSize = 18;
                 series.DataLabelsPaint = new SolidColorPaint(new SKColor(30, 30, 30));
                 series.DataLabelsFormatter = point =>
                    $"{series.Name}: {point.Coordinate.PrimaryValue}/{point.StackedValue!.Total}";
                 series.ToolTipLabelFormatter = point => $"{point.StackedValue!.Share:P2}";
             });
+        }
+        private void PlotLevelPieChart()
+        {
+            List<int> data = [];
+            List<string> names = [];
+            for (int i = 1; i <= 5; i++)
+            {
+                data.Add(achievements.Where(a => a.Level == i).Count());
+                names.Add(i.ToString());
+            }
 
+            int index = 0;
+            PieSeries = data.AsPieSeries((value, series) =>
+            {
+                series.Name = $"星级 {names[index++]}";
+
+                series.DataLabelsPosition = PolarLabelsPosition.Middle;
+                series.DataLabelsSize = 18;
+                series.DataLabelsPaint = new SolidColorPaint(new SKColor(30, 30, 30));
+                series.DataLabelsFormatter = point =>
+                   $"{series.Name}: {point.Coordinate.PrimaryValue}/{point.StackedValue!.Total}";
+                series.ToolTipLabelFormatter = point => $"{point.StackedValue!.Share:P2}";
+            });
         }
         #endregion
         #endregion

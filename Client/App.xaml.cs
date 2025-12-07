@@ -3,6 +3,9 @@ using Client.Services;
 using Client.Services.WebApi;
 using Client.ViewModels;
 using Client.Views;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
+using SkiaSharp;
 using System.Windows;
 
 namespace Client
@@ -80,6 +83,12 @@ namespace Client
                 //登录成功后 MainView 才开始生命周期（Loaded、Activated 等）
                 base.OnInitialized();
             });
+        }
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+            LiveCharts.Configure(config =>
+            config.HasGlobalSKTypeface(SKFontManager.Default.MatchCharacter('汉')));
         }
     }
 }
