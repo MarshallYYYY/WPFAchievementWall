@@ -10,6 +10,7 @@ using LiveChartsCore.SkiaSharpView.Extensions;
 using LiveChartsCore.SkiaSharpView.Painting;
 using LiveChartsCore.SkiaSharpView.VisualElements;
 using Models;
+using Newtonsoft.Json.Linq;
 using SkiaSharp;
 using System.Collections.ObjectModel;
 using System.Windows;
@@ -31,7 +32,22 @@ namespace Client.ViewModels
             this.goalService = goalService;
             this.loadingService = loadingService;
             this.snackbarService = snackbarService;
+
             PlotCommand = new DelegateCommand(Plot);
+
+            /*
+            // 设置第一个ComboBox的选项为成就
+            SelectedAnalysisObject = AnalysisObject.Achievement;
+            // 设置第二个ComboBox的选项为年份
+            SelectedDataDimension = DataDimension.Year;
+            // 设置第三个ComboBox的选项为折线图
+            SelectedChartType = ChartType.LineChart;
+
+            // 设置右侧TabControl显示的图表类型为折线图
+            TabControlSelectedIndex = 0;
+            */
+            SetDataDimensionOptions();
+            SetChartTypeOptions();
         }
 
         #region 会话、服务
@@ -53,19 +69,10 @@ namespace Client.ViewModels
         }
         #endregion
 
-        #region 每次进入页面时的初始化（UI初始化、数据初始化）
+        #region 每次进入页面时的数据初始化和之前选择的图表刷新
         private void Init()
         {
-            // 设置第一个ComboBox的选项为成就
-            SelectedAnalysisObject = AnalysisObject.Achievement;
-            // 设置第二个ComboBox的选项为年份
-            SelectedDataDimension = DataDimension.Year;
-            // 设置第三个ComboBox的选项为折线图
-            selectedChartType = ChartType.LineChart;
-
-            // 设置右侧TabControl显示的图表类型为折线图
-            TabControlSelectedIndex = 0;
-            // 加载数据，然后显示图表：成就 - 年份 - 折线图
+            // 加载数据，然后显示图表
             _ = loadingService.RunWithLoadingAsync(async () =>
             {
                 await InitData();
@@ -121,8 +128,6 @@ namespace Client.ViewModels
                 SetDataDimensionOptions();
             }
         }
-        #endregion
-
         private void SetDataDimensionOptions()
         {
             DataDimensionOptions.Clear();
@@ -135,11 +140,12 @@ namespace Client.ViewModels
                     break;
                 case AnalysisObject.Goal:
                     DataDimensionOptions.Add(DataDimension.CompletionStatus);
-                    DataDimensionOptions.Add(DataDimension.OntimeAchievementRate);
+                    DataDimensionOptions.Add(DataDimension.OntimeAchieved);
                     break;
             }
             SelectedDataDimension = DataDimensionOptions.First();
         }
+        #endregion
 
         #region 数据维度
         /// <summary>
@@ -225,7 +231,8 @@ namespace Client.ViewModels
             // 点击绘制按钮后，改变右侧TabControl显示的图表类型。
             TabControlSelectedIndex = 0;
 
-            ObservableCollection<DateTimePoint> points = [];
+            //ObservableCollection<DateTimePoint> points = [];
+            List<DateTimePoint> points = [];
             foreach (YearAchievements yearAchievements in groupedByYearAchievements)
             {
                 // Convert.ToDateTime(yearAchievements.Year) 会失败，所以在后面补充 1月1日。
@@ -244,7 +251,7 @@ namespace Client.ViewModels
                 DataLabelsPaint = new SolidColorPaint(new SKColor(30, 30, 30)),
                 DataLabelsPosition = DataLabelsPosition.Top
             };
-            LineSeries = [lineSeries];
+            LineSeries = [lineSeries,];
         }
         #endregion
 
@@ -268,22 +275,28 @@ namespace Client.ViewModels
             {
                 case DataDimension.Year:
                     PlotYearBarChart();
+                    //PlotYearBarChartPlanB();
                     break;
                 case DataDimension.Level:
-                    PlotLevelBarChart();
+                    PlotBarChartTemplate(SetLevelChartData);
                     break;
                 case DataDimension.Category:
+                    PlotBarChartTemplate(SetCategoryChartData);
                     break;
 
                 case DataDimension.CompletionStatus:
+                    PlotBarChartTemplate(SetCompletionStatusChartData);
                     break;
-                case DataDimension.OntimeAchievementRate:
+                case DataDimension.OntimeAchieved:
+                    PlotBarChartTemplate(SetOntimeAchievedChartData);
                     break;
             }
         }
+
+        #region 绘制年份柱状图、其余四个数据维度通用的设置Series和Axis的函数
         private void PlotYearBarChart()
         {
-            ObservableCollection<DateTimePoint> points = [];
+            List<DateTimePoint> points = [];
             foreach (YearAchievements yearAchievements in groupedByYearAchievements)
             {
                 DateTime dateTime = new(yearAchievements.Year ?? 2000, 1, 1);
@@ -298,27 +311,40 @@ namespace Client.ViewModels
                 DataLabelsPaint = new SolidColorPaint(new SKColor(30, 30, 30)),
                 DataLabelsPosition = DataLabelsPosition.Top
             };
-            BarSeries = [columnSeries];
+            BarSeries = [columnSeries,];
 
             BarXAxes = [new DateTimeAxis(TimeSpan.FromDays(365.25), date => date.ToString("yyyy")),];
         }
-        private void PlotLevelBarChart()
+        [Obsolete("这种绘制方式体现不出时间的跨度，比如2000与2005会紧靠着，不会有间隔距离上的体现。")]
+        private void PlotYearBarChartPlanB()
         {
-            ObservableCollection<int> points = [];
-            List<string> labels = [];
-            for (int i = 1; i <= 5; i++)
+            PlotBarChartTemplate((values, labels) =>
             {
-                points.Add(achievements.Where(a => a.Level == i).Count());
-                labels.Add(i.ToString());
-            }
+                foreach (YearAchievements yearAchievements in groupedByYearAchievements)
+                {
+                    values.Add(yearAchievements.Achievements.Count);
+                    labels.Add(yearAchievements.Year.ToString()!);
+                }
+            });
+        }
+
+        /// <summary>
+        /// 绘制柱状图的模板函数：设置柱状图的Series和Axis
+        /// </summary>
+        /// <param name="action">对values和labels添加元素</param>
+        private void PlotBarChartTemplate(Action<List<int>, List<string>> action)
+        {
+            List<int> values = [];
+            List<string> labels = [];
+
+            action?.Invoke(values, labels);
+
             ColumnSeries<int> columnSeries = new()
             {
-                Values = points,
+                Values = values,
                 DataLabelsPaint = new SolidColorPaint(new SKColor(30, 30, 30)),
                 DataLabelsPosition = DataLabelsPosition.Top
             };
-            BarSeries = [columnSeries];
-
             Axis axis = new()
             {
                 Labels = labels,
@@ -329,13 +355,16 @@ namespace Client.ViewModels
                 TicksPaint = new SolidColorPaint(new SKColor(35, 35, 35)),
                 TicksAtCenter = true,
                 // By default the axis tries to optimize the number of 
-                // labels to fit the available space, 
-                // when you need to force the axis to show all the labels then you must: 
+                // names to fit the available space, 
+                // when you need to force the axis to show all the names then you must: 
                 ForceStepToMin = true,
                 MinStep = 1
             };
+
+            BarSeries = [columnSeries,];
             BarXAxes = [axis,];
         }
+        #endregion
         #endregion
 
         #region 饼图 PieChart
@@ -351,40 +380,44 @@ namespace Client.ViewModels
             switch (selectedDataDimension)
             {
                 case DataDimension.Year:
-                    PlotYearPieChart();
+                    PlotPieChartTemplate(SetYearPieChartData);
                     break;
                 case DataDimension.Level:
-                    PlotLevelPieChart();
+                    PlotPieChartTemplate(SetLevelChartData);
                     break;
                 case DataDimension.Category:
+                    PlotPieChartTemplate(SetCategoryChartData);
                     break;
 
                 case DataDimension.CompletionStatus:
+                    PlotPieChartTemplate(SetCompletionStatusChartData);
                     break;
-                case DataDimension.OntimeAchievementRate:
+                case DataDimension.OntimeAchieved:
+                    PlotPieChartTemplate(SetOntimeAchievedChartData);
                     break;
             }
         }
-        private void PlotYearPieChart()
-        {
-            // 下面两种方式均可
-            //int[] data = new int[groupedByYearAchievements.Count];
-            //for (int i = 0; i < data.Length; i++)
-            //{
-            //    YearAchievements yearAchievements = groupedByYearAchievements[i];
-            //    data[i] = yearAchievements.Achievements.Count;
-            //}
 
-            List<int> data = [];
+        #region 设置年份饼图的数据（values和names）、通用的设置Series的函数
+        private void SetYearPieChartData(List<int> values, List<string> names)
+        {
             foreach (YearAchievements yearAchievements in groupedByYearAchievements)
             {
-                data.Add(yearAchievements.Achievements.Count);
+                values.Add(yearAchievements.Achievements.Count);
+                names.Add(yearAchievements.Year.ToString()!);
             }
+        }
+        private void PlotPieChartTemplate(Action<List<int>, List<string>> action)
+        {
+            List<int> values = [];
+            List<string> names = [];
+
+            action?.Invoke(values, names);
 
             int index = 0;
-            PieSeries = data.AsPieSeries((value, series) =>
+            PieSeries = values.AsPieSeries((value, series) =>
             {
-                series.Name = groupedByYearAchievements[index++].Year.ToString();
+                series.Name = names[index++];
 
                 series.DataLabelsPosition = PolarLabelsPosition.Middle;
                 series.DataLabelsSize = 18;
@@ -394,30 +427,49 @@ namespace Client.ViewModels
                 series.ToolTipLabelFormatter = point => $"{point.StackedValue!.Share:P2}";
             });
         }
-        private void PlotLevelPieChart()
+        #endregion
+        #endregion
+
+        #region 设置 星级、类别、完成情况、准时达成 柱状图和饼图的数据（values和labels/names）
+        private void SetLevelChartData(List<int> values, List<string> names)
         {
-            List<int> data = [];
-            List<string> names = [];
             for (int i = 1; i <= 5; i++)
             {
-                data.Add(achievements.Where(a => a.Level == i).Count());
-                names.Add(i.ToString());
+                values.Add(achievements.Where(a => a.Level == i).Count());
+                names.Add($"星级 {i}");
             }
-
-            int index = 0;
-            PieSeries = data.AsPieSeries((value, series) =>
-            {
-                series.Name = $"星级 {names[index++]}";
-
-                series.DataLabelsPosition = PolarLabelsPosition.Middle;
-                series.DataLabelsSize = 18;
-                series.DataLabelsPaint = new SolidColorPaint(new SKColor(30, 30, 30));
-                series.DataLabelsFormatter = point =>
-                   $"{series.Name}: {point.Coordinate.PrimaryValue}/{point.StackedValue!.Total}";
-                series.ToolTipLabelFormatter = point => $"{point.StackedValue!.Share:P2}";
-            });
         }
-        #endregion
-        #endregion
+        private void SetCategoryChartData(List<int> values, List<string> names)
+        {
+            names.AddRange([
+                AchievementCategory.Default,
+                    AchievementCategory.Life,
+                    AchievementCategory.Learning,
+                    AchievementCategory.Health,
+                    AchievementCategory.Career,
+                ]);
+            for (int i = 0; i < names.Count; i++)
+            {
+                values.Add(achievements.Where(a => a.Category == names[i]).Count());
+            }
+        }
+        private void SetCompletionStatusChartData(List<int> values, List<string> names)
+        {
+            names.AddRange(["进行中", "已完成"]);
+            values.Add(ongoingGoals.Count);
+            values.Add(achievedGoals.Count);
+        }
+        private void SetOntimeAchievedChartData(List<int> values, List<string> names)
+        {
+            names.AddRange(["未准时达成", "准时达成"]);
+            // 只比较年月日，不比较时分秒
+            values.Add(achievedGoals.Where(
+                a => (a.AchieveDate ?? DateTime.Now).Date > a.TargetDate.Date).Count());
+            values.Add(achievedGoals.Where(
+                a => (a.AchieveDate ?? DateTime.Now).Date <= a.TargetDate.Date).Count());
+        }
+        #endregion 设置 星级、类别、完成情况、准时达成 柱状图和饼图的数据（values和labels/names）
+
+        #endregion 右侧的TabControl
     }
 }

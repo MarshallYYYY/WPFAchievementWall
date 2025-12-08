@@ -27,7 +27,7 @@
         public const string Category = "类别";
 
         public const string CompletionStatus = "完成情况";
-        public const string OntimeAchievementRate = "准时达成率";
+        public const string OntimeAchieved = "准时达成";
     }
     public static class ChartType
     {

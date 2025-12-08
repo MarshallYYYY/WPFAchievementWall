@@ -41,6 +41,7 @@ namespace Client.ViewModels
         public void OnNavigatedTo(NavigationContext navigationContext)
         {
             CurrentTime = DateTime.Now;
+            UserName = userSession.CurrentUser.UserName;
         }
 
         public bool IsNavigationTarget(NavigationContext navigationContext) => true;

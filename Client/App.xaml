@@ -44,7 +44,7 @@
                                     <!--  第一个Border 设置边框样式  -->
                                     <Setter TargetName="borderOne"
                                         Property="BorderThickness"
-                                        Value="5,0,0,0" />
+                                        Value="7,0,0,0" />
                                     <!--
                                         第一个Border 设置边框颜色，
                                         value 动态绑定主要是为了适应主题颜色更改时，边框也着变

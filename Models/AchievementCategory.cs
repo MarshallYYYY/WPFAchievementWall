@@ -1,6 +1,6 @@
 ﻿namespace Models
 {
-    public class AchievementCategory
+    public static class AchievementCategory
     {
         public const string Default = "默认";
         public const string Life = "生活经历";

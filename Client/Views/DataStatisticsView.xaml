@@ -119,7 +119,7 @@
                 Tag="{x:Static common:ChartType.PieChart}">
                 <lvc:PieChart
                     Series="{Binding PieSeries}"
-                    IsClockwise="False"
+                    IsClockwise="True"
                     InitialRotation="-90">
                 </lvc:PieChart>
             </TabItem>
