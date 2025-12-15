@@ -443,11 +443,11 @@ namespace Client.ViewModels
         {
             names.AddRange([
                 AchievementCategory.Default,
-                    AchievementCategory.Life,
-                    AchievementCategory.Learning,
-                    AchievementCategory.Health,
-                    AchievementCategory.Career,
-                ]);
+                AchievementCategory.Life,
+                AchievementCategory.Learning,
+                AchievementCategory.Health,
+                AchievementCategory.Career,
+            ]);
             for (int i = 0; i < names.Count; i++)
             {
                 values.Add(achievements.Where(a => a.Category == names[i]).Count());

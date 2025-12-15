@@ -26,9 +26,6 @@
                 Value="18" />
             <Setter
                 Property="md:TextFieldAssist.HasClearButton"
-                Value="True" />
-            <Setter
-                Property="md:TextFieldAssist.HasClearButton"
                 Value="False" />
             <Setter
                 Property="Width"
@@ -125,7 +122,6 @@
             </TabItem>
 
         </TabControl>
-
 
     </Grid>
 
